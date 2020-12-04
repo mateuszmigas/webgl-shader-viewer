@@ -10,19 +10,20 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:webgl-shader-viewer.helloWorld"
+        "onCommand:webgl-shader-viewer.show-viewer"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "webgl-shader-viewer.helloWorld",
-				"title": "Hello World"
+				"command": "webgl-shader-viewer.show-viewer",
+				"title": "Open WebGL Shader Viewer"
 			}
 		]
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run package",
+		"build-viewer": "webpack --config ./src/viewer/webpack.config.js",
 		"compile": "webpack --devtool nosources-source-map --config ./build/node-extension.webpack.config.js",
 		"watch": "webpack --watch --devtool nosources-source-map --info-verbosity verbose --config ./build/node-extension.webpack.config.js",
 		"package": "webpack --mode production --config ./build/node-extension.webpack.config.js",
