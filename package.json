@@ -25,6 +25,7 @@
 	"scripts": {
 		"vscode:prepublish": "yarn run package",
 		"build-viewer": "webpack --config ./src/viewer/webpack.config.js",
+		"watch-viewer": "webpack --config ./src/viewer/webpack.config.js --watch",
 		"compile": "webpack --devtool nosources-source-map --config ./build/node-extension.webpack.config.js",
 		"watch": "webpack --watch --devtool nosources-source-map --info-verbosity verbose --config ./build/node-extension.webpack.config.js",
 		"package": "webpack --mode production --config ./build/node-extension.webpack.config.js",

@@ -8,5 +8,5 @@ console.log("fse");
   element.appendChild(canvas);
   const context = canvas.getContext("2d");
   context.fillStyle = "red";
-  context.fillRect(50, 50, 450, 450);
+  context.fillRect(150, 150, 200, 450);
 }
