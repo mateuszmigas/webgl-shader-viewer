@@ -10,7 +10,8 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:webgl-shader-viewer.show-viewer"
+		"onCommand:webgl-shader-viewer.show-viewer",
+		"onWebviewPanel:webglshaderviewer"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {

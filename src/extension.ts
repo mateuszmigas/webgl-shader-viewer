@@ -6,6 +6,14 @@ export function activate(context: vscode.ExtensionContext) {
       ViewerPanel.createOrShow(context.extensionUri)
     )
   );
+
+  if (vscode.window.registerWebviewPanelSerializer) {
+    vscode.window.registerWebviewPanelSerializer(ViewerPanel.viewType, {
+      async deserializeWebviewPanel(webviewPanel, state) {
+        ViewerPanel.revive(webviewPanel, context.extensionUri);
+      },
+    });
+  }
 }
 
 export function deactivate() {}
@@ -13,7 +21,7 @@ export function deactivate() {}
 class ViewerPanel {
   private static instance: ViewerPanel | undefined;
   private disposables: vscode.Disposable[] = [];
-  public static readonly viewType = "catCoding";
+  public static readonly viewType = "webglshaderviewer";
 
   public static createOrShow(extensionUri: vscode.Uri) {
     const column = vscode.window.activeTextEditor
@@ -26,7 +34,7 @@ class ViewerPanel {
     }
 
     const panel = vscode.window.createWebviewPanel(
-      "webglshaderviewer",
+      ViewerPanel.viewType,
       "WebGL Shader Viewer",
       column || vscode.ViewColumn.One,
       {
@@ -35,6 +43,10 @@ class ViewerPanel {
       }
     );
 
+    ViewerPanel.instance = new ViewerPanel(panel, extensionUri);
+  }
+
+  static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     ViewerPanel.instance = new ViewerPanel(panel, extensionUri);
   }
 
