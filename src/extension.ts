@@ -2,12 +2,9 @@ import * as vscode from "vscode";
 
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
-    vscode.commands.registerCommand("webgl-shader-viewer.show-viewer", () => {
-      ViewerPanel.createOrShow(context.extensionUri);
-      vscode.window.showInformationMessage(
-        "Hello World from WebGL Shader Viewer!"
-      );
-    })
+    vscode.commands.registerCommand("webgl-shader-viewer.show-viewer", () =>
+      ViewerPanel.createOrShow(context.extensionUri)
+    )
   );
 }
 
@@ -58,31 +55,14 @@ class ViewerPanel {
 
   private _getHtmlForWebview() {
     const webview = this.panel.webview;
-    // Local path to main script run in the webview
-    const scriptPathOnDisk = vscode.Uri.joinPath(
-      this.extensionUri,
-      "media",
-      "main.js"
+
+    const scriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, "media", "main.js")
     );
 
-    // And the uri we use to load this script in the webview
-    const scriptUri = webview.asWebviewUri(scriptPathOnDisk);
-
-    // Local path to css styles
-    // const styleResetPath = vscode.Uri.joinPath(
-    //   this.extensionUri,
-    //   "media",
-    //   "reset.css"
-    // );
-    // const stylesPathMainPath = vscode.Uri.joinPath(
-    //   this.extensionUri,
-    //   "media",
-    //   "vscode.css"
-    // );
-
-    // Uri to load styles into webview
-    //const stylesResetUri = webview.asWebviewUri(styleResetPath);
-    //const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
+    const stylesUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, "media", "styles.css")
+    );
 
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
@@ -100,12 +80,11 @@ class ViewerPanel {
 
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
-			<title>Cat Coding</title>
+			<link href="${stylesUri}" rel="stylesheet">
+			<title>No name</title>
 		</head>
 		<body>
-			<div id="viewer-host"></div>
-			<div>cycki</div>
+			<div id="main-container"></div>
 			<script nonce="${nonce}" src="${scriptUri}"></script>
 		</body>
 		</html>`;
