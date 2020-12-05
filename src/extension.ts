@@ -7,6 +7,17 @@ export function activate(context: vscode.ExtensionContext) {
     )
   );
 
+  //vscode.workspace.onDidSaveTextDocument
+  //vscode.window.visibleTextEditors
+  //vscode.window.onDidChangeVisibleTextEditors
+
+  //messages
+  //visible text editors
+  //
+  //get text editor content
+  //textdocumentupdated
+  //get visible text editors
+
   if (vscode.window.registerWebviewPanelSerializer) {
     vscode.window.registerWebviewPanelSerializer(ViewerPanel.viewType, {
       async deserializeWebviewPanel(webviewPanel, state) {
