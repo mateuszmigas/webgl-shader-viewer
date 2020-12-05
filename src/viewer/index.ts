@@ -12,8 +12,13 @@ console.log("fse");
 // createDropdown => element, controller { setItems, setSelectedItemId, getSelectedItemId, getItems }
 
 {
-  const element = document.getElementById("main-container");
+  const element = document.getElementById("viewer");
+  const options = document.createElement("div");
+  options.className = "viewer-options";
+
   const canvas = document.createElement("canvas");
+  canvas.className = "viewer-content";
+
   const {
     element: dropdownElement,
     controller: dropdownController,
@@ -32,8 +37,11 @@ console.log("fse");
     controller: textAreaController,
   } = createTextArea();
 
-  element.appendChild(dropdownElement);
-  element.appendChild(textAreaElement);
+  options.appendChild(dropdownElement);
+  options.appendChild(textAreaElement);
+
+  element.appendChild(options);
+
   textAreaController.setText("dupa");
 
   canvas.width = 500;

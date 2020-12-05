@@ -107,7 +107,7 @@ class ViewerPanel {
 			<title>No name</title>
 		</head>
 		<body>
-			<div id="main-container"></div>
+			<div id="viewer"></div>
 			<script nonce="${nonce}" src="${scriptUri}"></script>
 		</body>
 		</html>`;

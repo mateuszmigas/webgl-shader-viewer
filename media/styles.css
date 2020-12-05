@@ -5,11 +5,21 @@ body {
   padding: 0;
 }
 
-#main-container {
+#viewer {
   height: 100%;
-  background-color: blue;
+  display: grid;
+  grid-template-columns: 250px auto;
+  grid-template-areas: "options content";
 }
 
-.canvas-host {
-  background-color: red;
+.viewer-options {
+  grid-area: options;
+  background-color: burlywood;
+  display: flex;
+  flex-direction: column;
+}
+
+.viewer-content {
+  grid-area: content;
+  background-color: darkcyan;
 }
