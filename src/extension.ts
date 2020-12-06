@@ -1,13 +1,37 @@
+import {
+  VsCodeApiProxyMessageRequest,
+  VsCodeApiProxyMessageResponse,
+} from "./viewer/communicationProxy";
 import * as vscode from "vscode";
 
+export const proxyEndpoint = (
+  postMessage: (message: VsCodeApiProxyMessageResponse) => void
+) => (message: VsCodeApiProxyMessageRequest) => {
+  switch (message.type) {
+    case "getVisibleTextEditors":
+      const fileNames = vscode.window.visibleTextEditors.map(
+        (te) => te.document.uri.fsPath
+      );
+      console.log(vscode.window.visibleTextEditors);
+      postMessage({
+        type: "getVisibleTextEditors",
+        payload: { fileNames },
+      });
+      return;
+  }
+};
+
 export function activate(context: vscode.ExtensionContext) {
+  console.log("csfjelsk");
+
   context.subscriptions.push(
-    vscode.commands.registerCommand("webgl-shader-viewer.show-viewer", () =>
-      ViewerPanel.createOrShow(context.extensionUri)
-    )
+    vscode.commands.registerCommand("webgl-shader-viewer.show-viewer", () => {
+      ViewerPanel.createOrShow(context.extensionUri);
+      console.log("cccc");
+    })
   );
 
-  //vscode.workspace.onDidSaveTextDocument
+  //vscode.workspace.onDidSaveTextDocument(l => l.getText)
   //vscode.window.visibleTextEditors
   //vscode.window.onDidChangeVisibleTextEditors
 
@@ -66,6 +90,10 @@ class ViewerPanel {
     private extensionUri: vscode.Uri
   ) {
     this.panel.webview.html = this._getHtmlForWebview();
+    const listener = proxyEndpoint((msg) =>
+      this.panel.webview.postMessage(msg)
+    );
+    this.panel.webview.onDidReceiveMessage(listener, null, this.disposables);
     this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
   }
 

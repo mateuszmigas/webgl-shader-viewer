@@ -1,17 +1,10 @@
 import { createTextArea } from "./components/textArea";
 import { createDropdown } from "./components/dropdown";
+import { VsCodeApiProxy } from "./communicationProxy";
 
-console.log("fse");
+const createViewer = async () => {
+  const vscodeApi = new VsCodeApiProxy();
 
-//create section
-//create title
-//create dropdown
-//craete title
-//create input
-
-// createDropdown => element, controller { setItems, setSelectedItemId, getSelectedItemId, getItems }
-
-{
   const element = document.getElementById("viewer");
   const options = document.createElement("div");
   options.className = "viewer-options";
@@ -42,7 +35,12 @@ console.log("fse");
 
   element.appendChild(options);
 
-  textAreaController.setText("dupa");
+  console.log("requesting");
+
+  const files = await vscodeApi.getVisibleTextEditors();
+  console.log("files2", files);
+
+  textAreaController.setText(files.join(","));
 
   canvas.width = 500;
   canvas.height = 500;
@@ -50,4 +48,6 @@ console.log("fse");
   const context = canvas.getContext("2d");
   context.fillStyle = "green";
   context.fillRect(150, 150, 200, 450);
-}
+};
+
+createViewer();
