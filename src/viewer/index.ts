@@ -18,12 +18,6 @@ const createViewer = async () => {
   } = createDropdown((item) => {
     console.log("item changed", item);
   });
-  dropdownController.setItems([
-    { id: "1", display: "ala1" },
-    { id: "2", display: "ala2" },
-    { id: "3", display: "ala3" },
-  ]);
-  dropdownController.setSelectedItemById("2");
 
   const {
     element: textAreaElement,
@@ -35,12 +29,22 @@ const createViewer = async () => {
 
   element.appendChild(options);
 
-  console.log("requesting");
-
-  const files = await vscodeApi.getVisibleTextEditors();
-  console.log("files2", files);
-
-  textAreaController.setText(files.join(","));
+  const files = await vscodeApi.getShaderDocuments();
+  dropdownController.setItems(
+    files.map((f) => ({
+      id: f.filePath,
+      display: f.fileName,
+    }))
+  );
+  vscodeApi.onDidShaderDocumentsChange((docs) => {
+    console.log("docs changed");
+    dropdownController.setItems(
+      docs.map((f) => ({
+        id: f.filePath,
+        display: f.fileName,
+      }))
+    );
+  });
 
   canvas.width = 500;
   canvas.height = 500;

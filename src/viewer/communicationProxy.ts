@@ -1,25 +1,22 @@
-import { vscodeApi } from "./vscodeApi";
-import * as vscode from "vscode";
+declare const acquireVsCodeApi: () => {
+  //getState: () => any;
+  //setState: (state: any) => void;
+  postMessage: (message: VsCodeApiProxyMessageRequest) => void;
+};
+export const vscodeApi = acquireVsCodeApi();
 
 export type VsCodeApiProxyMessageRequest =
-  | { type: "getVisibleTextEditors" }
-  | {
-      type: "getSavedTextDocumentContent";
-      payload: { fileName: string };
-    };
+  | { type: "getShaderDocuments" }
+  | { type: "onDidShaderDocumentsChange" };
 
 export type VsCodeApiProxyMessageResponse =
   | {
-      type: "getVisibleTextEditors";
-      payload: { fileNames: string[] };
+      type: "getShaderDocuments";
+      payload: { files: { filePath: string; fileName: string }[] };
     }
   | {
-      type: "onDidSaveTextDocument";
-      payload: { fileName: string };
-    }
-  | {
-      type: "getSavedTextDocumentContent";
-      payload: { content: string };
+      type: "onDidShaderDocumentsChange";
+      payload: { files: { filePath: string; fileName: string }[] };
     };
 
 export class VsCodeApiProxy {
@@ -34,23 +31,34 @@ export class VsCodeApiProxy {
     });
   }
 
-  getVisibleTextEditors() {
+  getShaderDocuments() {
     vscodeApi.postMessage({
-      type: "getVisibleTextEditors",
+      type: "getShaderDocuments",
     });
 
-    return new Promise<string[]>((resolve) => {
+    return new Promise<{ filePath: string; fileName: string }[]>((resolve) => {
       this.eventListeners.push((message) => {
-        console.log("on message", message);
-
-        if (message.type === "getVisibleTextEditors") {
-          console.log("webview", message.payload);
-
-          resolve(message.payload.fileNames);
+        if (message.type === "getShaderDocuments") {
+          resolve(message.payload.files);
           return true;
         }
         return false;
       });
+    });
+  }
+
+  onDidShaderDocumentsChange(
+    callback: (documents: { filePath: string; fileName: string }[]) => void
+  ) {
+    vscodeApi.postMessage({
+      type: "onDidShaderDocumentsChange",
+    });
+
+    this.eventListeners.push((message) => {
+      if (message.type === "onDidShaderDocumentsChange") {
+        callback(message.payload.files);
+      }
+      return false;
     });
   }
 }
