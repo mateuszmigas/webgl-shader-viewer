@@ -19,6 +19,8 @@ export const proxyEndpoint = (
     }));
   };
 
+  vscode.workspace.findFiles("**/*.glsl").then((x) => console.log("found", x));
+
   switch (message.type) {
     case "getShaderDocuments": {
       postMessage({
