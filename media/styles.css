@@ -14,7 +14,7 @@ body {
 
 .viewer-options {
   grid-area: options;
-  background-color: burlywood;
+  /* background-color: burlywood; */
   display: grid;
   grid-template-columns: auto 50px;
   grid-template-rows: 50px 50px 50px auto;
@@ -25,9 +25,14 @@ body {
     "shader-options shader-options";
 }
 
+.section-title {
+  margin: 13px;
+  user-select: none;
+}
+
 .viewer-shaders-title {
   grid-area: shaders-title;
-  background-color: yellow;
+  /* background-color: yellow; */
 }
 .viewer-refresh-button {
   grid-area: refresh-button;
@@ -35,11 +40,9 @@ body {
 }
 .viewer-vertex-shader-selector {
   grid-area: vertex-shader-selector;
-  background-color: green;
 }
 .viewer-fragment-shader-selector {
   grid-area: fragment-shader-selector;
-  background-color: orange;
 }
 
 .viewer-shader-options {
@@ -56,4 +59,17 @@ body {
 .viewer-content {
   grid-area: content;
   background-color: darkcyan;
+}
+
+.options-wrapper {
+  margin: 5px;
+  display: flex;
+  flex-direction: column;
+}
+.options-label {
+  font-size: 12px;
+}
+
+.options-content {
+  flex-grow: 1;
 }

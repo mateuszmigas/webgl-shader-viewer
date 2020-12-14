@@ -9,15 +9,10 @@ export type VsCodeApiProxyMessageRequest =
   | { type: "getShaderDocuments" }
   | { type: "onDidShaderDocumentsChange" };
 
-export type VsCodeApiProxyMessageResponse =
-  | {
-      type: "getShaderDocuments";
-      payload: { files: { filePath: string; fileName: string }[] };
-    }
-  | {
-      type: "onDidShaderDocumentsChange";
-      payload: { files: { filePath: string; fileName: string }[] };
-    };
+export type VsCodeApiProxyMessageResponse = {
+  type: "getShaderDocuments";
+  payload: { files: { filePath: string; fileName: string }[] };
+};
 
 export class VsCodeApiProxy {
   eventListeners: ((message: VsCodeApiProxyMessageResponse) => boolean)[] = [];
@@ -44,21 +39,6 @@ export class VsCodeApiProxy {
         }
         return false;
       });
-    });
-  }
-
-  onDidShaderDocumentsChange(
-    callback: (documents: { filePath: string; fileName: string }[]) => void
-  ) {
-    vscodeApi.postMessage({
-      type: "onDidShaderDocumentsChange",
-    });
-
-    this.eventListeners.push((message) => {
-      if (message.type === "onDidShaderDocumentsChange") {
-        callback(message.payload.files);
-      }
-      return false;
     });
   }
 }

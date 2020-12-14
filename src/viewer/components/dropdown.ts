@@ -4,18 +4,22 @@ export type DropdownItem = {
 };
 
 export const createDropdown = (
-  onChange: (item: DropdownItem | null) => void
-): {
-  element: HTMLSelectElement;
-  controller: {
+  //initialValue: DropdownItem | null,
+  onChange: (item: DropdownItem | null) => void,
+  className?: string,
+  options?: {} //placeholder
+): [
+  HTMLSelectElement,
+  {
     setItems: (items: DropdownItem[]) => void;
     getItems: () => DropdownItem[];
     setSelectedItemById: (id: string) => void;
     getSelectedItem: () => DropdownItem | null;
     clearSelection: () => void;
-  };
-} => {
+  }
+] => {
   const element = document.createElement("select");
+  element.className = className ?? "";
 
   let selectedItem: DropdownItem | null = null;
   let itemElements: { element: HTMLOptionElement; item: DropdownItem }[] = [];
@@ -68,14 +72,14 @@ export const createDropdown = (
     setSelectedItem(null);
   };
 
-  return {
+  return [
     element,
-    controller: {
+    {
       setItems,
       getItems,
       setSelectedItemById,
       getSelectedItem,
       clearSelection,
     },
-  };
+  ];
 };

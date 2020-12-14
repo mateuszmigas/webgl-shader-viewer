@@ -1,75 +1,94 @@
-import { createTextArea } from "./components/textArea";
-import { createDropdown } from "./components/dropdown";
+import { createDropdown, DropdownItem } from "./components/dropdown";
 import { VsCodeApiProxy } from "./communicationProxy";
 import { createSectionTitle } from "./components/createSectionTitle";
+import { createFAButton } from "./components/createFAButton";
+import { withLabel } from "./components/wrappers";
 
-const createDivSection = (text: string) => {
+const createDivSection = (className: string) => {
   const div = document.createElement("div");
-  div.className = text;
+  div.className = className;
   return div;
+};
+
+const createShaderOptions = (element: HTMLElement) => {
+  element.innerHTML = Math.random().toString();
 };
 
 const createViewer = async () => {
   const vscodeApi = new VsCodeApiProxy();
   const element = document.getElementById("viewer");
   const options = document.createElement("div");
+  const shaderOptions = createDivSection("viewer-shader-options");
+  options.appendChild(shaderOptions);
+
   options.className = "viewer-options";
+  let selectedVertex: DropdownItem | null = null;
+  let selectedFragment: DropdownItem | null = null;
 
-  options.appendChild(createDivSection("viewer-shaders-title"));
-  options.appendChild(createDivSection("viewer-refresh-button"));
-  options.appendChild(createDivSection("viewer-vertex-shader-selector"));
-  options.appendChild(createDivSection("viewer-fragment-shader-selector"));
-  options.appendChild(createDivSection("viewer-shader-options"));
+  const onShadersChanged = () => {
+    // /if (selectedFragment)
+    //element.innerHTML = "";
+    //createShaderOptions(shaderOptions);
+  };
 
-  // const { element: shadersEl } = createSectionTitle("shaders");
-  // options.appendChild(shadersEl);
+  //vertex shader
+  const [vertexDropdownElement, vertexDropdownController] = createDropdown(
+    (newVertex) => {
+      selectedFragment = newVertex;
+      onShadersChanged();
+    }
+  );
+  options.appendChild(
+    withLabel(
+      vertexDropdownElement,
+      "viewer-vertex-shader-selector",
+      "Vertex Shader"
+    )
+  );
 
-  // const refreshButton = document.createElement("button");
-  // //refreshButton.
+  //fragment shader
+  const [fragmentDropdownElement, fragmentDropdownController] = createDropdown(
+    (newFragment) => {
+      selectedFragment = newFragment;
+      onShadersChanged();
+    }
+  );
+  options.appendChild(
+    withLabel(
+      fragmentDropdownElement,
+      "viewer-fragment-shader-selector",
+      "Fragment Shader"
+    )
+  );
 
-  // const canvas = document.createElement("canvas");
-  // canvas.className = "viewer-content";
+  options.appendChild(
+    createSectionTitle("SHADERS", "viewer-shaders-title").element
+  );
 
-  // const {
-  //   element: dropdownElement,
-  //   controller: dropdownController,
-  // } = createDropdown((item) => {
-  //   console.log("item changed", item);
-  // });
+  options.appendChild(
+    createFAButton("R", "viewer-refresh-button", () => {
+      vscodeApi.getShaderDocuments().then((sd) => {
+        const files = sd.map((f) => ({
+          id: f.filePath,
+          display: f.fileName,
+        }));
 
-  // const {
-  //   element: textAreaElement,
-  //   controller: textAreaController,
-  // } = createTextArea();
-
-  // options.appendChild(dropdownElement);
-  // options.appendChild(textAreaElement);
+        vertexDropdownController.setItems(files);
+        fragmentDropdownController.setItems(files);
+      });
+    }).element
+  );
 
   element.appendChild(options);
 
-  // const files = await vscodeApi.getShaderDocuments();
-  // dropdownController.setItems(
-  //   files.map((f) => ({
-  //     id: f.filePath,
-  //     display: f.fileName,
-  //   }))
-  // );
-  // vscodeApi.onDidShaderDocumentsChange((docs) => {
-  //   console.log("docs changed");
-  //   dropdownController.setItems(
-  //     docs.map((f) => ({
-  //       id: f.filePath,
-  //       display: f.fileName,
-  //     }))
-  //   );
-  // });
-
-  // canvas.width = 500;
-  // canvas.height = 500;
-  // element.appendChild(canvas);
-  // const context = canvas.getContext("2d");
-  // context.fillStyle = "green";
-  // context.fillRect(150, 150, 200, 450);
+  const canvas = document.createElement("canvas");
+  canvas.className = "viewer-content";
+  canvas.width = 500;
+  canvas.height = 500;
+  element.appendChild(canvas);
+  const context = canvas.getContext("2d");
+  context.fillStyle = "green";
+  context.fillRect(150, 150, 200, 450);
 };
 
 createViewer();

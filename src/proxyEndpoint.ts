@@ -9,44 +9,27 @@ export const proxyEndpoint = (
   postMessage: (message: VsCodeApiProxyMessageResponse) => void,
   disposables: vscode.Disposable[]
 ) => (message: VsCodeApiProxyMessageRequest) => {
-  const requestShaderDocuments = () => {
-    const shaderDocuments = vscode.window.visibleTextEditors.filter((td) =>
-      path.extname(td.document.fileName, ".glsl")
-    );
-    return shaderDocuments.map((sd) => ({
-      filePath: sd.document.fileName,
-      fileName: path.basename(sd.document.fileName),
-    }));
-  };
-
-  vscode.workspace.findFiles("**/*.glsl").then((x) => console.log("found", x));
+  //   path.extname(td.document.fileName, ".glsl")
+  // );
+  // return shaderDocuments.map((sd) => ({
+  //   filePath: sd.document.fileName,
+  //   fileName: path.basename(sd.document.fileName),
+  // }));
 
   switch (message.type) {
     case "getShaderDocuments": {
-      postMessage({
-        type: "getShaderDocuments",
-        payload: {
-          files: requestShaderDocuments(),
-        },
+      vscode.workspace.findFiles("**/*.glsl").then((documents) => {
+        postMessage({
+          type: "getShaderDocuments",
+          payload: {
+            files: documents.map((sd) => ({
+              filePath: sd.fsPath,
+              fileName: path.basename(sd.fsPath),
+            })),
+          },
+        });
       });
-      break;
-    }
-    case "onDidShaderDocumentsChange": {
-      //wrong
-      vscode.workspace.onDidChangeWorkspaceFolders(
-        (e) => {
-          console.log("docs changed");
 
-          postMessage({
-            type: "onDidShaderDocumentsChange",
-            payload: {
-              files: requestShaderDocuments(),
-            },
-          });
-        },
-        null,
-        disposables
-      );
       break;
     }
     default:
