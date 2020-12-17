@@ -44,14 +44,14 @@ body {
 .viewer-vertex-shader-selector {
   grid-area: vertex-shader-selector;
 }
-`
+
 .viewer-fragment-shader-selector {
   grid-area: fragment-shader-selector;
 }
 
 .viewer-shader-options {
   grid-area: shader-options;
-  background-color: red;
+  /* background-color: red; */
 }
 
 .viewer-options-grid {
@@ -78,4 +78,20 @@ body {
 
 .options-content {
   flex-grow: 1;
+}
+
+.edit-input-grid {
+  display: grid;
+  grid-gap: 5px;
+  grid-auto-flow: row;
+}
+
+.edit-input-row {
+  display: grid;
+  grid-gap: 5px;
+  grid-auto-flow: column;
+}
+
+.edit-input {
+  min-width: 0px;
 }

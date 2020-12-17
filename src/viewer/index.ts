@@ -3,6 +3,7 @@ import { VsCodeApiProxy } from "./communicationProxy";
 import { createSectionTitle } from "./components/createSectionTitle";
 import { createFAButton } from "./components/createFAButton";
 import { withLabel } from "./components/wrappers";
+import { createMatrix3, createVector3, createVector4 } from "./components/editVector3";
 
 const createDivSection = (className: string) => {
   const div = document.createElement("div");
@@ -13,6 +14,8 @@ const createDivSection = (className: string) => {
 const createShaderOptions = (element: HTMLElement) => {
   element.innerHTML = Math.random().toString();
 };
+
+
 
 const createViewer = async () => {
   const vscodeApi = new VsCodeApiProxy();
@@ -80,15 +83,18 @@ const createViewer = async () => {
   );
 
   element.appendChild(options);
+  shaderOptions.appendChild(withLabel(createVector3(), "", "u_color"));
+  shaderOptions.appendChild(withLabel(createVector4(), "", "u_diffuse"));
+  shaderOptions.appendChild(withLabel(createMatrix3(), "", "u_diffuse2"));
 
-  const canvas = document.createElement("canvas");
-  canvas.className = "viewer-content";
-  canvas.width = 500;
-  canvas.height = 500;
-  element.appendChild(canvas);
-  const context = canvas.getContext("2d");
-  context.fillStyle = "green";
-  context.fillRect(150, 150, 200, 450);
+  // const canvas = document.createElement("canvas");
+  // canvas.className = "viewer-content";
+  // canvas.width = 500;
+  // canvas.height = 500;
+  // element.appendChild(canvas);
+  // const context = canvas.getContext("2d");
+  // context.fillStyle = "green";
+  // context.fillRect(150, 150, 200, 450);
 };
 
 createViewer();
