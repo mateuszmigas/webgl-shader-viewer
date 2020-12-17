@@ -34,13 +34,17 @@ body {
   grid-area: shaders-title;
   /* background-color: yellow; */
 }
+
 .viewer-refresh-button {
   grid-area: refresh-button;
-  background-color: blue;
+  margin: 5px;
+  font-size: 24px;
 }
+
 .viewer-vertex-shader-selector {
   grid-area: vertex-shader-selector;
 }
+`
 .viewer-fragment-shader-selector {
   grid-area: fragment-shader-selector;
 }
@@ -66,8 +70,10 @@ body {
   display: flex;
   flex-direction: column;
 }
+
 .options-label {
-  font-size: 12px;
+  font-size: 10px;
+  margin: 2px;
 }
 
 .options-content {

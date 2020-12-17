@@ -66,7 +66,7 @@ const createViewer = async () => {
   );
 
   options.appendChild(
-    createFAButton("R", "viewer-refresh-button", () => {
+    createFAButton("↻", "viewer-refresh-button", () => {
       vscodeApi.getShaderDocuments().then((sd) => {
         const files = sd.map((f) => ({
           id: f.filePath,
