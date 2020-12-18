@@ -83,9 +83,9 @@ const createViewer = async () => {
   );
 
   element.appendChild(options);
-  shaderOptions.appendChild(withLabel(createVector3(), "", "u_color"));
-  shaderOptions.appendChild(withLabel(createVector4(), "", "u_diffuse"));
-  shaderOptions.appendChild(withLabel(createMatrix3(), "", "u_diffuse2"));
+  shaderOptions.appendChild(withLabel(createVector3()[0], "", "u_color"));
+  shaderOptions.appendChild(withLabel(createVector4()[0], "", "u_diffuse"));
+  shaderOptions.appendChild(withLabel(createMatrix3(newval => console.log(newval))[0], "", "u_diffuse2"));
 
   // const canvas = document.createElement("canvas");
   // canvas.className = "viewer-content";

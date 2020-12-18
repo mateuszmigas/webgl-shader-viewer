@@ -95,3 +95,7 @@ body {
 .edit-input {
   min-width: 0px;
 }
+
+.edit-input:read-only {
+  background-color: gray;
+}
