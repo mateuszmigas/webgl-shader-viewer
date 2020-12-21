@@ -3,23 +3,28 @@ export type DropdownItem = {
   display: string;
 };
 
+const defaultOptions = {
+  emptyItem: true
+}
+
 export const createDropdown = (
   //initialValue: DropdownItem | null,
   onChange: (item: DropdownItem | null) => void,
   className?: string,
-  options?: {} //placeholder
+  options?: { emptyItem: boolean } //placeholder
 ): [
-  HTMLSelectElement,
-  {
-    setItems: (items: DropdownItem[]) => void;
-    getItems: () => DropdownItem[];
-    setSelectedItemById: (id: string) => void;
-    getSelectedItem: () => DropdownItem | null;
-    clearSelection: () => void;
-  }
-] => {
+    HTMLSelectElement,
+    {
+      setItems: (items: DropdownItem[]) => void;
+      getItems: () => DropdownItem[];
+      setSelectedItemById: (id: string) => void;
+      getSelectedItem: () => DropdownItem | null;
+      clearSelection: () => void;
+    }
+  ] => {
+  const combinedOptions = { ...defaultOptions, ...options };
   const element = document.createElement("select");
-  element.className = className ?? "";
+  element.className = `dropdown-base ${className}`;
 
   let selectedItem: DropdownItem | null = null;
   let itemElements: { element: HTMLOptionElement; item: DropdownItem }[] = [];
@@ -43,7 +48,8 @@ export const createDropdown = (
       setSelectedItem(null);
     }
 
-    [{ id: "", display: "" }, ...items].forEach((item) => {
+    const newItems = combinedOptions.emptyItem ? [{ id: "", display: "" }, ...items] : [...items];
+    newItems.forEach((item) => {
       const option = document.createElement("option");
       option.value = item.id;
       option.textContent = item.display;
