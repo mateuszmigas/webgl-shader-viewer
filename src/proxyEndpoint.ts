@@ -9,13 +9,6 @@ export const proxyEndpoint = (
   postMessage: (message: VsCodeApiProxyMessageResponse) => void,
   disposables: vscode.Disposable[]
 ) => (message: VsCodeApiProxyMessageRequest) => {
-  //   path.extname(td.document.fileName, ".glsl")
-  // );
-  // return shaderDocuments.map((sd) => ({
-  //   filePath: sd.document.fileName,
-  //   fileName: path.basename(sd.document.fileName),
-  // }));
-
   const didSaveTextDocumentWatchers = new Map<string, (fileContent: string) => void>();
 
   vscode.workspace.onDidSaveTextDocument(listener => {
@@ -27,7 +20,7 @@ export const proxyEndpoint = (
     case "getShaderDocuments": {
       vscode.workspace.findFiles("**/*.glsl").then((documents) => {
         postMessage({
-          type: "getShaderDocuments",
+          ...message,
           payload: {
             files: documents.map((sd) => ({
               filePath: sd.fsPath,
@@ -38,17 +31,26 @@ export const proxyEndpoint = (
       });
       break;
     }
-    case "subscribeToDocumentChange": {
-      didSaveTextDocumentWatchers.set(message.payload.filePath, (newContent: string) => {
+    case "getDocumentText": {
+      vscode.workspace.openTextDocument(message.payload.fileName).then(document => {
         postMessage({
-          type: "onDocumentChange",
-          payload: { filePath: message.payload.filePath, newContent }
+          ...message,
+          payload: { fileName: message.payload.fileName, text: document.getText() }
+        });
+      })
+      break;
+    }
+    case "subscribeToDocumentTextChange": {
+      didSaveTextDocumentWatchers.set(message.payload.fileName, (newContent: string) => {
+        postMessage({
+          type: "onDocumentTextChange",
+          payload: { filePath: message.payload.fileName, text: newContent }
         })
       });
       break;
     }
-    case "unsubscribeToDocumentChange": {
-      didSaveTextDocumentWatchers.delete(message.payload.filePath);
+    case "unsubscribeToDocumentTextChange": {
+      didSaveTextDocumentWatchers.delete(message.payload.fileName);
       break;
     }
     default:

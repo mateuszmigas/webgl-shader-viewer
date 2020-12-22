@@ -90,17 +90,18 @@ const createViewer = async () => {
   viewer.appendChild(webGLCanvas);
   viewer.appendChild(viewerOptions);
 
-  let selectedVertex: DropdownItem | null = null;
-  let selectedFragment: DropdownItem | null = null;
-  let selectedVertexWatcherUnsubscribe: Unsubscribe | undefined;
-  let selectedFragmentWatcherUnsubscribe: Unsubscribe | undefined;
+  let selectedVertexFileWatcherUnsubscribe: Unsubscribe | undefined;
+  let selectedFragmentFileWatcherUnsubscribe: Unsubscribe | undefined;
+  let selectedVertexContent: string | null;
+  let selectedFragmentContent: string | null;
 
-  const onShadersChanged = () => {
+  const onShaderContentChanged = () => {
     shaderOptions.innerHTML = "";
-
-    if (selectedVertex && selectedFragment)
-      appendWithShaderOptions(shaderOptions);
-  };
+    console.log({
+      fragment: selectedFragmentContent,
+      vertex: selectedVertexContent
+    });
+  }
 
   viewerOptions.appendChild(
     createDivSection("viewer-shaders-title", [
@@ -121,18 +122,19 @@ const createViewer = async () => {
   );
 
   const [vertexDropdownElement, vertexDropdownController] = createDropdown(
-    (newVertex) => {
-      selectedVertexWatcherUnsubscribe?.();
+    async (newVertex) => {
+      selectedVertexFileWatcherUnsubscribe?.();
 
       if (newVertex) {
-        selectedVertexWatcherUnsubscribe = vscodeApi.subscribeToDocumentChange(
+        selectedVertexFileWatcherUnsubscribe = vscodeApi.subscribeToDocumentSave(
           newVertex.id, (newContent) => {
-            console.log('new content', newContent);
+            selectedVertexContent = newContent;
+            onShaderContentChanged();
           });
       }
 
-      selectedFragment = newVertex;
-      onShadersChanged();
+      selectedVertexContent = newVertex ? await vscodeApi.getDocumentText(newVertex.id) : "";
+      onShaderContentChanged();
     }
   );
   viewerOptions.appendChild(
@@ -144,9 +146,19 @@ const createViewer = async () => {
   );
 
   const [fragmentDropdownElement, fragmentDropdownController] = createDropdown(
-    (newFragment) => {
-      selectedFragment = newFragment;
-      onShadersChanged();
+    async (newFragment) => {
+      selectedFragmentFileWatcherUnsubscribe?.();
+
+      if (newFragment) {
+        selectedFragmentFileWatcherUnsubscribe = vscodeApi.subscribeToDocumentSave(
+          newFragment.id, (newContent) => {
+            selectedFragmentContent = newContent;
+            onShaderContentChanged();
+          });
+      }
+
+      selectedFragmentContent = newFragment ? await vscodeApi.getDocumentText(newFragment.id) : "";
+      onShaderContentChanged();
     }
   );
   viewerOptions.appendChild(
