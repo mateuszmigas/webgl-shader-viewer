@@ -1,6 +1,6 @@
 import { translations } from './../translations';
 import { createDropdown, DropdownItem } from "./components/dropdown";
-import { VsCodeApiProxy } from "./communicationProxy";
+import { Unsubscribe, VsCodeApiProxy } from "./communicationProxy";
 import { createSectionTitle } from "./components/createSectionTitle";
 import { createFAButton as createButton } from "./components/createFAButton";
 import { withLabel } from "./components/wrappers";
@@ -13,15 +13,15 @@ const createDivSection = (className: string, children?: HTMLElement[]) => {
   return div;
 };
 
-const createCanvas = (host: HTMLElement) => {
+const createCanvas = (className: string) => {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
-  host.appendChild(canvas);
-  canvas.className = "viewer-content";
+  canvas.className = className;
   canvas.width = 500;
   canvas.height = 500;
   context.fillStyle = "green";
   context.fillRect(150, 150, 200, 450);
+  return canvas;
 }
 
 const compileAndGenerate = async () => {
@@ -34,22 +34,72 @@ const compileAndGenerate = async () => {
   //apply change if:
   //name + type changed
 }
+const appendWithShaderOptions = (element: HTMLElement) => {
+  element.appendChild(withLabel(createVector3()[0], "", "u_color"));
+  element.appendChild(withLabel(createVector4()[0], "", "u_diffuse"));
+
+  const [mat3el, mat3con] = createMatrix3(newval => console.log(newval));
+  const [ediff, cdiff] =
+    createDropdown(
+      (sel) => {
+        if (!sel)
+          return;
+        if (sel.id === "0") {
+          mat3con.setReadonly(false);
+        }
+        if (sel.id === "1") {
+          mat3con.setReadonly(true);
+        }
+      },
+      "",
+      { emptyItem: false }
+    );
+
+  cdiff.setItems([{ id: "0", display: "Color picker" }, { id: "1", display: "Custom2" }]);
+  cdiff.setSelectedItemById("0");
+
+  element.appendChild(
+    withLabel(
+      createDivSection("column-with-gap",
+        [ediff, mat3el]), "", "dobre diffuse"));
+
+  element.appendChild(
+    withLabel(
+      createDivSection("column-with-gap",
+        [createDropdown(
+          (newFragment) => {
+          }
+        )[0], createMatrix3(newval => console.log(newval))[0]]), "", "u_diffuse2"))
+  element.appendChild(
+    withLabel(
+      createDivSection("column-with-gap",
+        [createDropdown(
+          (newFragment) => {
+          }
+        )[0], createMatrix3(newval => console.log(newval))[0]]), "", "u_diffuse2"))
+
+}
 
 const createViewer = async () => {
   const vscodeApi = new VsCodeApiProxy();
   const viewer = document.getElementById("viewer");
   const viewerOptions = createDivSection("viewer-options");
   const shaderOptions = createDivSection("viewer-shader-options");
+  const webGLCanvas = createCanvas("viewer-content");
 
+  viewer.appendChild(webGLCanvas);
   viewer.appendChild(viewerOptions);
 
   let selectedVertex: DropdownItem | null = null;
   let selectedFragment: DropdownItem | null = null;
+  let selectedVertexWatcherUnsubscribe: Unsubscribe | undefined;
+  let selectedFragmentWatcherUnsubscribe: Unsubscribe | undefined;
 
   const onShadersChanged = () => {
-    // /if (selectedFragment)
-    //element.innerHTML = "";
-    //createShaderOptions(shaderOptions);
+    shaderOptions.innerHTML = "";
+
+    if (selectedVertex && selectedFragment)
+      appendWithShaderOptions(shaderOptions);
   };
 
   viewerOptions.appendChild(
@@ -70,9 +120,17 @@ const createViewer = async () => {
 
   );
 
-  //vertex shader
   const [vertexDropdownElement, vertexDropdownController] = createDropdown(
     (newVertex) => {
+      selectedVertexWatcherUnsubscribe?.();
+
+      if (newVertex) {
+        selectedVertexWatcherUnsubscribe = vscodeApi.subscribeToDocumentChange(
+          newVertex.id, (newContent) => {
+            console.log('new content', newContent);
+          });
+      }
+
       selectedFragment = newVertex;
       onShadersChanged();
     }
@@ -85,7 +143,6 @@ const createViewer = async () => {
     )
   );
 
-  //fragment shader
   const [fragmentDropdownElement, fragmentDropdownController] = createDropdown(
     (newFragment) => {
       selectedFragment = newFragment;
@@ -101,57 +158,6 @@ const createViewer = async () => {
   );
 
   viewerOptions.appendChild(shaderOptions);
-
-  shaderOptions.appendChild(withLabel(createVector3()[0], "", "u_color"));
-  shaderOptions.appendChild(withLabel(createVector4()[0], "", "u_diffuse"));
-
-  const [mat3el, mat3con] = createMatrix3(newval => console.log(newval));
-  const [ediff, cdiff] =
-    createDropdown(
-      (sel) => {
-        if (!sel)
-          return;
-        if (sel.id === "0") {
-          mat3con.setReadonly(false);
-        }
-        if (sel.id === "1") {
-          mat3con.setReadonly(true);
-        }
-      },
-      "",
-      { emptyItem: false }
-    );
-
-  cdiff.setItems([{ id: "0", display: "Color picker" }, { id: "1", display: "Custom" }]);
-  cdiff.setSelectedItemById("0");
-
-
-  shaderOptions.appendChild(
-    withLabel(
-      createDivSection("column-with-gap",
-        [ediff, mat3el]), "", "dobre diffuse"));
-
-  shaderOptions.appendChild(
-    withLabel(
-      createDivSection("column-with-gap",
-        [createDropdown(
-          (newFragment) => {
-            selectedFragment = newFragment;
-            onShadersChanged();
-          }
-        )[0], createMatrix3(newval => console.log(newval))[0]]), "", "u_diffuse2"))
-  shaderOptions.appendChild(
-    withLabel(
-      createDivSection("column-with-gap",
-        [createDropdown(
-          (newFragment) => {
-            selectedFragment = newFragment;
-            onShadersChanged();
-          }
-        )[0], createMatrix3(newval => console.log(newval))[0]]), "", "u_diffuse2"))
-
-  createCanvas(viewer);
-
 };
 
 createViewer();

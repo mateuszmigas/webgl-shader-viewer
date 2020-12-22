@@ -5,7 +5,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("webgl-shader-viewer.show-viewer", () => {
       ViewerPanel.createOrShow(context.extensionUri);
-      console.log("cccc");
     })
   );
 
@@ -18,4 +17,4 @@ export function activate(context: vscode.ExtensionContext) {
   }
 }
 
-export function deactivate() {}
+export function deactivate() { }

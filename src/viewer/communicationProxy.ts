@@ -1,3 +1,4 @@
+import { remove } from './../utils';
 declare const acquireVsCodeApi: () => {
   //getState: () => any;
   //setState: (state: any) => void;
@@ -7,22 +8,24 @@ export const vscodeApi = acquireVsCodeApi();
 
 export type VsCodeApiProxyMessageRequest =
   | { type: "getShaderDocuments" }
-  | { type: "onDidShaderDocumentsChange" };
+  | { type: "subscribeToDocumentChange", payload: { filePath: string } }
+  | { type: "unsubscribeToDocumentChange", payload: { filePath: string } };
 
 export type VsCodeApiProxyMessageResponse = {
   type: "getShaderDocuments";
   payload: { files: { filePath: string; fileName: string }[] };
-};
+} | { type: "onDocumentChange", payload: { filePath: string, newContent: string } }
+
+export type Unsubscribe = () => void;
+
+type ProxyResponseListener = (message: VsCodeApiProxyMessageResponse) => void;
 
 export class VsCodeApiProxy {
-  eventListeners: ((message: VsCodeApiProxyMessageResponse) => boolean)[] = [];
+  eventListeners: ProxyResponseListener[] = [];
 
   constructor() {
     window.addEventListener("message", (event) => {
-      //clear event listener that are no longer interested
-      this.eventListeners = this.eventListeners.filter((listener) =>
-        listener(event.data)
-      );
+      this.eventListeners.forEach((listener) => listener(event.data));
     });
   }
 
@@ -32,13 +35,37 @@ export class VsCodeApiProxy {
     });
 
     return new Promise<{ filePath: string; fileName: string }[]>((resolve) => {
-      this.eventListeners.push((message) => {
+      const listener = (message: VsCodeApiProxyMessageResponse) => {
         if (message.type === "getShaderDocuments") {
           resolve(message.payload.files);
-          return true;
+          this.removeListener(listener);
         }
-        return false;
-      });
+      };
+
+      this.eventListeners.push(listener);
     });
+  }
+
+  subscribeToDocumentChange(filePath: string, callback: (newContent: string) => void): Unsubscribe {
+    vscodeApi.postMessage({
+      type: "subscribeToDocumentChange",
+      payload: { filePath }
+    });
+
+    const listener = (message: VsCodeApiProxyMessageResponse) => {
+      if (message.type === "onDocumentChange" && message.payload.filePath === filePath) {
+        callback(message.payload.newContent);
+      }
+    }
+
+    this.eventListeners.push(listener);
+    return () => {
+      this.removeListener(listener);
+      vscodeApi.postMessage({ type: "unsubscribeToDocumentChange", payload: { filePath } })
+    }
+  }
+
+  private removeListener(listener: ProxyResponseListener) {
+    remove(this.eventListeners, listener)
   }
 }

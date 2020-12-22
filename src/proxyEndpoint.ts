@@ -16,6 +16,13 @@ export const proxyEndpoint = (
   //   fileName: path.basename(sd.document.fileName),
   // }));
 
+  const didSaveTextDocumentWatchers = new Map<string, (fileContent: string) => void>();
+
+  vscode.workspace.onDidSaveTextDocument(listener => {
+    const watcher = didSaveTextDocumentWatchers.get(listener.fileName);
+    watcher?.(listener.getText());
+  }, null, disposables);
+
   switch (message.type) {
     case "getShaderDocuments": {
       vscode.workspace.findFiles("**/*.glsl").then((documents) => {
@@ -29,7 +36,19 @@ export const proxyEndpoint = (
           },
         });
       });
-
+      break;
+    }
+    case "subscribeToDocumentChange": {
+      didSaveTextDocumentWatchers.set(message.payload.filePath, (newContent: string) => {
+        postMessage({
+          type: "onDocumentChange",
+          payload: { filePath: message.payload.filePath, newContent }
+        })
+      });
+      break;
+    }
+    case "unsubscribeToDocumentChange": {
+      didSaveTextDocumentWatchers.delete(message.payload.filePath);
       break;
     }
     default:
