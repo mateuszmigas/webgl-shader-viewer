@@ -85,6 +85,7 @@ export class ViewerPanel {
           </head>
           <body>
               <div id="viewer"></div>
+              <input type="color" id="head" name="head" value="#e66465">
               <script nonce="${nonce}" src="${scriptUri}"></script>
           </body>
           </html>`;
