@@ -11,39 +11,133 @@ import {
 } from "./components/editVector3";
 import { appendWithShaderOptions } from "./shaderOptions";
 import { createDiv } from "./components/common";
+import { compileShader, createProgram } from "./webgl_utils/utils";
+import { hasProperty } from "../utils";
+import { isArray } from "util";
 
-const createCanvas = (className: string) => {
+export type UniformInfo = {
+  name: string;
+  type: string;
+  update: () => void;
+};
+
+export type AttributeBufferInfo = {};
+
+export type CompileErrors = string[];
+export type ShaderController = {};
+
+const createWebGLCanvas = (
+  className: string
+  // onShadersCompiled: (payload: {
+  //   uniforms: UniformInfo[];
+  //   attributeBuffers: AttributeBufferInfo[];
+  //   //getContext
+  //   //render
+  // }) => void
+): [
+  HTMLCanvasElement,
+  {
+    compileShaders: (
+      vertexShaderContent: string,
+      fragmentShaderContent: string
+    ) => CompileErrors | ShaderController;
+  }
+] => {
   const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
   canvas.className = className;
-  canvas.width = 500;
-  canvas.height = 500;
-  context.fillStyle = "green";
-  context.fillRect(150, 150, 200, 450);
-  return canvas;
-};
+  const context = canvas.getContext("webgl");
+  if (!context) {
+    throw new Error("Unable to create webgl context");
+  }
 
-const compileAndGenerate = async () => {
-  //get shaders text
-  //compile shader
-  //generate shader options
-  //old shader options
-  //new shader options
-  //apply change if:
-  //name + type changed
-};
+  const compileShaders = (
+    vertexShaderContent: string,
+    fragmentShaderContent: string
+  ) => {
+    const vertexShader = compileShader(
+      context,
+      context.VERTEX_SHADER,
+      vertexShaderContent
+    );
 
-// [1] [2] [3] [] [color]
+    const fragmentShader = compileShader(
+      context,
+      context.FRAGMENT_SHADER,
+      fragmentShaderContent
+    );
+
+    let vertexError: string = undefined;
+    if (hasProperty(vertexShader, "error")) {
+      vertexError = vertexShader.error;
+    }
+
+    let fragmentError: string = undefined;
+    if (hasProperty(fragmentShader, "error")) {
+      fragmentError = fragmentShader.error;
+    }
+
+    if (vertexError || fragmentError) {
+      return [vertexError, fragmentError];
+    }
+
+    const program = createProgram(context, vertexShader, fragmentShader);
+
+    //createController90
+
+    // const numUniforms = context.getProgramParameter(
+    //   program,
+    //   context.ACTIVE_UNIFORMS
+    // );
+    // const uniformSetters = {};
+    // console.log("getting uniforms", numUniforms);
+
+    // for (let ii = 0; ii < numUniforms; ++ii) {
+    //   const uniformInfo = context.getActiveUniform(program, ii);
+    //   // if (isBuiltIn(uniformInfo)) {
+    //   //     continue;
+    //   // }
+    //   let name = uniformInfo.name;
+    //   console.log("uniform:", uniformInfo);
+    // }
+
+    //program.
+    //generate program info
+
+    //fragment: { errors: }
+    //fragment: { errors: }
+
+    //delete shaders
+
+    return Promise.resolve<ShaderController>({});
+  };
+
+  return [
+    canvas,
+    {
+      compileShaders,
+    },
+  ];
+};
 
 const createViewer = async () => {
   const vscodeApi = new VsCodeApiProxy();
   const viewer = document.getElementById("viewer");
   const viewerOptions = createDiv("viewer-options");
   const shaderOptions = createDiv("viewer-shader-options");
-  const webGLCanvas = createCanvas("viewer-content");
+  const shaderCompilationErrors = createDiv("viewer-content");
+  shaderCompilationErrors.style.background = "red";
+  const [webGLCanvas, webGLController] = createWebGLCanvas("viewer-content");
 
   viewer.appendChild(webGLCanvas);
+  viewer.appendChild(shaderCompilationErrors);
   viewer.appendChild(viewerOptions);
+
+  const showContent = (content: "canvas" | "errors") => {
+    webGLCanvas.style.visibility =
+      content === "canvas" ? "visible" : "collapse";
+    shaderCompilationErrors.style.visibility =
+      content === "errors" ? "visible" : "collapse";
+  };
 
   let selectedVertexFileWatcherUnsubscribe: Unsubscribe | undefined;
   let selectedFragmentFileWatcherUnsubscribe: Unsubscribe | undefined;
@@ -58,6 +152,25 @@ const createViewer = async () => {
     });
 
     appendWithShaderOptions(shaderOptions);
+
+    if (selectedFragmentContent && selectedVertexContent) {
+      const result = webGLController.compileShaders(
+        selectedVertexContent,
+        selectedFragmentContent
+      );
+
+      if (Array.isArray(result)) {
+        shaderCompilationErrors.style.visibility = "visible";
+        const errors = result as string[];
+        showContent("errors");
+        shaderCompilationErrors.innerText = errors.join("\r\n");
+      } else {
+        const shaderController = result as ShaderController;
+        showContent("canvas");
+      }
+    } else {
+      console.log("clear");
+    }
   };
 
   viewerOptions.appendChild(

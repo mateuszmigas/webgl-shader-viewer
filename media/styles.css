@@ -65,6 +65,7 @@ body {
 .viewer-content {
   grid-area: content;
   background-color: darkcyan;
+  visibility: collapse;
 }
 
 .options-wrapper {

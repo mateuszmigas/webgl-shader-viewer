@@ -8,9 +8,45 @@ import {
 } from "./components/editVector3";
 import { withLabel } from "./components/wrappers";
 
+//const attributeBuffers
+
+//name, type => value
+
+export type AttributeBufferType = "vector2" | "vector3" | "vector4";
+export type UniformType = "vec2" | "vec3";
+
+export class CompositeKeyMap<TKey, TValue> {
+  private map = new Map<string, TValue>();
+
+  constructor(private keySelector: (compositeKey: TKey) => string) {}
+
+  get(key: TKey) {
+    this.map.get(this.keySelector(key));
+  }
+
+  set(key: TKey, value: TValue) {
+    this.map.set(this.keySelector(key), value);
+  }
+
+  clear() {
+    this.map.clear();
+  }
+}
+
+const attributeBuffers = new CompositeKeyMap<
+  { name: string; bufferType: AttributeBufferType },
+  string
+>((key) => `${key.name};${key.bufferType}`);
+
+const uniforms = new CompositeKeyMap<
+  { name: string; uniformType: UniformType },
+  string
+>((key) => `${key.name};${key.uniformType}`);
+
 export const appendWithShaderOptions = (element: HTMLElement) => {
   //compile
   //create map
+
   element.appendChild(withLabel(createColor4()[0], "", "u_color"));
   element.appendChild(withLabel(createVector4()[0], "", "u_diffuse"));
 
