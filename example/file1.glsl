@@ -1,4 +1,4 @@
-attribute vec4 a_position;
+attribute vec3 a_position;
 varying vec3 v_dupa;
 
 // all shaders have a main function

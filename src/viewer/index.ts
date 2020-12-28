@@ -1,138 +1,26 @@
 import { translations } from "./../translations";
-import { createDropdown, DropdownItem } from "./components/dropdown";
+import { createDropdown } from "./components/dropdown";
 import { Unsubscribe, VsCodeApiProxy } from "./communicationProxy";
 import { createSectionTitle } from "./components/createSectionTitle";
 import { createFAButton as createButton } from "./components/createFAButton";
 import { withLabel } from "./components/wrappers";
-import {
-  createMatrix3,
-  createVector3,
-  createVector4,
-} from "./components/editVector3";
 import { appendWithShaderOptions } from "./shaderOptions";
 import { createDiv } from "./components/common";
-import { compileShader, createProgram } from "./webgl_utils/utils";
-import { hasProperty } from "../utils";
-import { isArray } from "util";
-
-export type UniformInfo = {
-  name: string;
-  type: string;
-  update: () => void;
-};
-
-export type AttributeBufferInfo = {};
-
-export type CompileErrors = string[];
-export type ShaderController = {};
-
-const createWebGLCanvas = (
-  className: string
-  // onShadersCompiled: (payload: {
-  //   uniforms: UniformInfo[];
-  //   attributeBuffers: AttributeBufferInfo[];
-  //   //getContext
-  //   //render
-  // }) => void
-): [
-  HTMLCanvasElement,
-  {
-    compileShaders: (
-      vertexShaderContent: string,
-      fragmentShaderContent: string
-    ) => CompileErrors | ShaderController;
-  }
-] => {
-  const canvas = document.createElement("canvas");
-  canvas.className = className;
-  const context = canvas.getContext("webgl");
-  if (!context) {
-    throw new Error("Unable to create webgl context");
-  }
-
-  const compileShaders = (
-    vertexShaderContent: string,
-    fragmentShaderContent: string
-  ) => {
-    const vertexShader = compileShader(
-      context,
-      context.VERTEX_SHADER,
-      vertexShaderContent
-    );
-
-    const fragmentShader = compileShader(
-      context,
-      context.FRAGMENT_SHADER,
-      fragmentShaderContent
-    );
-
-    let vertexError: string = undefined;
-    if (hasProperty(vertexShader, "error")) {
-      vertexError = vertexShader.error;
-    }
-
-    let fragmentError: string = undefined;
-    if (hasProperty(fragmentShader, "error")) {
-      fragmentError = fragmentShader.error;
-    }
-
-    if (vertexError || fragmentError) {
-      return [vertexError, fragmentError];
-    }
-
-    const program = createProgram(context, vertexShader, fragmentShader);
-
-    //createController90
-
-    // const numUniforms = context.getProgramParameter(
-    //   program,
-    //   context.ACTIVE_UNIFORMS
-    // );
-    // const uniformSetters = {};
-    // console.log("getting uniforms", numUniforms);
-
-    // for (let ii = 0; ii < numUniforms; ++ii) {
-    //   const uniformInfo = context.getActiveUniform(program, ii);
-    //   // if (isBuiltIn(uniformInfo)) {
-    //   //     continue;
-    //   // }
-    //   let name = uniformInfo.name;
-    //   console.log("uniform:", uniformInfo);
-    // }
-
-    //program.
-    //generate program info
-
-    //fragment: { errors: }
-    //fragment: { errors: }
-
-    //delete shaders
-
-    return Promise.resolve<ShaderController>({});
-  };
-
-  return [
-    canvas,
-    {
-      compileShaders,
-    },
-  ];
-};
+import { CompileErrors, createWebGLCanvas } from "./createWebGLCanvas";
 
 const createViewer = async () => {
   const vscodeApi = new VsCodeApiProxy();
   const viewer = document.getElementById("viewer");
   const viewerOptions = createDiv("viewer-options");
   const shaderOptions = createDiv("viewer-shader-options");
-  const shaderCompilationErrors = createDiv("viewer-content");
-  shaderCompilationErrors.style.background = "red";
+  const shaderCompilationErrors = createDiv("viewer-content shader-errors");
   const [webGLCanvas, webGLController] = createWebGLCanvas("viewer-content");
 
   viewer.appendChild(webGLCanvas);
   viewer.appendChild(shaderCompilationErrors);
   viewer.appendChild(viewerOptions);
 
-  const showContent = (content: "canvas" | "errors") => {
+  const showContent = (content: "canvas" | "errors" | "none") => {
     webGLCanvas.style.visibility =
       content === "canvas" ? "visible" : "collapse";
     shaderCompilationErrors.style.visibility =
@@ -160,16 +48,28 @@ const createViewer = async () => {
       );
 
       if (Array.isArray(result)) {
-        shaderCompilationErrors.style.visibility = "visible";
-        const errors = result as string[];
         showContent("errors");
+        const [
+          vertexShaderErrors,
+          fragmentShaderErrors,
+        ] = result as CompileErrors;
+
+        const errors: string[] = [];
+
+        if (vertexShaderErrors) {
+          errors.push("VERTEX SHADER:", vertexShaderErrors);
+        }
+
+        if (fragmentShaderErrors) {
+          errors.push("FRAGMENT SHADER:", fragmentShaderErrors);
+        }
+
         shaderCompilationErrors.innerText = errors.join("\r\n");
       } else {
-        const shaderController = result as ShaderController;
         showContent("canvas");
       }
     } else {
-      console.log("clear");
+      showContent("none");
     }
   };
 

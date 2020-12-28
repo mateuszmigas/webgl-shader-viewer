@@ -6,6 +6,10 @@ export const remove = <T>(array: T[], item: T) => {
   }
 };
 
+export const removeLast = (text: string, count: number) => {
+  return text.substring(0, text.length - count);
+};
+
 //https://stackoverflow.com/a/2117523
 export const uuidv4 = () => {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {

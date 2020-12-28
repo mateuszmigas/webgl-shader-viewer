@@ -64,8 +64,11 @@ body {
 
 .viewer-content {
   grid-area: content;
-  background-color: darkcyan;
   visibility: collapse;
+}
+
+.shader-errors {
+  color: red;
 }
 
 .options-wrapper {
