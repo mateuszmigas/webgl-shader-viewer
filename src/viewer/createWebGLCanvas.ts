@@ -1,5 +1,5 @@
 import { hasProperty, removeLast } from "../utils";
-import { UniformInfo } from "./uniform";
+import { getUniformSetter, UniformInfo } from "./uniform";
 import { compileShader, createProgram } from "./webgl_utils/utils";
 
 export type AttributeBufferInfo = {};
@@ -23,20 +23,19 @@ export const generateUniformInfos = (
     context.ACTIVE_UNIFORMS
   );
   const result: UniformInfo[] = [];
-  console.log("getting uniforms", numUniforms);
-  for (let ii = 0; ii < numUniforms; ++ii) {
-    //const unifrom1 = context.getUniform(program, ii);
-    const uniformInfo = context.getActiveUniform(program, ii);
-    // if (isBuiltIn(uniformInfo)) {
-    //     continue;
-    // }
-    let name = uniformInfo.name;
+
+  for (let index = 0; index < numUniforms; ++index) {
+    const uniform = context.getActiveUniform(program, index);
+    const location = context.getUniformLocation(program, uniform.name);
+    const update = getUniformSetter(uniform.type, context, location);
+
     result.push({
-      name: uniformInfo.name,
-      type: uniformInfo.type,
-      update: () => console.log("i dupa"),
+      name: uniform.name,
+      type: uniform.type,
+      update,
     });
   }
+
   return result;
 };
 

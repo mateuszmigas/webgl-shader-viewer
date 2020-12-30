@@ -1,3 +1,4 @@
+import { assertNever } from "./../utils";
 import { Vector2, Vector3, Vector4 } from "./components/editVector3";
 import { Color3, Color4 } from "./components/editColor";
 export enum UniformType {
@@ -26,3 +27,20 @@ export type UniformInfo =
       type: UniformType.FLOAT_VEC4;
       update: (value: Vector4 | Color4) => void;
     };
+
+export const getUniformSetter = (
+  type: UniformType,
+  context: WebGLRenderingContext,
+  location: WebGLUniformLocation
+): ((value: any) => void) => {
+  switch (type) {
+    case UniformType.FLOAT_VEC2:
+      return (value: Vector2) => context.uniform2f(location, ...value);
+    case UniformType.FLOAT_VEC3:
+      return (value: Vector3) => context.uniform3f(location, ...value);
+    case UniformType.FLOAT_VEC4:
+      return (value: Vector4) => context.uniform4f(location, ...value);
+    default:
+      assertNever(type);
+  }
+};
