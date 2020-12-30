@@ -4,9 +4,13 @@ import { Unsubscribe, VsCodeApiProxy } from "./communicationProxy";
 import { createSectionTitle } from "./components/createSectionTitle";
 import { createFAButton as createButton } from "./components/createFAButton";
 import { withLabel } from "./components/wrappers";
-import { appendWithShaderOptions } from "./shaderOptions";
+import { appendWithShaderOptions as updateShaderOptions } from "./shaderOptions";
 import { createDiv } from "./components/common";
-import { CompileErrors, createWebGLCanvas } from "./createWebGLCanvas";
+import {
+  CompileErrors,
+  createWebGLCanvas,
+  ShaderController,
+} from "./createWebGLCanvas";
 
 const createViewer = async () => {
   const vscodeApi = new VsCodeApiProxy();
@@ -34,12 +38,6 @@ const createViewer = async () => {
 
   const onShaderContentChanged = () => {
     shaderOptions.innerHTML = "";
-    console.log({
-      fragment: selectedFragmentContent,
-      vertex: selectedVertexContent,
-    });
-
-    appendWithShaderOptions(shaderOptions);
 
     if (selectedFragmentContent && selectedVertexContent) {
       const result = webGLController.compileShaders(
@@ -67,6 +65,7 @@ const createViewer = async () => {
         shaderCompilationErrors.innerText = errors.join("\r\n");
       } else {
         showContent("canvas");
+        updateShaderOptions(shaderOptions, result as ShaderController);
       }
     } else {
       showContent("none");

@@ -1,102 +1,90 @@
-import { createDiv } from "./components/common";
-import { createDropdown } from "./components/dropdown";
-import { createColor4 } from "./components/editColor";
-import {
-  createVector3,
-  createVector4,
-  createMatrix3,
-} from "./components/editVector3";
 import { withLabel } from "./components/wrappers";
+import { createUniformComponent } from "./uniformComponent";
+import { CompositeKeyMap } from "./compositeKeyMap";
+import { ShaderController } from "./createWebGLCanvas";
+import { UniformType } from "./uniform";
 
-//const attributeBuffers
+const uniformsCache = new CompositeKeyMap<
+  { name: string; type: UniformType },
+  HTMLElement
+>((key) => `${key.name};${key.type}`);
 
-//name, type => value
+export const appendWithShaderOptions = (
+  element: HTMLElement,
+  shaderController: ShaderController
+) => {
+  console.log("updating shader options");
 
-export type AttributeBufferType = "vector2" | "vector3" | "vector4";
-export type UniformType = "vec2" | "vec3";
+  const uniformElements = shaderController.uniforms.map((uniform) => {
+    const componentFromCache = uniformsCache.get({
+      ...uniform,
+    });
 
-export class CompositeKeyMap<TKey, TValue> {
-  private map = new Map<string, TValue>();
+    if (componentFromCache) {
+      console.log("component found", uniform);
 
-  constructor(private keySelector: (compositeKey: TKey) => string) {}
+      return componentFromCache;
+    } else {
+      console.log("crating new comp");
 
-  get(key: TKey) {
-    this.map.get(this.keySelector(key));
-  }
+      const component = withLabel(
+        createUniformComponent(uniform, shaderController.render),
+        "",
+        uniform.name
+      );
+      uniformsCache.set({ ...uniform }, component);
+      return component;
+    }
+  });
 
-  set(key: TKey, value: TValue) {
-    this.map.set(this.keySelector(key), value);
-  }
+  uniformElements.forEach((e) => element.appendChild(e));
 
-  clear() {
-    this.map.clear();
-  }
-}
-
-const attributeBuffers = new CompositeKeyMap<
-  { name: string; bufferType: AttributeBufferType },
-  string
->((key) => `${key.name};${key.bufferType}`);
-
-const uniforms = new CompositeKeyMap<
-  { name: string; uniformType: UniformType },
-  string
->((key) => `${key.name};${key.uniformType}`);
-
-export const appendWithShaderOptions = (element: HTMLElement) => {
-  //compile
-  //create map
-
-  element.appendChild(withLabel(createColor4()[0], "", "u_color"));
-  element.appendChild(withLabel(createVector4()[0], "", "u_diffuse"));
-
-  const [mat3el, mat3con] = createMatrix3((newval) => console.log(newval));
-  const [ediff, cdiff] = createDropdown(
-    (sel) => {
-      if (!sel) return;
-      if (sel.id === "0") {
-        mat3con.setReadonly(false);
-      }
-      if (sel.id === "1") {
-        mat3con.setReadonly(true);
-      }
-    },
-    "",
-    { emptyItem: false }
-  );
-
-  cdiff.setItems([
-    { id: "0", display: "Color picker" },
-    { id: "1", display: "Custom2" },
-  ]);
-  cdiff.setSelectedItemById("0");
-
-  element.appendChild(
-    withLabel(
-      createDiv("column-with-gap", [ediff, mat3el]),
-      "",
-      "dobre diffuse"
-    )
-  );
-
-  element.appendChild(
-    withLabel(
-      createDiv("column-with-gap", [
-        createDropdown((newFragment) => {})[0],
-        createMatrix3((newval) => console.log(newval))[0],
-      ]),
-      "",
-      "u_diffuse2"
-    )
-  );
-  element.appendChild(
-    withLabel(
-      createDiv("column-with-gap", [
-        createDropdown((newFragment) => {})[0],
-        createMatrix3((newval) => console.log(newval))[0],
-      ]),
-      "",
-      "u_diffuse2"
-    )
-  );
+  // element.appendChild(withLabel(createColor4()[0], "", "u_color"));
+  // element.appendChild(withLabel(createVector4()[0], "", "u_diffuse"));
+  // const [mat3el, mat3con] = createMatrix3((newval) => console.log(newval));
+  // const [ediff, cdiff] = createDropdown(
+  //   (sel) => {
+  //     if (!sel) return;
+  //     if (sel.id === "0") {
+  //       mat3con.setReadonly(false);
+  //     }
+  //     if (sel.id === "1") {
+  //       mat3con.setReadonly(true);
+  //     }
+  //   },
+  //   "",
+  //   { emptyItem: false }
+  // );
+  // cdiff.setItems([
+  //   { id: "0", display: "Color picker" },
+  //   { id: "1", display: "Custom2" },
+  // ]);
+  // cdiff.setSelectedItemById("0");
+  // element.appendChild(
+  //   withLabel(
+  //     createDiv("column-with-gap", [ediff, mat3el]),
+  //     "",
+  //     "dobre diffuse"
+  //   )
+  // );
+  // element.appendChild(
+  //   withLabel(
+  //     createDiv("column-with-gap", [
+  //       createDropdown((newFragment) => {})[0],
+  //       createMatrix3((newval) => console.log(newval))[0],
+  //     ]),
+  //     "",
+  //     "u_diffuse2"
+  //   )
+  // );
+  // element.appendChild(
+  //   withLabel(
+  //     createDiv("column-with-gap", [
+  //       createDropdown((newFragment) => {})[0],
+  //       createMatrix3((newval) => console.log(newval))[0],
+  //     ]),
+  //     "",
+  //     "u_diffuse2"
+  //   )
+  // );
 };

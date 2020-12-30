@@ -18,7 +18,10 @@ export const createMultiNumberInput = <T extends number[]>(
 
   const itemElements: { element: HTMLInputElement; value: number }[] = [];
   const setValues = (newValues: T) =>
-    itemElements.forEach((ie, index) => (ie.value = newValues[index]));
+    itemElements.forEach((ie, index) => {
+      ie.value = newValues[index];
+      ie.element.value = ie.value.toString();
+    });
   const getValues = () => itemElements.map((ie) => ie.value) as T;
   const setReadonly = (readonly: boolean) =>
     itemElements.forEach((ie) => (ie.element.readOnly = readonly));
@@ -70,6 +73,10 @@ export type Matrix3 = [
 ];
 export const createMatrix3 = (onChange?: (newValue: Matrix3) => void) =>
   createMultiNumberInput<Matrix3>([0, 0, 0, 0, 0, 0, 0, 0, 0], onChange, 3, 3);
+
+export type Vector2 = [number, number];
+export const createVector2 = (onChange?: (newValue: Vector2) => void) =>
+  createMultiNumberInput<Vector2>([0, 0], onChange, 1, 2);
 
 export type Vector3 = [number, number, number];
 export const createVector3 = (onChange?: (newValue: Vector3) => void) =>

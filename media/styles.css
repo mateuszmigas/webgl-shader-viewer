@@ -92,6 +92,10 @@ body {
   grid-auto-flow: row;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .column-with-gap {
   display: grid;
   grid-gap: 5px;
@@ -115,6 +119,12 @@ body {
   width: 20px;
   height: 20px;
   border: 0.5px solid white;
+}
+
+.unsupported-error {
+  height: 21px;
+  color: red;
+  font-size: 14px;
 }
 
 .edit-input {

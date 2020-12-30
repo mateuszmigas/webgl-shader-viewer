@@ -43,7 +43,16 @@ export const createColor4 = (
   );
   container.appendChild(element);
   container.appendChild(colorDiv);
-  return [container, controller];
+  return [
+    container,
+    {
+      ...controller,
+      setValues: (value: Color4) => {
+        controller.setValues(value);
+        setColor(value);
+      },
+    },
+  ];
 };
 
 export type Color3 = [number, number, number];
@@ -77,10 +86,19 @@ export const createColor3 = (
     initialValue,
     onChangeInternal,
     1,
-    4,
+    3,
     colorInputProps
   );
   container.appendChild(element);
   container.appendChild(colorDiv);
-  return [container, controller];
+  return [
+    container,
+    {
+      ...controller,
+      setValues: (value: Color3) => {
+        controller.setValues(value);
+        setColor(value);
+      },
+    },
+  ];
 };
