@@ -1,4 +1,3 @@
-import { createDiv } from "./common";
 export const createMultiNumberInput = <T extends number[]>(
   initialValue: T,
   onChange: (newValue: T) => void,

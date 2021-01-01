@@ -41,8 +41,6 @@ export const createProgram = (
   if (result) {
     return program;
   } else {
-    console.log("cos nie halo");
-
     renderingContext.deleteProgram(program);
 
     throw new Error(

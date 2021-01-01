@@ -1,3 +1,4 @@
+import { uuidv4 } from "../../utils";
 import {
   createVector2,
   createVector3,
@@ -5,10 +6,10 @@ import {
   Vector2,
   Vector3,
   Vector4,
-} from "./components/editVector3";
-import { createDiv } from "./components/common";
-import { createDropdown } from "./components/dropdown";
-import { createColor3, createColor4 } from "./components/editColor";
+} from "../components/editVector3";
+import { createDiv } from "../components/common";
+import { createDropdown } from "../components/dropdown";
+import { createColor3, createColor4 } from "../components/editColor";
 import { UniformInfo, UniformType } from "./uniform";
 
 export const createUniformComponent = (
@@ -29,6 +30,13 @@ export const createUniformComponent = (
     case UniformType.FLOAT_VEC4:
       return createUniformForVec4((value) => {
         uniformInfo.update(value);
+        render();
+      });
+    case UniformType.SAMPLER_2D:
+      return createUniformForTexture((value) => {
+        const currentUpdate = uuidv4();
+        //load with debounce => then
+        uniformInfo.update({ slot: value.slot, textureData: true });
         render();
       });
     default:
@@ -72,6 +80,14 @@ export const createUniformSelection = (elements: {
 export const createUniformForVec2 = (update: (value: Vector2) => void) => {
   const [customElement, customController] = createVector2(update);
   customController.setValues([0, 0]);
+  return customElement;
+};
+
+export const createUniformForTexture = (
+  update: (value: { slot: number; textureSrc: string }) => void
+) => {
+  const [customElement, customController] = createVector3();
+  customController.setValues([0, 0, 0]);
   return customElement;
 };
 

@@ -1,8 +1,14 @@
+import {
+  AttributeBufferInfo,
+  generateAttributeBufferInfos,
+} from "./webgl_utils/attributeBuffer";
 import { hasProperty, removeLast } from "../utils";
-import { getUniformSetter, UniformInfo } from "./uniform";
+import {
+  generateUniformInfos,
+  getUniformSetter,
+  UniformInfo,
+} from "./webgl_utils/uniform";
 import { compileShader, createProgram } from "./webgl_utils/utils";
-
-export type AttributeBufferInfo = {};
 
 export type CompileErrors = [
   vertexShaderErrors: string,
@@ -11,32 +17,8 @@ export type CompileErrors = [
 
 export type ShaderController = {
   uniforms: UniformInfo[];
+  attributeBuffers: AttributeBufferInfo[];
   render: () => void;
-};
-
-export const generateUniformInfos = (
-  context: WebGLRenderingContext,
-  program: WebGLProgram
-): UniformInfo[] => {
-  const numUniforms = context.getProgramParameter(
-    program,
-    context.ACTIVE_UNIFORMS
-  );
-  const result: UniformInfo[] = [];
-
-  for (let index = 0; index < numUniforms; ++index) {
-    const uniform = context.getActiveUniform(program, index);
-    const location = context.getUniformLocation(program, uniform.name);
-    const update = getUniformSetter(uniform.type, context, location);
-
-    result.push({
-      name: uniform.name,
-      type: uniform.type,
-      update,
-    });
-  }
-
-  return result;
 };
 
 export const createWebGLCanvas = (
@@ -53,6 +35,7 @@ export const createWebGLCanvas = (
   const canvas = document.createElement("canvas");
   canvas.className = className;
   const context = canvas.getContext("webgl");
+
   if (!context) {
     //todo move to errors
     throw new Error("Unable to create webgl context");
@@ -90,50 +73,34 @@ export const createWebGLCanvas = (
     }
 
     const program = createProgram(context, vertexShader, fragmentShader);
-
-    //createController90
-
-    // const numUniforms = context.getProgramParameter(
-    //   program,
-    //   context.ACTIVE_UNIFORMS
-    // );
-    // const uniformSetters = {};
-    // console.log("getting uniforms", numUniforms);
-
-    // for (let ii = 0; ii < numUniforms; ++ii) {
-    //   const uniformInfo = context.getActiveUniform(program, ii);
-    //   // if (isBuiltIn(uniformInfo)) {
-    //   //     continue;
-    //   // }
-    //   let name = uniformInfo.name;
-    //   console.log("uniform:", uniformInfo);
-    // }
-
-    //program.
-    //generate program info
-
     const uniforms = generateUniformInfos(context, program);
-    // uniforms.push({
-    //   name: "uniform1",
-    //   type: "vec3",
-    //   update: () => {},
-    // });
-
-    // uniforms.push({
-    //   name: "uniform2",
-    //   type: "vec2",
-    //   update: () => {},
-    // });
-    //fragment: { errors: }
-    //fragment: { errors: }
+    const attributeBuffers = generateAttributeBufferInfos(context, program);
 
     //delete shaders
 
     return {
       render: () => {
+        //webglUtils.resizeCanvasToDisplaySize(gl.canvas);
         console.log("rendering");
+
+        context.useProgram(program);
+
+        // Tell WebGL how to convert from clip space to pixels
+        context.viewport(0, 0, context.canvas.width, context.canvas.height);
+
+        // Clear the canvas
+        context.clearColor(0, 0, 0, 0);
+        context.clear(context.COLOR_BUFFER_BIT);
+
+        uniforms.forEach((u) => u.onRender());
+        attributeBuffers.forEach((ab) => ab.onRender());
+        const primitiveType = context.TRIANGLES;
+        const offset = 0;
+        const count = 3;
+        context.drawArrays(primitiveType, offset, count);
       },
       uniforms,
+      attributeBuffers,
     } as ShaderController;
   };
 
