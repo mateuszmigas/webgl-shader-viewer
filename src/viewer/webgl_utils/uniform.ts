@@ -69,7 +69,11 @@ export const generateUniformInfos = (
     const location = context.getUniformLocation(program, uniform.name);
     const setter = getUniformSetter(uniform.type, context, location);
     let currentValue: unknown = undefined;
-    const onRender = () => setter(currentValue);
+    const onRender = () => {
+      console.log("setting", currentValue);
+
+      setter(currentValue);
+    };
 
     result.push({
       name: uniform.name,

@@ -2,7 +2,7 @@ import {
   AttributeBufferInfo,
   generateAttributeBufferInfos,
 } from "./webgl_utils/attributeBuffer";
-import { hasProperty, removeLast } from "../utils";
+import { hasProperty, observeElementBoundingRect, removeLast } from "../utils";
 import {
   generateUniformInfos,
   getUniformSetter,
@@ -35,6 +35,11 @@ export const createWebGLCanvas = (
   const canvas = document.createElement("canvas");
   canvas.className = className;
   const context = canvas.getContext("webgl");
+
+  observeElementBoundingRect(canvas, (rect) => {
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+  });
 
   if (!context) {
     //todo move to errors
@@ -75,7 +80,6 @@ export const createWebGLCanvas = (
     const program = createProgram(context, vertexShader, fragmentShader);
     const uniforms = generateUniformInfos(context, program);
     const attributeBuffers = generateAttributeBufferInfos(context, program);
-
     //delete shaders
 
     return {
