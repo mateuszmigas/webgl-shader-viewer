@@ -28,7 +28,9 @@ export const createUniformComponent = (
         render();
       });
     case UniformType.FLOAT_VEC4:
-      return createUniformForVec4((value) => {
+      const initialValue: Vector4 = [1, 0, 0, 1];
+      uniformInfo.update(initialValue);
+      return createUniformForVec4(initialValue, (value) => {
         uniformInfo.update(value);
         render();
       });
@@ -116,12 +118,15 @@ export const createUniformForVec3 = (update: (value: Vector3) => void) => {
   ]);
 };
 
-export const createUniformForVec4 = (update: (value: Vector4) => void) => {
+export const createUniformForVec4 = (
+  initialValue: Vector4,
+  update: (value: Vector4) => void
+) => {
   const [customElement, customController] = createVector4(update);
-  customController.setValues([0, 0, 0, 0]);
+  customController.setValues(initialValue);
 
   const [colorElement, colorController] = createColor4(update);
-  colorController.setValues([1, 0, 0, 1]);
+  colorController.setValues(initialValue);
 
   const optionsElement = createUniformSelection({
     custom: {

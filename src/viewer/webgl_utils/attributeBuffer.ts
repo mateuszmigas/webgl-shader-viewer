@@ -8,6 +8,7 @@ export enum AttributeBufferType {
 export type AttributeBufferInfo = {
   name: string;
   onRender: () => void;
+  getElementsCount: () => number;
 } & (
   | {
       type: AttributeBufferType.FLOAT_VEC3;
@@ -47,10 +48,13 @@ export const generateAttributeBufferInfos = (
     const buffer = context.createBuffer();
     const dispose = () => context.deleteBuffer(buffer);
     const numComponents = getNumComponents(attrib.type);
+    let numElements: number = 0;
+    console.log("num comp", numComponents);
+
     const onRender = () => {
       context.enableVertexAttribArray(location);
       context.bindBuffer(context.ARRAY_BUFFER, buffer);
-      const size = 2; // 2 components per iteration
+      const size = numComponents; // 2 components per iteration
       const type = context.FLOAT; // the data is 32bit floats
       const normalize = false; // don't normalize the data
       const stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
@@ -65,19 +69,25 @@ export const generateAttributeBufferInfos = (
       );
     };
 
+    const getElementsCount = () => numElements;
+
     result.push({
       name: attrib.name,
       type: attrib.type,
       update: (value: number[][]) => {
+        console.log("parsed", value);
+
+        numElements = value.length;
         context.bindBuffer(context.ARRAY_BUFFER, buffer);
         const flatten = [].concat(...value);
         context.bufferData(
           context.ARRAY_BUFFER,
-          new Float32Array([0, 0, 0, 0.5, 0.7, 0]),
+          new Float32Array(flatten),
           context.STATIC_DRAW
         );
       },
       onRender,
+      getElementsCount: getElementsCount,
       //dispose
     });
   }

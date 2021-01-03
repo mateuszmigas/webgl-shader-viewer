@@ -12,7 +12,13 @@ export const createAttributeBufferComponent = (
         render();
       });
     case AttributeBufferType.FLOAT_VEC4:
-      return createAttributeBufferInputVec4((value) => {
+      const initialValue: Vector4[] = [
+        [0, 0, 0, 1],
+        [0, 0.5, 0, 1],
+        [0.7, 0, 0, 1],
+      ];
+      attributeBufferInfo.update(initialValue);
+      return createAttributeBufferInputVec4(initialValue, (value) => {
         attributeBufferInfo.update(value);
         render();
       });
@@ -61,12 +67,14 @@ export const createAttributeBufferInputVec3 = (
 };
 
 export const createAttributeBufferInputVec4 = (
+  initialValue: Vector4[],
   update: (value: Vector4[]) => void
 ) => {
   const input = document.createElement("input");
   //const itemElement = { element: input, value };
   //Object.assign(input, inputOptions);
   input.className = "edit-input";
+  input.value = JSON.stringify(initialValue);
   input.oninput = () => {
     try {
       const result = JSON.parse(input.value);

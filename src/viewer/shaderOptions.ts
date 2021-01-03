@@ -64,4 +64,6 @@ export const appendWithShaderOptions = (
   );
 
   attributeBufferElements.forEach((e) => element.appendChild(e));
+
+  shaderController.render();
 };

@@ -98,9 +98,14 @@ export const createWebGLCanvas = (
 
         uniforms.forEach((u) => u.onRender());
         attributeBuffers.forEach((ab) => ab.onRender());
+        const numElements = Math.min(
+          ...attributeBuffers.map((ab) => ab.getElementsCount())
+        );
+        console.log("rendering", numElements);
+
         const primitiveType = context.TRIANGLES;
         const offset = 0;
-        const count = 3;
+        const count = numElements;
         context.drawArrays(primitiveType, offset, count);
       },
       uniforms,
