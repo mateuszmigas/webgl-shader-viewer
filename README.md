@@ -3,7 +3,6 @@
 WORK IN PROGRESS NOT READY YET!!!
 
 This is a Visual Studio Code extension for previewing shader files.
-This is the README for your extension "webgl-shader-viewer". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 
