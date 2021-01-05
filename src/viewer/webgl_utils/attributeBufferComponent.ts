@@ -1,14 +1,60 @@
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
 import { Vector2, Vector3, Vector4 } from "../components/editVector3";
+import { CompositeKeyMap } from "../compositeKeyMap";
+import { withLabel } from "../components/wrappers";
 
-export const createAttributeBufferComponent = (
+const attributeBufferComponentCache = new CompositeKeyMap<
+  { name: string; type: AttributeBufferType },
+  HTMLElement
+>((key) => `${key.name};${key.type}`);
+
+export const createAttributeBufferComponents = (
+  context: WebGLRenderingContext,
+  program: WebGLProgram,
+  render: () => void,
+  attributeBuffers: { name: string; type: AttributeBufferType }[]
+) => {
+  const attributeBufferComponents = attributeBuffers.map((u) => {
+    const key = {
+      ...u,
+    };
+
+    const componentFromCache = attributeBufferComponentCache.get(key);
+
+    if (componentFromCache) {
+      return { key, component: componentFromCache };
+    } else {
+      const attributeBufferInfo = new AttributeBufferInfo(
+        context,
+        program,
+        u.name,
+        u.type
+      );
+      const component = withLabel(
+        createattributeBufferComponent(attributeBufferInfo, render),
+        "",
+        u.name
+      );
+      attributeBufferComponentCache.set(key, component);
+      return { key, component: component };
+    }
+  });
+
+  attributeBufferComponentCache.clear();
+  attributeBufferComponents.forEach((uc) =>
+    attributeBufferComponentCache.set(uc.key, uc.component)
+  );
+  return attributeBufferComponents.map((uc) => uc.component);
+};
+
+const createattributeBufferComponent = (
   attributeBufferInfo: AttributeBufferInfo,
   render: () => void
 ) => {
-  switch (attributeBufferInfo.type) {
+  switch (attributeBufferInfo.getAttributeBufferType()) {
     case AttributeBufferType.FLOAT_VEC3:
       return createAttributeBufferInputVec3((value) => {
-        attributeBufferInfo.update(value);
+        attributeBufferInfo.setValue(value);
         render();
       });
     case AttributeBufferType.FLOAT_VEC4:
@@ -17,9 +63,9 @@ export const createAttributeBufferComponent = (
         [0, 0.5, 0, 1],
         [0.7, 0, 0, 1],
       ];
-      attributeBufferInfo.update(initialValue);
+      attributeBufferInfo.setValue(initialValue);
       return createAttributeBufferInputVec4(initialValue, (value) => {
-        attributeBufferInfo.update(value);
+        attributeBufferInfo.setValue(value);
         render();
       });
     default:
@@ -27,16 +73,14 @@ export const createAttributeBufferComponent = (
   }
 };
 
-export const createAttributeBufferNotSupported = () => {
+const createAttributeBufferNotSupported = () => {
   const div = document.createElement("div");
   div.className = "unsupported-error";
   div.innerText = "Not supported attribute buffer";
   return div;
 };
 
-export const createAttributeBufferInputVec3 = (
-  update: (value: Vector3[]) => void
-) => {
+const createAttributeBufferInputVec3 = (update: (value: Vector3[]) => void) => {
   const input = document.createElement("input");
   //const itemElement = { element: input, value };
   //Object.assign(input, inputOptions);
@@ -66,7 +110,7 @@ export const createAttributeBufferInputVec3 = (
   return input;
 };
 
-export const createAttributeBufferInputVec4 = (
+const createAttributeBufferInputVec4 = (
   initialValue: Vector4[],
   update: (value: Vector4[]) => void
 ) => {
@@ -78,16 +122,16 @@ export const createAttributeBufferInputVec4 = (
   input.oninput = () => {
     try {
       const result = JSON.parse(input.value);
-      console.log("result", result);
+      //console.log("result", result);
 
       if (!Array.isArray(result)) {
-        console.log("this is not an array type");
+        // console.log("this is not an array type");
       } else {
         const xxx = result.every((e) =>
           Array.isArray(e) ? e.length === 4 : false
         );
         if (!xxx) {
-          console.log("not every element id the arra is same size");
+          //  console.log("not every element id the arra is same size");
         }
       }
       update(result);

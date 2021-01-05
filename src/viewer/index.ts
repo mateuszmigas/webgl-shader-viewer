@@ -4,13 +4,17 @@ import { Unsubscribe, VsCodeApiProxy } from "./communicationProxy";
 import { createSectionTitle } from "./components/createSectionTitle";
 import { createFAButton as createButton } from "./components/createFAButton";
 import { withLabel } from "./components/wrappers";
-import { appendWithShaderOptions as updateShaderOptions } from "./shaderOptions";
 import { createDiv } from "./components/common";
+import { createWebGLCanvas, compileShaders } from "./createWebGLCanvas";
+import { createUniformComponents } from "./webgl_utils/uniformComponent";
 import {
-  CompileErrors,
-  createWebGLCanvas,
-  ShaderController,
-} from "./createWebGLCanvas";
+  formatShaderCompileErrors,
+  getProgramAttributeBuffers,
+  getProgramUniforms,
+  renderProgram,
+  ShaderCompileErrors,
+} from "./webgl_utils/utils";
+import { createAttributeBufferComponents } from "./webgl_utils/attributeBufferComponent";
 
 const createViewer = async () => {
   const vscodeApi = new VsCodeApiProxy();
@@ -38,34 +42,48 @@ const createViewer = async () => {
 
   const onShaderContentChanged = () => {
     shaderOptions.innerHTML = "";
+    const context = webGLController.context;
 
     if (selectedFragmentContent && selectedVertexContent) {
-      const result = webGLController.compileShaders(
+      const result = compileShaders(
+        context,
         selectedVertexContent,
         selectedFragmentContent
       );
 
       if (Array.isArray(result)) {
         showContent("errors");
-        const [
-          vertexShaderErrors,
-          fragmentShaderErrors,
-        ] = result as CompileErrors;
-
-        const errors: string[] = [];
-
-        if (vertexShaderErrors) {
-          errors.push("VERTEX SHADER:", vertexShaderErrors);
-        }
-
-        if (fragmentShaderErrors) {
-          errors.push("FRAGMENT SHADER:", fragmentShaderErrors);
-        }
-
-        shaderCompilationErrors.innerText = errors.join("\r\n");
+        shaderCompilationErrors.innerText = formatShaderCompileErrors(
+          result as ShaderCompileErrors
+        );
       } else {
         showContent("canvas");
-        updateShaderOptions(shaderOptions, result as ShaderController);
+        const program = result as WebGLProgram;
+        const uniforms = getProgramUniforms(context, program);
+        const attributeBuffers = getProgramAttributeBuffers(context, program);
+
+        const scheduleRender = () => {};
+        const render = () =>
+          renderProgram(webGLController.context, result, {
+            uniforms: [],
+            attributeBuffers: [],
+          });
+
+        createUniformComponents(
+          context,
+          program,
+          render,
+          uniforms
+        ).forEach((ue) => shaderOptions.appendChild(ue));
+
+        createAttributeBufferComponents(
+          context,
+          program,
+          render,
+          attributeBuffers
+        ).forEach((ab) => shaderOptions.appendChild(ab));
+
+        render();
       }
     } else {
       showContent("none");

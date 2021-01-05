@@ -1,3 +1,6 @@
+import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
+import { UniformInfo, UniformType } from "./uniform";
+
 export const compileShader = (
   renderingContext: WebGLRenderingContext,
   type: GLenum,
@@ -49,8 +52,85 @@ export const createProgram = (
   }
 };
 
-export class EasyGLAttributeBuffer {}
+export const getProgramUniforms = (
+  context: WebGLRenderingContext,
+  program: WebGLProgram
+) => {
+  const numUniforms = context.getProgramParameter(
+    program,
+    context.ACTIVE_UNIFORMS
+  );
+  const result: { name: string; type: UniformType }[] = [];
 
-export class EasyGLUniform {}
+  for (let index = 0; index < numUniforms; ++index) {
+    const uniform = context.getActiveUniform(program, index);
+    result.push({ ...uniform });
+  }
 
-export class EasyGLProgram {}
+  return result;
+};
+
+export const getProgramAttributeBuffers = (
+  context: WebGLRenderingContext,
+  program: WebGLProgram
+) => {
+  const numAttributeBuffers = context.getProgramParameter(
+    program,
+    context.ACTIVE_ATTRIBUTES
+  );
+
+  const result: { name: string; type: AttributeBufferType }[] = [];
+
+  for (let index = 0; index < numAttributeBuffers; ++index) {
+    const attributeBuffer = context.getActiveAttrib(program, index);
+    result.push({ ...attributeBuffer });
+  }
+
+  return result;
+};
+
+export const renderProgram = (
+  context: WebGLRenderingContext,
+  program: WebGLProgram,
+  renderInfo: {
+    uniforms: UniformInfo[];
+    attributeBuffers: AttributeBufferInfo[];
+    //textures
+  }
+) => {
+  context.useProgram(program);
+  context.viewport(0, 0, context.canvas.width, context.canvas.height);
+  context.clearColor(0, 0, 0, 0);
+  context.clear(context.COLOR_BUFFER_BIT);
+
+  renderInfo.uniforms.forEach((u) => u.setUniform());
+  renderInfo.attributeBuffers.forEach((ab) => ab.setAttributeBuffer());
+  // const numElements = Math.min(
+  //   ...renderInfo.attributeBuffers.map((ab) => ab.getElementsCount())
+  // );
+
+  const primitiveType = context.TRIANGLES;
+  const offset = 0;
+  const count = 3;
+  context.drawArrays(primitiveType, offset, count);
+};
+
+export type ShaderCompileErrors = [
+  vertexShaderErrors: string,
+  fragmentShaderErrors: string
+];
+export const formatShaderCompileErrors = (result: ShaderCompileErrors) => {
+  const [vertexShaderErrors, fragmentShaderErrors] = result;
+
+  const errors: string[] = [];
+
+  if (vertexShaderErrors) {
+    errors.push("VERTEX SHADER:", vertexShaderErrors);
+  }
+
+  if (fragmentShaderErrors) {
+    errors.push("FRAGMENT SHADER:", fragmentShaderErrors);
+  }
+
+  return errors.join("\r\n");
+};
