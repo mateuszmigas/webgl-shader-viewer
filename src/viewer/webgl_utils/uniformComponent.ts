@@ -29,10 +29,11 @@ export const createUniformComponents = (
       ...uniform,
     };
 
-    const uniformComponentFromCache = uniformComponentCache.get(key);
+    const fromCache = uniformComponentCache.get(key);
 
-    if (uniformComponentFromCache) {
-      return { key, value: uniformComponentFromCache };
+    if (fromCache) {
+      fromCache.uniformInfo.attachToProgram(program);
+      return { key, value: fromCache };
     } else {
       const uniformInfo = new UniformInfo(
         context,

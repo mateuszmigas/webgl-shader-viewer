@@ -16,8 +16,12 @@ export class AttributeBufferInfo {
     private name: string,
     private type: AttributeBufferType
   ) {
-    this.location = context.getAttribLocation(program, name);
+    this.attachToProgram(program);
     this.buffer = context.createBuffer();
+  }
+
+  attachToProgram(program: WebGLProgram) {
+    this.location = this.context.getAttribLocation(program, this.name);
   }
 
   setValue(newValue: number[][]) {

@@ -86,8 +86,11 @@ const createViewer = async () => {
           abc => abc.attributeBufferInfo
         );
 
-        if (animationFrameHandle !== null)
+        if (animationFrameHandle !== null) {
+          console.log("cancelling frame");
+
           cancelAnimationFrame(animationFrameHandle);
+        }
 
         const render = () => {
           renderProgram(webGLController.context, result, {

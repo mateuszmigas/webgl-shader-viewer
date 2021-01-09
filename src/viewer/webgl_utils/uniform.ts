@@ -17,13 +17,17 @@ export class UniformInfo<T = any> {
   private setter: (value: T) => void;
 
   constructor(
-    context: WebGLRenderingContext,
+    private context: WebGLRenderingContext,
     program: WebGLProgram,
     private name: string,
     private type: UniformType
   ) {
-    const location = context.getUniformLocation(program, name);
-    this.setter = createUniformSetter(type, context, location);
+    this.attachToProgram(program);
+  }
+
+  attachToProgram(program: WebGLProgram) {
+    const location = this.context.getUniformLocation(program, this.name);
+    this.setter = createUniformSetter(this.type, this.context, location);
   }
 
   setValue(newValue: T) {
@@ -48,8 +52,6 @@ const createUniformSetter = (
   context: WebGLRenderingContext,
   location: WebGLUniformLocation
 ): ((value: any) => void) => {
-  console.log("creating setter for", type);
-
   switch (type) {
     case UniformType.FLOAT_VEC2:
       return (value: Vector2) => context.uniform2f(location, ...value);

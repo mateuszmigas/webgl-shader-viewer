@@ -18,12 +18,11 @@ export const createAttributeBufferComponents = (
       ...attributeBuffer,
     };
 
-    const attributeBufferComponentFromCache = attributeBufferComponentCache.get(
-      key
-    );
+    const fromCache = attributeBufferComponentCache.get(key);
 
-    if (attributeBufferComponentFromCache) {
-      return { key, value: attributeBufferComponentFromCache };
+    if (fromCache) {
+      fromCache.attributeBufferInfo.attachToProgram(program);
+      return { key, value: fromCache };
     } else {
       const attributeBufferInfo = new AttributeBufferInfo(
         context,
