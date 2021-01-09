@@ -39,6 +39,7 @@ const createViewer = async () => {
   let selectedFragmentFileWatcherUnsubscribe: Unsubscribe | undefined;
   let selectedVertexContent: string | null;
   let selectedFragmentContent: string | null;
+  let animationFrameHandle: number = null;
 
   const onShaderContentChanged = () => {
     shaderOptions.innerHTML = "";
@@ -62,26 +63,39 @@ const createViewer = async () => {
         const uniforms = getProgramUniforms(context, program);
         const attributeBuffers = getProgramAttributeBuffers(context, program);
 
-        const scheduleRender = () => {};
-        const render = () =>
-          renderProgram(webGLController.context, result, {
-            uniforms: [],
-            attributeBuffers: [],
-          });
-
-        createUniformComponents(
+        const uniformComponents = createUniformComponents(
           context,
           program,
-          render,
           uniforms
-        ).forEach((ue) => shaderOptions.appendChild(ue));
+        );
+        uniformComponents.forEach(uc =>
+          shaderOptions.appendChild(uc.component)
+        );
 
-        createAttributeBufferComponents(
+        const attributeBufferComponents = createAttributeBufferComponents(
           context,
           program,
-          render,
           attributeBuffers
-        ).forEach((ab) => shaderOptions.appendChild(ab));
+        );
+        attributeBufferComponents.forEach(ab =>
+          shaderOptions.appendChild(ab.component)
+        );
+
+        const uniformInfos = uniformComponents.map(uc => uc.uniformInfo);
+        const attributeBufferInfos = attributeBufferComponents.map(
+          abc => abc.attributeBufferInfo
+        );
+
+        if (animationFrameHandle !== null)
+          cancelAnimationFrame(animationFrameHandle);
+
+        const render = () => {
+          renderProgram(webGLController.context, result, {
+            uniforms: uniformInfos,
+            attributeBuffers: attributeBufferInfos,
+          });
+          animationFrameHandle = requestAnimationFrame(render);
+        };
 
         render();
       }
@@ -94,8 +108,8 @@ const createViewer = async () => {
     createDiv("viewer-shaders-title", [
       createSectionTitle(translations.shaders, "").element,
       createButton("Sync", "viewer-refresh-button", () => {
-        vscodeApi.getShaderDocuments().then((sd) => {
-          const files = sd.map((f) => ({
+        vscodeApi.getShaderDocuments().then(sd => {
+          const files = sd.map(f => ({
             id: f.filePath,
             display: f.fileName,
           }));
@@ -108,13 +122,13 @@ const createViewer = async () => {
   );
 
   const [vertexDropdownElement, vertexDropdownController] = createDropdown(
-    async (newVertex) => {
+    async newVertex => {
       selectedVertexFileWatcherUnsubscribe?.();
 
       if (newVertex) {
         selectedVertexFileWatcherUnsubscribe = vscodeApi.subscribeToDocumentSave(
           newVertex.id,
-          (newContent) => {
+          newContent => {
             selectedVertexContent = newContent;
             onShaderContentChanged();
           }
@@ -136,13 +150,13 @@ const createViewer = async () => {
   );
 
   const [fragmentDropdownElement, fragmentDropdownController] = createDropdown(
-    async (newFragment) => {
+    async newFragment => {
       selectedFragmentFileWatcherUnsubscribe?.();
 
       if (newFragment) {
         selectedFragmentFileWatcherUnsubscribe = vscodeApi.subscribeToDocumentSave(
           newFragment.id,
-          (newContent) => {
+          newContent => {
             selectedFragmentContent = newContent;
             onShaderContentChanged();
           }

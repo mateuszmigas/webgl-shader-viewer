@@ -64,7 +64,7 @@ export const getProgramUniforms = (
 
   for (let index = 0; index < numUniforms; ++index) {
     const uniform = context.getActiveUniform(program, index);
-    result.push({ ...uniform });
+    result.push({ name: uniform.name, type: uniform.type });
   }
 
   return result;
@@ -83,7 +83,7 @@ export const getProgramAttributeBuffers = (
 
   for (let index = 0; index < numAttributeBuffers; ++index) {
     const attributeBuffer = context.getActiveAttrib(program, index);
-    result.push({ ...attributeBuffer });
+    result.push({ name: attributeBuffer.name, type: attributeBuffer.type });
   }
 
   return result;
@@ -103,8 +103,8 @@ export const renderProgram = (
   context.clearColor(0, 0, 0, 0);
   context.clear(context.COLOR_BUFFER_BIT);
 
-  renderInfo.uniforms.forEach((u) => u.setUniform());
-  renderInfo.attributeBuffers.forEach((ab) => ab.setAttributeBuffer());
+  renderInfo.uniforms.forEach(u => u.setUniform());
+  renderInfo.attributeBuffers.forEach(ab => ab.setAttributeBuffer());
   // const numElements = Math.min(
   //   ...renderInfo.attributeBuffers.map((ab) => ab.getElementsCount())
   // );

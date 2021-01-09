@@ -16,71 +16,62 @@ import { withLabel } from "../components/wrappers";
 
 const uniformComponentCache = new CompositeKeyMap<
   { name: string; type: UniformType },
-  HTMLElement
->((key) => `${key.name};${key.type}`);
+  { component: HTMLElement; uniformInfo: UniformInfo }
+>(key => `${key.name};${key.type}`);
 
 export const createUniformComponents = (
   context: WebGLRenderingContext,
   program: WebGLProgram,
-  render: () => void,
   uniforms: { name: string; type: UniformType }[]
 ) => {
-  const uniformComponents = uniforms.map((u) => {
+  const uniformComponents = uniforms.map(uniform => {
     const key = {
-      ...u,
+      ...uniform,
     };
 
-    const componentFromCache = uniformComponentCache.get(key);
+    const uniformComponentFromCache = uniformComponentCache.get(key);
 
-    if (componentFromCache) {
-      return { key, component: componentFromCache };
+    if (uniformComponentFromCache) {
+      return { key, value: uniformComponentFromCache };
     } else {
-      const uniformInfo = new UniformInfo(context, program, u.name, u.type);
-      const component = withLabel(
-        createUniformComponent(uniformInfo, render),
-        "",
-        u.name
+      const uniformInfo = new UniformInfo(
+        context,
+        program,
+        uniform.name,
+        uniform.type
       );
-      uniformComponentCache.set(key, component);
-      return { key, component: component };
+      const component = withLabel(
+        createUniformComponent(uniformInfo),
+        "",
+        uniform.name
+      );
+      return { key, value: { component, uniformInfo } };
     }
   });
 
   uniformComponentCache.clear();
-  uniformComponents.forEach((uc) =>
-    uniformComponentCache.set(uc.key, uc.component)
-  );
-  return uniformComponents.map((uc) => uc.component);
+  uniformComponents.forEach(uc => uniformComponentCache.set(uc.key, uc.value));
+
+  return uniformComponents.map(uc => uc.value);
 };
 
-const createUniformComponent = (
-  uniformInfo: UniformInfo,
-  render: () => void
-) => {
+const createUniformComponent = (uniformInfo: UniformInfo) => {
   switch (uniformInfo.getUniformType()) {
     case UniformType.FLOAT_VEC2:
-      return createUniformForVec2((value) => {
-        uniformInfo.setValue(value);
-        render();
-      });
+      return createUniformForVec2(value => uniformInfo.setValue(value));
     case UniformType.FLOAT_VEC3:
-      return createUniformForVec3((value) => {
-        uniformInfo.setValue(value);
-        render();
-      });
+      return createUniformForVec3(value => uniformInfo.setValue(value));
     case UniformType.FLOAT_VEC4:
       const initialValue: Vector4 = [1, 0, 0, 1];
       uniformInfo.setValue(initialValue);
-      return createUniformForVec4(initialValue, (value) => {
-        uniformInfo.setValue(value);
-        render();
-      });
+      return createUniformForVec4(initialValue, value =>
+        uniformInfo.setValue(value)
+      );
     case UniformType.SAMPLER_2D:
-      return createUniformForTexture((value) => {
+      return createUniformForTexture(value => {
         const currentsetValue = uuidv4();
         //load with debounce => then
         uniformInfo.setValue({ slot: value.slot, textureData: true });
-        render();
       });
     default:
       return createUniformNotSupported();
@@ -98,12 +89,10 @@ export const createUniformSelection = (elements: {
   [key: string]: { display: string; element: HTMLElement };
 }) => {
   const [optionsElement, optionsController] = createDropdown(
-    (item) => {
+    item => {
       if (!item) return;
 
-      Object.values(elements).forEach((oe) =>
-        oe.element.classList.add("hidden")
-      );
+      Object.values(elements).forEach(oe => oe.element.classList.add("hidden"));
 
       elements[item.id].element.classList.remove("hidden");
     },

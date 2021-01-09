@@ -48,6 +48,8 @@ const createUniformSetter = (
   context: WebGLRenderingContext,
   location: WebGLUniformLocation
 ): ((value: any) => void) => {
+  console.log("creating setter for", type);
+
   switch (type) {
     case UniformType.FLOAT_VEC2:
       return (value: Vector2) => context.uniform2f(location, ...value);

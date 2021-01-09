@@ -5,57 +5,56 @@ import { withLabel } from "../components/wrappers";
 
 const attributeBufferComponentCache = new CompositeKeyMap<
   { name: string; type: AttributeBufferType },
-  HTMLElement
->((key) => `${key.name};${key.type}`);
+  { component: HTMLElement; attributeBufferInfo: AttributeBufferInfo }
+>(key => `${key.name};${key.type}`);
 
 export const createAttributeBufferComponents = (
   context: WebGLRenderingContext,
   program: WebGLProgram,
-  render: () => void,
   attributeBuffers: { name: string; type: AttributeBufferType }[]
 ) => {
-  const attributeBufferComponents = attributeBuffers.map((u) => {
+  const attributeBufferComponents = attributeBuffers.map(attributeBuffer => {
     const key = {
-      ...u,
+      ...attributeBuffer,
     };
 
-    const componentFromCache = attributeBufferComponentCache.get(key);
+    const attributeBufferComponentFromCache = attributeBufferComponentCache.get(
+      key
+    );
 
-    if (componentFromCache) {
-      return { key, component: componentFromCache };
+    if (attributeBufferComponentFromCache) {
+      return { key, value: attributeBufferComponentFromCache };
     } else {
       const attributeBufferInfo = new AttributeBufferInfo(
         context,
         program,
-        u.name,
-        u.type
+        attributeBuffer.name,
+        attributeBuffer.type
       );
       const component = withLabel(
-        createattributeBufferComponent(attributeBufferInfo, render),
+        createAttributeBufferComponent(attributeBufferInfo),
         "",
-        u.name
+        attributeBuffer.name
       );
-      attributeBufferComponentCache.set(key, component);
-      return { key, component: component };
+      return { key, value: { component, attributeBufferInfo } };
     }
   });
 
   attributeBufferComponentCache.clear();
-  attributeBufferComponents.forEach((uc) =>
-    attributeBufferComponentCache.set(uc.key, uc.component)
+  attributeBufferComponents.forEach(uc =>
+    attributeBufferComponentCache.set(uc.key, uc.value)
   );
-  return attributeBufferComponents.map((uc) => uc.component);
+
+  return attributeBufferComponents.map(uc => uc.value);
 };
 
-const createattributeBufferComponent = (
-  attributeBufferInfo: AttributeBufferInfo,
-  render: () => void
+const createAttributeBufferComponent = (
+  attributeBufferInfo: AttributeBufferInfo
 ) => {
   switch (attributeBufferInfo.getAttributeBufferType()) {
     case AttributeBufferType.FLOAT_VEC3:
-      return createAttributeBufferInputVec3((value) => {
+      return createAttributeBufferInputVec3(value => {
         attributeBufferInfo.setValue(value);
-        render();
       });
     case AttributeBufferType.FLOAT_VEC4:
       const initialValue: Vector4[] = [
@@ -64,9 +63,8 @@ const createattributeBufferComponent = (
         [0.7, 0, 0, 1],
       ];
       attributeBufferInfo.setValue(initialValue);
-      return createAttributeBufferInputVec4(initialValue, (value) => {
+      return createAttributeBufferInputVec4(initialValue, value => {
         attributeBufferInfo.setValue(value);
-        render();
       });
     default:
       return createAttributeBufferNotSupported();
@@ -93,7 +91,7 @@ const createAttributeBufferInputVec3 = (update: (value: Vector3[]) => void) => {
       if (!Array.isArray(result)) {
         console.log("this is not an array type");
       } else {
-        const xxx = result.every((e) =>
+        const xxx = result.every(e =>
           Array.isArray(e) ? e.length === 3 : false
         );
         if (!xxx) {
@@ -127,7 +125,7 @@ const createAttributeBufferInputVec4 = (
       if (!Array.isArray(result)) {
         // console.log("this is not an array type");
       } else {
-        const xxx = result.every((e) =>
+        const xxx = result.every(e =>
           Array.isArray(e) ? e.length === 4 : false
         );
         if (!xxx) {
