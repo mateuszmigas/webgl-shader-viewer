@@ -4,24 +4,23 @@ export type DropdownItem = {
 };
 
 const defaultOptions = {
-  emptyItem: true
-}
+  emptyItem: true,
+};
 
 export const createDropdown = (
-  //initialValue: DropdownItem | null,
   onChange: (item: DropdownItem | null) => void,
   className?: string,
-  options?: { emptyItem: boolean } //placeholder
+  options?: { emptyItem: boolean }
 ): [
-    HTMLSelectElement,
-    {
-      setItems: (items: DropdownItem[]) => void;
-      getItems: () => DropdownItem[];
-      setSelectedItemById: (id: string) => void;
-      getSelectedItem: () => DropdownItem | null;
-      clearSelection: () => void;
-    }
-  ] => {
+  HTMLSelectElement,
+  {
+    setItems: (items: DropdownItem[]) => void;
+    getItems: () => DropdownItem[];
+    setSelectedItemById: (id: string) => void;
+    getSelectedItem: () => DropdownItem | null;
+    clearSelection: () => void;
+  }
+] => {
   const combinedOptions = { ...defaultOptions, ...options };
   const element = document.createElement("select");
   element.className = `dropdown-base ${className}`;
@@ -34,7 +33,7 @@ export const createDropdown = (
   };
 
   element.onchange = () => {
-    const foundElement = itemElements.find((e) => e.item.id === element.value);
+    const foundElement = itemElements.find(e => e.item.id === element.value);
 
     if (foundElement.item.id) setSelectedItem(foundElement.item);
     else setSelectedItem(null);
@@ -44,12 +43,14 @@ export const createDropdown = (
     element.innerHTML = "";
     itemElements.length = 0;
 
-    if (!items.find((i) => i.id === selectedItem?.id)) {
+    if (!items.find(i => i.id === selectedItem?.id)) {
       setSelectedItem(null);
     }
 
-    const newItems = combinedOptions.emptyItem ? [{ id: "", display: "" }, ...items] : [...items];
-    newItems.forEach((item) => {
+    const newItems = combinedOptions.emptyItem
+      ? [{ id: "", display: "" }, ...items]
+      : [...items];
+    newItems.forEach(item => {
       const option = document.createElement("option");
       option.value = item.id;
       option.textContent = item.display;
@@ -59,10 +60,10 @@ export const createDropdown = (
     });
   };
 
-  const getItems = () => itemElements.map((ie) => ie.item);
+  const getItems = () => itemElements.map(ie => ie.item);
   const setSelectedItemById = (id: string) => {
     setSelectedItem(null);
-    itemElements.forEach((ie) => {
+    itemElements.forEach(ie => {
       if (ie.item.id === id) {
         ie.element.selected = true;
         setSelectedItem(ie.item);
@@ -74,7 +75,7 @@ export const createDropdown = (
 
   const getSelectedItem = () => selectedItem;
   const clearSelection = () => {
-    itemElements.forEach((ie) => (ie.element.selected = false));
+    itemElements.forEach(ie => (ie.element.selected = false));
     setSelectedItem(null);
   };
 

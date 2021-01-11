@@ -1,9 +1,11 @@
-import { hasProperty, observeElementBoundingRect, removeLast } from "../utils";
+import { observeElementBoundingRect } from "../utils/html";
+import { removeLast } from "../utils/array";
+import { hasProperty } from "../utils/typeGuards";
 import {
   compileShader,
   createProgram,
   ShaderCompileErrors,
-} from "./webgl_utils/utils";
+} from "../utils/webgl/index";
 
 export const compileShaders = (
   context: WebGLRenderingContext,
@@ -52,7 +54,7 @@ export const createWebGLCanvas = (
   canvas.className = className;
   const context = canvas.getContext("webgl");
 
-  observeElementBoundingRect(canvas, (rect) => {
+  observeElementBoundingRect(canvas, rect => {
     canvas.width = rect.width;
     canvas.height = rect.height;
   });

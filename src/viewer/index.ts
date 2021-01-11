@@ -1,20 +1,19 @@
 import { translations } from "./../translations";
 import { createDropdown } from "./components/dropdown";
 import { Unsubscribe, VsCodeApiProxy } from "./communicationProxy";
-import { createSectionTitle } from "./components/createSectionTitle";
-import { createFAButton as createButton } from "./components/createFAButton";
-import { withLabel } from "./components/wrappers";
-import { createDiv } from "./components/common";
+import { createSectionTitle } from "./components/header";
+import { createButton as createButton } from "./components/button";
+import { createDiv, withLabel } from "./components/wrappers";
 import { createWebGLCanvas, compileShaders } from "./createWebGLCanvas";
-import { createUniformComponents } from "./webgl_utils/uniformComponent";
+import { createUniformComponents } from "../utils/webgl/uniformComponent";
 import {
   formatShaderCompileErrors,
   getProgramAttributeBuffers,
   getProgramUniforms,
   renderProgram,
   ShaderCompileErrors,
-} from "./webgl_utils/utils";
-import { createAttributeBufferComponents } from "./webgl_utils/attributeBufferComponent";
+} from "../utils/webgl/index";
+import { createAttributeBufferComponents } from "../utils/webgl/attributeBufferComponent";
 
 const createViewer = async () => {
   const vscodeApi = new VsCodeApiProxy();
@@ -33,6 +32,18 @@ const createViewer = async () => {
       content === "canvas" ? "visible" : "collapse";
     shaderCompilationErrors.style.visibility =
       content === "errors" ? "visible" : "collapse";
+  };
+
+  const syncShaderDocuments = () => {
+    vscodeApi.getShaderDocuments().then(sd => {
+      const files = sd.map(f => ({
+        id: f.filePath,
+        display: f.fileName,
+      }));
+
+      vertexDropdownController.setItems(files);
+      fragmentDropdownController.setItems(files);
+    });
   };
 
   let selectedVertexFileWatcherUnsubscribe: Unsubscribe | undefined;
@@ -86,11 +97,8 @@ const createViewer = async () => {
           abc => abc.attributeBufferInfo
         );
 
-        if (animationFrameHandle !== null) {
-          console.log("cancelling frame");
-
+        if (animationFrameHandle !== null)
           cancelAnimationFrame(animationFrameHandle);
-        }
 
         const render = () => {
           renderProgram(webGLController.context, result, {
@@ -110,17 +118,8 @@ const createViewer = async () => {
   viewerOptions.appendChild(
     createDiv("viewer-shaders-title", [
       createSectionTitle(translations.shaders, "").element,
-      createButton("Sync", "viewer-refresh-button", () => {
-        vscodeApi.getShaderDocuments().then(sd => {
-          const files = sd.map(f => ({
-            id: f.filePath,
-            display: f.fileName,
-          }));
-
-          vertexDropdownController.setItems(files);
-          fragmentDropdownController.setItems(files);
-        });
-      }).element,
+      createButton("Sync", "viewer-refresh-button", syncShaderDocuments)
+        .element,
     ])
   );
 
@@ -181,6 +180,8 @@ const createViewer = async () => {
   );
 
   viewerOptions.appendChild(shaderOptions);
+
+  syncShaderDocuments();
 };
 
 createViewer();

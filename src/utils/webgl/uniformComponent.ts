@@ -1,4 +1,3 @@
-import { uuidv4 } from "../../utils";
 import {
   createVector2,
   createVector3,
@@ -6,13 +5,13 @@ import {
   Vector2,
   Vector3,
   Vector4,
-} from "../components/editVector3";
-import { createDiv } from "../components/common";
-import { createDropdown } from "../components/dropdown";
-import { createColor3, createColor4 } from "../components/editColor";
+} from "../../viewer/components/inputNumber";
+import { createDropdown } from "../../viewer/components/dropdown";
+import { createColor3, createColor4 } from "../../viewer/components/inputColor";
 import { UniformInfo, UniformType } from "./uniform";
-import { CompositeKeyMap } from "../compositeKeyMap";
-import { withLabel } from "../components/wrappers";
+import { CompositeKeyMap } from "../../viewer/compositeKeyMap";
+import { createDiv, withLabel } from "../../viewer/components/wrappers";
+import { uuidv4 } from "../uuid";
 
 const uniformComponentCache = new CompositeKeyMap<
   { name: string; type: UniformType },

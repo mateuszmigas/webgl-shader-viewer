@@ -1,5 +1,5 @@
-import { createDiv } from "./common";
-import { createMultiNumberInput } from "./editVector3";
+import { createMultiNumberInput } from "./helpers";
+import { createDiv } from "./wrappers";
 
 const colorInputProps = {
   min: "0",

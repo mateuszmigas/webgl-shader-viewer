@@ -21,9 +21,9 @@ export const createMultiNumberInput = <T extends number[]>(
       ie.value = newValues[index];
       ie.element.value = ie.value.toString();
     });
-  const getValues = () => itemElements.map((ie) => ie.value) as T;
+  const getValues = () => itemElements.map(ie => ie.value) as T;
   const setReadonly = (readonly: boolean) =>
-    itemElements.forEach((ie) => (ie.element.readOnly = readonly));
+    itemElements.forEach(ie => (ie.element.readOnly = readonly));
 
   for (let row = 0; row < rows; row++) {
     const inputRow = document.createElement("div");
@@ -58,29 +58,3 @@ export const createMultiNumberInput = <T extends number[]>(
     },
   ];
 };
-
-export type Matrix3 = [
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number
-];
-export const createMatrix3 = (onChange?: (newValue: Matrix3) => void) =>
-  createMultiNumberInput<Matrix3>([0, 0, 0, 0, 0, 0, 0, 0, 0], onChange, 3, 3);
-
-export type Vector2 = [number, number];
-export const createVector2 = (onChange?: (newValue: Vector2) => void) =>
-  createMultiNumberInput<Vector2>([0, 0], onChange, 1, 2);
-
-export type Vector3 = [number, number, number];
-export const createVector3 = (onChange?: (newValue: Vector3) => void) =>
-  createMultiNumberInput<Vector3>([0, 0, 0], onChange, 1, 3);
-
-export type Vector4 = [number, number, number, number];
-export const createVector4 = (onChange?: (newValue: Vector4) => void) =>
-  createMultiNumberInput<Vector4>([0, 0, 0, 0], onChange, 1, 4);

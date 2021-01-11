@@ -1,5 +1,4 @@
-import { assertNever } from "./../../utils";
-import { Vector3, Vector4 } from "../components/editVector3";
+import { assertNever } from "../typeGuards";
 
 export enum AttributeBufferType {
   FLOAT_VEC3 = 35665,

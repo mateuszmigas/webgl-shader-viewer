@@ -1,5 +1,5 @@
-import { assertNever } from "../../utils";
-import { Vector2, Vector3, Vector4 } from "../components/editVector3";
+import { Vector2, Vector3, Vector4 } from "../../viewer/components/inputNumber";
+import { assertNever } from "../typeGuards";
 
 export enum UniformType {
   FLOAT_VEC2 = 35664,
