@@ -1,3 +1,5 @@
+import { removeLast } from "../array";
+import { hasProperty } from "../typeGuards";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
 import { UniformInfo, UniformType } from "./uniform";
 
@@ -24,6 +26,41 @@ export const compileShader = (
       error,
     };
   }
+};
+
+export const compileShadersFromSource = (
+  context: WebGLRenderingContext,
+  vertexShaderContent: string,
+  fragmentShaderContent: string
+) => {
+  const vertexShader = compileShader(
+    context,
+    context.VERTEX_SHADER,
+    vertexShaderContent
+  );
+
+  const fragmentShader = compileShader(
+    context,
+    context.FRAGMENT_SHADER,
+    fragmentShaderContent
+  );
+
+  let vertexError: string = undefined;
+  if (hasProperty(vertexShader, "error")) {
+    vertexError = removeLast(vertexShader.error, 1);
+  }
+
+  let fragmentError: string = undefined;
+  if (hasProperty(fragmentShader, "error")) {
+    fragmentError = removeLast(fragmentShader.error, 1);
+  }
+
+  if (vertexError || fragmentError) {
+    //todo cleanup
+    return [vertexError, fragmentError] as ShaderCompileErrors;
+  }
+
+  return createProgram(context, vertexShader, fragmentShader);
 };
 
 export const createProgram = (

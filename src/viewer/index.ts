@@ -4,9 +4,9 @@ import { Unsubscribe, VsCodeApiProxy } from "./communicationProxy";
 import { createSectionTitle } from "./components/header";
 import { createButton as createButton } from "./components/button";
 import { createDiv, withLabel } from "./components/wrappers";
-import { createWebGLCanvas, compileShaders } from "./createWebGLCanvas";
 import { createUniformComponents } from "../utils/webgl/uniformComponent";
 import {
+  compileShadersFromSource,
   formatShaderCompileErrors,
   getProgramAttributeBuffers,
   getProgramUniforms,
@@ -14,6 +14,7 @@ import {
   ShaderCompileErrors,
 } from "../utils/webgl/index";
 import { createAttributeBufferComponents } from "../utils/webgl/attributeBufferComponent";
+import { createWebGLCanvas } from "./components/webglCanvas";
 
 const createViewer = async () => {
   const vscodeApi = new VsCodeApiProxy();
@@ -57,7 +58,7 @@ const createViewer = async () => {
     const context = webGLController.context;
 
     if (selectedFragmentContent && selectedVertexContent) {
-      const result = compileShaders(
+      const result = compileShadersFromSource(
         context,
         selectedVertexContent,
         selectedFragmentContent
@@ -143,13 +144,7 @@ const createViewer = async () => {
       onShaderContentChanged();
     }
   );
-  viewerOptions.appendChild(
-    withLabel(
-      vertexDropdownElement,
-      "viewer-vertex-shader-selector",
-      "Vertex Shader"
-    )
-  );
+  viewerOptions.appendChild(withLabel(vertexDropdownElement, "Vertex Shader"));
 
   const [fragmentDropdownElement, fragmentDropdownController] = createDropdown(
     async newFragment => {
@@ -172,12 +167,15 @@ const createViewer = async () => {
     }
   );
   viewerOptions.appendChild(
-    withLabel(
-      fragmentDropdownElement,
-      "viewer-fragment-shader-selector",
-      "Fragment Shader"
-    )
+    withLabel(fragmentDropdownElement, "Fragment Shader")
   );
+
+  const [meshElement, meshController] = createDropdown(() => {});
+  meshController.setItems([
+    { id: "cube", display: "Cube" },
+    { id: "circle", display: "Circle" },
+  ]);
+  viewerOptions.appendChild(withLabel(meshElement, "Mesh"));
 
   viewerOptions.appendChild(shaderOptions);
 

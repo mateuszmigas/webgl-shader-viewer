@@ -9,7 +9,7 @@ import {
 import { createDropdown } from "../../viewer/components/dropdown";
 import { createColor3, createColor4 } from "../../viewer/components/inputColor";
 import { UniformInfo, UniformType } from "./uniform";
-import { CompositeKeyMap } from "../../viewer/compositeKeyMap";
+import { CompositeKeyMap } from "../compositeKeyMap";
 import { createDiv, withLabel } from "../../viewer/components/wrappers";
 import { uuidv4 } from "../uuid";
 
@@ -42,7 +42,6 @@ export const createUniformComponents = (
       );
       const component = withLabel(
         createUniformComponent(uniformInfo),
-        "",
         uniform.name
       );
       return { key, value: { component, uniformInfo } };
