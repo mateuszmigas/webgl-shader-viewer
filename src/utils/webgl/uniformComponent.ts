@@ -1,4 +1,3 @@
-import { uuidv4 } from "../../utils";
 import {
   createVector2,
   createVector3,
@@ -6,40 +5,72 @@ import {
   Vector2,
   Vector3,
   Vector4,
-} from "../components/editVector3";
-import { createDiv } from "../components/common";
-import { createDropdown } from "../components/dropdown";
-import { createColor3, createColor4 } from "../components/editColor";
+} from "../../viewer/components/inputNumber";
+import { createDropdown } from "../../viewer/components/dropdown";
+import { createColor3, createColor4 } from "../../viewer/components/inputColor";
 import { UniformInfo, UniformType } from "./uniform";
+import { CompositeKeyMap } from "../compositeKeyMap";
+import { createDiv, withLabel } from "../../viewer/components/wrappers";
+import { uuidv4 } from "../uuid";
 
-export const createUniformComponent = (
-  uniformInfo: UniformInfo,
-  render: () => void
+const uniformComponentCache = new CompositeKeyMap<
+  { name: string; type: UniformType },
+  { component: HTMLElement; uniformInfo: UniformInfo }
+>(key => `${key.name};${key.type}`);
+
+export const createUniformComponents = (
+  context: WebGLRenderingContext,
+  program: WebGLProgram,
+  uniforms: { name: string; type: UniformType }[]
 ) => {
-  switch (uniformInfo.type) {
+  const uniformComponents = uniforms.map(uniform => {
+    const key = {
+      ...uniform,
+    };
+
+    const fromCache = uniformComponentCache.get(key);
+
+    if (fromCache) {
+      fromCache.uniformInfo.attachToProgram(program);
+      return { key, value: fromCache };
+    } else {
+      const uniformInfo = new UniformInfo(
+        context,
+        program,
+        uniform.name,
+        uniform.type
+      );
+      const component = withLabel(
+        createUniformComponent(uniformInfo),
+        uniform.name
+      );
+      return { key, value: { component, uniformInfo } };
+    }
+  });
+
+  uniformComponentCache.clear();
+  uniformComponents.forEach(uc => uniformComponentCache.set(uc.key, uc.value));
+
+  return uniformComponents.map(uc => uc.value);
+};
+
+const createUniformComponent = (uniformInfo: UniformInfo) => {
+  switch (uniformInfo.getUniformType()) {
     case UniformType.FLOAT_VEC2:
-      return createUniformForVec2((value) => {
-        uniformInfo.update(value);
-        render();
-      });
+      return createUniformForVec2(value => uniformInfo.setValue(value));
     case UniformType.FLOAT_VEC3:
-      return createUniformForVec3((value) => {
-        uniformInfo.update(value);
-        render();
-      });
+      return createUniformForVec3(value => uniformInfo.setValue(value));
     case UniformType.FLOAT_VEC4:
       const initialValue: Vector4 = [1, 0, 0, 1];
-      uniformInfo.update(initialValue);
-      return createUniformForVec4(initialValue, (value) => {
-        uniformInfo.update(value);
-        render();
-      });
+      uniformInfo.setValue(initialValue);
+      return createUniformForVec4(initialValue, value =>
+        uniformInfo.setValue(value)
+      );
     case UniformType.SAMPLER_2D:
-      return createUniformForTexture((value) => {
-        const currentUpdate = uuidv4();
+      return createUniformForTexture(value => {
+        const currentsetValue = uuidv4();
         //load with debounce => then
-        uniformInfo.update({ slot: value.slot, textureData: true });
-        render();
+        uniformInfo.setValue({ slot: value.slot, textureData: true });
       });
     default:
       return createUniformNotSupported();
@@ -57,12 +88,10 @@ export const createUniformSelection = (elements: {
   [key: string]: { display: string; element: HTMLElement };
 }) => {
   const [optionsElement, optionsController] = createDropdown(
-    (item) => {
+    item => {
       if (!item) return;
 
-      Object.values(elements).forEach((oe) =>
-        oe.element.classList.add("hidden")
-      );
+      Object.values(elements).forEach(oe => oe.element.classList.add("hidden"));
 
       elements[item.id].element.classList.remove("hidden");
     },
@@ -79,13 +108,13 @@ export const createUniformSelection = (elements: {
   return optionsElement;
 };
 
-export const createUniformForVec2 = (update: (value: Vector2) => void) => {
+const createUniformForVec2 = (update: (value: Vector2) => void) => {
   const [customElement, customController] = createVector2(update);
   customController.setValues([0, 0]);
   return customElement;
 };
 
-export const createUniformForTexture = (
+const createUniformForTexture = (
   update: (value: { slot: number; textureSrc: string }) => void
 ) => {
   const [customElement, customController] = createVector3();
@@ -93,7 +122,7 @@ export const createUniformForTexture = (
   return customElement;
 };
 
-export const createUniformForVec3 = (update: (value: Vector3) => void) => {
+const createUniformForVec3 = (update: (value: Vector3) => void) => {
   const [customElement, customController] = createVector3(update);
   customController.setValues([0, 0, 0]);
 
@@ -118,7 +147,7 @@ export const createUniformForVec3 = (update: (value: Vector3) => void) => {
   ]);
 };
 
-export const createUniformForVec4 = (
+const createUniformForVec4 = (
   initialValue: Vector4,
   update: (value: Vector4) => void
 ) => {

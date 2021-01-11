@@ -11,6 +11,10 @@ export class CompositeKeyMap<TKey, TValue> {
     this.map.set(this.keySelector(key), value);
   }
 
+  has(key: TKey) {
+    this.map.has(this.keySelector(key));
+  }
+
   clear() {
     this.map.clear();
   }

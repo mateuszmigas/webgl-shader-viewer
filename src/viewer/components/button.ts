@@ -1,4 +1,4 @@
-export const createFAButton = (
+export const createButton = (
   text: string,
   className: string,
   onClick: () => void
