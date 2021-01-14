@@ -4,7 +4,7 @@ import { Unsubscribe, VsCodeApiProxy } from "./communicationProxy";
 import { createSectionTitle } from "./components/header";
 import { createButton as createButton } from "./components/button";
 import { createDiv, withLabel } from "./components/wrappers";
-import { createUniformComponents } from "../utils/webgl/uniformComponent";
+import { createUniformComponents } from "./utils/webgl/uniformComponent";
 import {
   compileShadersFromSource,
   formatShaderCompileErrors,
@@ -12,8 +12,8 @@ import {
   getProgramUniforms,
   renderProgram,
   ShaderCompileErrors,
-} from "../utils/webgl/index";
-import { createAttributeBufferComponents } from "../utils/webgl/attributeBufferComponent";
+} from "./utils/webgl/index";
+import { createAttributeBufferComponents } from "./utils/webgl/attributeBufferComponent";
 import { createWebGLCanvas } from "./components/webglCanvas";
 
 const createViewer = async () => {

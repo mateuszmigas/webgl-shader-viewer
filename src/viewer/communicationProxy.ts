@@ -1,5 +1,5 @@
-import { remove } from "./../utils/array";
-import { uuidv4 } from "./../utils/uuid";
+import { remove } from "./utils/array";
+import { uuidv4 } from "./utils/uuid";
 declare const acquireVsCodeApi: () => {
   //getState: () => any;
   //setState: (state: any) => void;

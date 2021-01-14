@@ -1,7 +1,7 @@
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
-import { Vector2, Vector3, Vector4 } from "../../viewer/components/inputNumber";
+import { Vector2, Vector3, Vector4 } from "../../components/inputNumber";
 import { CompositeKeyMap } from "../compositeKeyMap";
-import { withLabel } from "../../viewer/components/wrappers";
+import { withLabel } from "../../components/wrappers";
 
 const attributeBufferComponentCache = new CompositeKeyMap<
   { name: string; type: AttributeBufferType },

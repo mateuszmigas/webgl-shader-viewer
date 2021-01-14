@@ -5,12 +5,12 @@ import {
   Vector2,
   Vector3,
   Vector4,
-} from "../../viewer/components/inputNumber";
-import { createDropdown } from "../../viewer/components/dropdown";
-import { createColor3, createColor4 } from "../../viewer/components/inputColor";
+} from "../../components/inputNumber";
+import { createDropdown } from "../../components/dropdown";
+import { createColor3, createColor4 } from "../../components/inputColor";
 import { UniformInfo, UniformType } from "./uniform";
 import { CompositeKeyMap } from "../compositeKeyMap";
-import { createDiv, withLabel } from "../../viewer/components/wrappers";
+import { createDiv, withLabel } from "../../components/wrappers";
 import { uuidv4 } from "../uuid";
 
 const uniformComponentCache = new CompositeKeyMap<
