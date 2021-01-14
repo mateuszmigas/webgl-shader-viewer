@@ -1,39 +1,17 @@
-import { remove } from "./utils/array";
-import { uuidv4 } from "./utils/uuid";
+import { remove } from "../utils/array";
+import { Unsubscribe } from "../utils/common";
+import { uuidv4 } from "../utils/uuid";
+import { MessageRequest, MessageResponse } from "./messages";
 declare const acquireVsCodeApi: () => {
   //getState: () => any;
   //setState: (state: any) => void;
-  postMessage: (message: VsCodeApiProxyMessageRequest) => void;
+  postMessage: (message: MessageRequest) => void;
 };
 export const vscodeApi = acquireVsCodeApi();
 
-export type VsCodeApiProxyMessageRequest =
-  | { type: "getShaderDocuments"; id: string }
-  | { type: "getDocumentText"; id: string; payload: { fileName: string } }
-  | { type: "subscribeToDocumentTextChange"; payload: { fileName: string } }
-  | { type: "unsubscribeToDocumentTextChange"; payload: { fileName: string } };
+type ProxyResponseListener = (message: MessageResponse) => void;
 
-export type VsCodeApiProxyMessageResponse =
-  | {
-      type: "getShaderDocuments";
-      id: string;
-      payload: { files: { filePath: string; fileName: string }[] };
-    }
-  | {
-      type: "getDocumentText";
-      id: string;
-      payload: { fileName: string; text: string };
-    }
-  | {
-      type: "onDocumentTextChange";
-      payload: { filePath: string; text: string };
-    };
-
-export type Unsubscribe = () => void;
-
-type ProxyResponseListener = (message: VsCodeApiProxyMessageResponse) => void;
-
-export class VsCodeApiProxy {
+export class ViewerEndpoint {
   eventListeners: ProxyResponseListener[] = [];
 
   constructor() {
@@ -51,7 +29,7 @@ export class VsCodeApiProxy {
     });
 
     return new Promise<{ filePath: string; fileName: string }[]>(resolve => {
-      const listener = (message: VsCodeApiProxyMessageResponse) => {
+      const listener = (message: MessageResponse) => {
         if (message.type === "getShaderDocuments" && message.id === messageId) {
           resolve(message.payload.files);
           this.removeListener(listener);
@@ -72,7 +50,7 @@ export class VsCodeApiProxy {
     });
 
     return new Promise<string>(resolve => {
-      const listener = (message: VsCodeApiProxyMessageResponse) => {
+      const listener = (message: MessageResponse) => {
         if (message.type === "getDocumentText" && message.id === messageId) {
           resolve(message.payload.text);
           this.removeListener(listener);
@@ -92,7 +70,7 @@ export class VsCodeApiProxy {
       payload: { fileName: filePath },
     });
 
-    const listener = (message: VsCodeApiProxyMessageResponse) => {
+    const listener = (message: MessageResponse) => {
       if (
         message.type === "onDocumentTextChange" &&
         message.payload.filePath === filePath

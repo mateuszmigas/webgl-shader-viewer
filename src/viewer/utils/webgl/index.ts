@@ -1,4 +1,4 @@
-import { removeLast } from "../array";
+import { removeLast } from "../../../utils/array";
 import { hasProperty } from "../typeGuards";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
 import { UniformInfo, UniformType } from "./uniform";
