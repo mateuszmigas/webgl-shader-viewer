@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { panelEndpoint } from "./communication/panelEndpoint";
+import { panelEndpoint } from "./common/communication/panelEndpoint";
 
 export class Panel {
   private static instance: Panel | undefined;

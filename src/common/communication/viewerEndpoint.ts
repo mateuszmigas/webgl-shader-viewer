@@ -1,6 +1,5 @@
-import { remove } from "../utils/array";
-import { Unsubscribe } from "../utils/common";
-import { uuidv4 } from "../utils/uuid";
+import { remove } from "../array";
+import { uuidv4 } from "../uuid";
 import { MessageRequest, MessageResponse } from "./messages";
 
 declare const acquireVsCodeApi: () => {
@@ -66,7 +65,7 @@ export class ViewerEndpoint {
   subscribeToDocumentSave(
     filePath: string,
     callback: (newContent: string) => void
-  ): Unsubscribe {
+  ): () => void {
     vscodeApi.postMessage({
       type: "subscribeToDocumentTextChange",
       payload: { fileName: filePath },

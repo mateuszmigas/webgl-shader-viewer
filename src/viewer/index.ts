@@ -1,5 +1,4 @@
-import { ViewerEndpoint } from "../communication/viewerEndpoint";
-import { translations } from "./../translations";
+import { translations } from "./../common/translations";
 import { createDropdown } from "./components/dropdown";
 import { createSectionTitle } from "./components/header";
 import { createButton as createButton } from "./components/button";
@@ -15,7 +14,7 @@ import {
 } from "./utils/webgl/index";
 import { createAttributeBufferComponents } from "./utils/webgl/attributeBufferComponent";
 import { createWebGLCanvas } from "./components/webglCanvas";
-import { Unsubscribe } from "../utils/common";
+import { ViewerEndpoint } from "../common/communication/viewerEndpoint";
 
 const createViewer = async () => {
   const viewerEndpoint = new ViewerEndpoint();
@@ -48,8 +47,8 @@ const createViewer = async () => {
     });
   };
 
-  let selectedVertexFileWatcherUnsubscribe: Unsubscribe | undefined;
-  let selectedFragmentFileWatcherUnsubscribe: Unsubscribe | undefined;
+  let selectedVertexFileWatcherUnsubscribe: () => void | undefined;
+  let selectedFragmentFileWatcherUnsubscribe: () => void | undefined;
   let selectedVertexContent: string | null;
   let selectedFragmentContent: string | null;
   let animationFrameHandle: number = null;
