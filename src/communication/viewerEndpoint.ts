@@ -2,17 +2,19 @@ import { remove } from "../utils/array";
 import { Unsubscribe } from "../utils/common";
 import { uuidv4 } from "../utils/uuid";
 import { MessageRequest, MessageResponse } from "./messages";
+
 declare const acquireVsCodeApi: () => {
   //getState: () => any;
   //setState: (state: any) => void;
   postMessage: (message: MessageRequest) => void;
 };
+
 export const vscodeApi = acquireVsCodeApi();
 
-type ProxyResponseListener = (message: MessageResponse) => void;
+type ResponseListener = (message: MessageResponse) => void;
 
 export class ViewerEndpoint {
-  eventListeners: ProxyResponseListener[] = [];
+  eventListeners: ResponseListener[] = [];
 
   constructor() {
     window.addEventListener("message", event => {
@@ -89,7 +91,7 @@ export class ViewerEndpoint {
     };
   }
 
-  private removeListener(listener: ProxyResponseListener) {
+  private removeListener(listener: ResponseListener) {
     remove(this.eventListeners, listener);
   }
 }
