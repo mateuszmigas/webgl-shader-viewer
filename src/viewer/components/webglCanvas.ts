@@ -1,4 +1,4 @@
-import { observeElementBoundingRect } from "../../utils/html";
+import { observeElementBoundingRect } from "../utils/html";
 export const createWebGLCanvas = (
   className: string
 ): [

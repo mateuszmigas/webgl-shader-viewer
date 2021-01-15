@@ -1,10 +1,9 @@
-import { translations } from "./../translations";
+import { translations } from "./../common/translations";
 import { createDropdown } from "./components/dropdown";
-import { Unsubscribe, VsCodeApiProxy } from "./communicationProxy";
 import { createSectionTitle } from "./components/header";
 import { createButton as createButton } from "./components/button";
 import { createDiv, withLabel } from "./components/wrappers";
-import { createUniformComponents } from "../utils/webgl/uniformComponent";
+import { createUniformComponents } from "./utils/webgl/uniformComponent";
 import {
   compileShadersFromSource,
   formatShaderCompileErrors,
@@ -12,12 +11,13 @@ import {
   getProgramUniforms,
   renderProgram,
   ShaderCompileErrors,
-} from "../utils/webgl/index";
-import { createAttributeBufferComponents } from "../utils/webgl/attributeBufferComponent";
+} from "./utils/webgl/index";
+import { createAttributeBufferComponents } from "./utils/webgl/attributeBufferComponent";
 import { createWebGLCanvas } from "./components/webglCanvas";
+import { ViewerEndpoint } from "../common/communication/viewerEndpoint";
 
 const createViewer = async () => {
-  const vscodeApi = new VsCodeApiProxy();
+  const viewerEndpoint = new ViewerEndpoint();
   const viewer = document.getElementById("viewer");
   const viewerOptions = createDiv("viewer-options");
   const shaderOptions = createDiv("viewer-shader-options");
@@ -36,7 +36,7 @@ const createViewer = async () => {
   };
 
   const syncShaderDocuments = () => {
-    vscodeApi.getShaderDocuments().then(sd => {
+    viewerEndpoint.getShaderDocuments().then(sd => {
       const files = sd.map(f => ({
         id: f.filePath,
         display: f.fileName,
@@ -47,8 +47,8 @@ const createViewer = async () => {
     });
   };
 
-  let selectedVertexFileWatcherUnsubscribe: Unsubscribe | undefined;
-  let selectedFragmentFileWatcherUnsubscribe: Unsubscribe | undefined;
+  let selectedVertexFileWatcherUnsubscribe: () => void | undefined;
+  let selectedFragmentFileWatcherUnsubscribe: () => void | undefined;
   let selectedVertexContent: string | null;
   let selectedFragmentContent: string | null;
   let animationFrameHandle: number = null;
@@ -129,7 +129,7 @@ const createViewer = async () => {
       selectedVertexFileWatcherUnsubscribe?.();
 
       if (newVertex) {
-        selectedVertexFileWatcherUnsubscribe = vscodeApi.subscribeToDocumentSave(
+        selectedVertexFileWatcherUnsubscribe = viewerEndpoint.subscribeToDocumentSave(
           newVertex.id,
           newContent => {
             selectedVertexContent = newContent;
@@ -139,7 +139,7 @@ const createViewer = async () => {
       }
 
       selectedVertexContent = newVertex
-        ? await vscodeApi.getDocumentText(newVertex.id)
+        ? await viewerEndpoint.getDocumentText(newVertex.id)
         : "";
       onShaderContentChanged();
     }
@@ -151,7 +151,7 @@ const createViewer = async () => {
       selectedFragmentFileWatcherUnsubscribe?.();
 
       if (newFragment) {
-        selectedFragmentFileWatcherUnsubscribe = vscodeApi.subscribeToDocumentSave(
+        selectedFragmentFileWatcherUnsubscribe = viewerEndpoint.subscribeToDocumentSave(
           newFragment.id,
           newContent => {
             selectedFragmentContent = newContent;
@@ -161,7 +161,7 @@ const createViewer = async () => {
       }
 
       selectedFragmentContent = newFragment
-        ? await vscodeApi.getDocumentText(newFragment.id)
+        ? await viewerEndpoint.getDocumentText(newFragment.id)
         : "";
       onShaderContentChanged();
     }

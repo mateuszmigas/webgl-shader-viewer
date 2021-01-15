@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
-import { proxyEndpoint } from "./proxyEndpoint";
+import { panelEndpoint } from "./common/communication/panelEndpoint";
 
-export class ViewerPanel {
-  private static instance: ViewerPanel | undefined;
+export class Panel {
+  private static instance: Panel | undefined;
   private disposables: vscode.Disposable[] = [];
   public static readonly viewType = "webglshaderviewer";
 
@@ -11,13 +11,13 @@ export class ViewerPanel {
       ? vscode.window.activeTextEditor.viewColumn
       : undefined;
 
-    if (ViewerPanel.instance) {
-      ViewerPanel.instance.panel.reveal(column);
+    if (Panel.instance) {
+      Panel.instance.panel.reveal(column);
       return;
     }
 
     const panel = vscode.window.createWebviewPanel(
-      ViewerPanel.viewType,
+      Panel.viewType,
       "WebGL Shader Viewer",
       column || vscode.ViewColumn.One,
       {
@@ -26,11 +26,11 @@ export class ViewerPanel {
       }
     );
 
-    ViewerPanel.instance = new ViewerPanel(panel, extensionUri);
+    Panel.instance = new Panel(panel, extensionUri);
   }
 
   static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-    ViewerPanel.instance = new ViewerPanel(panel, extensionUri);
+    Panel.instance = new Panel(panel, extensionUri);
   }
 
   private constructor(
@@ -38,8 +38,8 @@ export class ViewerPanel {
     private extensionUri: vscode.Uri
   ) {
     this.panel.webview.html = this._getHtmlForWebview();
-    const listener = proxyEndpoint(
-      (msg) => this.panel.webview.postMessage(msg),
+    const listener = panelEndpoint(
+      msg => this.panel.webview.postMessage(msg),
       this.disposables
     );
     this.panel.webview.onDidReceiveMessage(listener, null, this.disposables);
@@ -48,9 +48,9 @@ export class ViewerPanel {
 
   public dispose() {
     this.panel.dispose();
-    this.disposables.forEach((d) => d.dispose());
+    this.disposables.forEach(d => d.dispose());
     this.disposables.length = 0;
-    ViewerPanel.instance = undefined;
+    Panel.instance = undefined;
   }
 
   private _getHtmlForWebview() {

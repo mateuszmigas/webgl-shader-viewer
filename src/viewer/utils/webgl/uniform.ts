@@ -1,4 +1,4 @@
-import { Vector2, Vector3, Vector4 } from "../../viewer/components/inputNumber";
+import { Vector2, Vector3, Vector4 } from "../../components/inputNumber";
 import { assertNever } from "../typeGuards";
 
 export enum UniformType {
