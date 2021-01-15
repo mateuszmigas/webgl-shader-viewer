@@ -11,7 +11,7 @@ import { createColor3, createColor4 } from "../../components/inputColor";
 import { UniformInfo, UniformType } from "./uniform";
 import { CompositeKeyMap } from "../compositeKeyMap";
 import { createDiv, withLabel } from "../../components/wrappers";
-import { uuidv4 } from "../../../common/uuid";
+import { uuidv4 } from "../../../../common/uuid";
 
 const uniformComponentCache = new CompositeKeyMap<
   { name: string; type: UniformType },

@@ -58,7 +58,7 @@ export class AttributeBufferInfo {
     return this.type;
   }
 
-  dispose() {
+  deleteBuffer() {
     this.context.deleteBuffer(this.buffer);
     this.buffer = null;
   }

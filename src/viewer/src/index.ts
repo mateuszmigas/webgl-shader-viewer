@@ -1,4 +1,4 @@
-import { translations } from "./../common/translations";
+import { translations } from "../../common/translations";
 import { createDropdown } from "./components/dropdown";
 import { createSectionTitle } from "./components/header";
 import { createButton as createButton } from "./components/button";
@@ -14,7 +14,7 @@ import {
 } from "./utils/webgl/index";
 import { createAttributeBufferComponents } from "./utils/webgl/attributeBufferComponent";
 import { createWebGLCanvas } from "./components/webglCanvas";
-import { ViewerEndpoint } from "../common/communication/viewerEndpoint";
+import { ViewerEndpoint } from "../../common/communication/viewerEndpoint";
 
 const createViewer = async () => {
   const viewerEndpoint = new ViewerEndpoint();

@@ -1,24 +1,53 @@
-import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
+import { CompositeKeyMap } from "../../utils/compositeKeyMap";
+import { Unsubscribe, foo } from "../../../../common/types";
 import { Vector2, Vector3, Vector4 } from "../../components/inputNumber";
-import { CompositeKeyMap } from "../compositeKeyMap";
 import { withLabel } from "../../components/wrappers";
+import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
 
-const attributeBufferComponentCache = new CompositeKeyMap<
-  { name: string; type: AttributeBufferType },
-  { component: HTMLElement; attributeBufferInfo: AttributeBufferInfo }
->(key => `${key.name};${key.type}`);
+console.log(foo);
+type CacheKey = {
+  name: string;
+  type: AttributeBufferType;
+};
+
+type CacheValue = {
+  component: HTMLElement;
+  attributeBufferInfo: AttributeBufferInfo;
+  dispose: () => void;
+};
+
+const componentCache = new CompositeKeyMap<CacheKey, CacheValue>(
+  key => `${key.name};${key.type}`
+);
+
+const rebuildCache = (newValues: { key: CacheKey; value: CacheValue }[]) => {
+  //dispose here
+  //abi.dispose();
+  //componentCache.clear();
+  //attributeBufferComponents.forEach(uc => componentCache.set(uc.key, uc.value));
+};
+
+type AttributeBufferBinding = {
+  name: string;
+  type: string;
+  onChange: (value: any) => void;
+  //subscribeToChange:
+
+  //onChange
+};
 
 export const createAttributeBufferComponents = (
   context: WebGLRenderingContext,
   program: WebGLProgram,
-  attributeBuffers: { name: string; type: AttributeBufferType }[]
+  attributeBuffers: { name: string; type: AttributeBufferType }[],
+  attributeBufferBindings?: AttributeBufferBinding[]
 ) => {
-  const attributeBufferComponents = attributeBuffers.map(attributeBuffer => {
+  const components = attributeBuffers.map(attributeBuffer => {
     const key = {
       ...attributeBuffer,
     };
 
-    const fromCache = attributeBufferComponentCache.get(key);
+    const fromCache = componentCache.get(key);
 
     if (fromCache) {
       fromCache.attributeBufferInfo.attachToProgram(program);
@@ -30,30 +59,41 @@ export const createAttributeBufferComponents = (
         attributeBuffer.name,
         attributeBuffer.type
       );
-      const component = withLabel(
-        createAttributeBufferComponent(attributeBufferInfo),
-        attributeBuffer.name
+
+      const [element, unsubscribe] = createAttributeBufferComponent(
+        attributeBufferInfo
       );
-      return { key, value: { component, attributeBufferInfo } };
+
+      return {
+        key,
+        value: {
+          component: withLabel(element, attributeBuffer.name),
+          attributeBufferInfo,
+          dispose: () => {
+            attributeBufferInfo.deleteBuffer();
+            unsubscribe();
+          },
+        },
+      };
     }
   });
 
-  attributeBufferComponentCache.clear();
-  attributeBufferComponents.forEach(uc =>
-    attributeBufferComponentCache.set(uc.key, uc.value)
-  );
-
-  return attributeBufferComponents.map(uc => uc.value);
+  rebuildCache(components);
+  return components.map(c => c.value);
 };
 
 const createAttributeBufferComponent = (
   attributeBufferInfo: AttributeBufferInfo
-) => {
+): [HTMLElement, Unsubscribe] => {
   switch (attributeBufferInfo.getAttributeBufferType()) {
     case AttributeBufferType.FLOAT_VEC3:
-      return createAttributeBufferInputVec3(value => {
-        attributeBufferInfo.setValue(value);
-      });
+      return [
+        createAttributeBufferInputVec3(value => {
+          attributeBufferInfo.setValue(value);
+        }),
+        () => {},
+      ];
+    //component
     case AttributeBufferType.FLOAT_VEC4:
       const initialValue: Vector4[] = [
         [0, 0, 0, 1],
@@ -61,11 +101,14 @@ const createAttributeBufferComponent = (
         [0.7, 0, 0, 1],
       ];
       attributeBufferInfo.setValue(initialValue);
-      return createAttributeBufferInputVec4(initialValue, value => {
-        attributeBufferInfo.setValue(value);
-      });
+      return [
+        createAttributeBufferInputVec4(initialValue, value => {
+          attributeBufferInfo.setValue(value);
+        }),
+        () => {},
+      ];
     default:
-      return createAttributeBufferNotSupported();
+      return [createAttributeBufferNotSupported(), () => {}];
   }
 };
 
@@ -75,6 +118,9 @@ const createAttributeBufferNotSupported = () => {
   div.innerText = "Not supported attribute buffer";
   return div;
 };
+
+//vec3
+//binding
 
 const createAttributeBufferInputVec3 = (update: (value: Vector3[]) => void) => {
   const input = document.createElement("input");
