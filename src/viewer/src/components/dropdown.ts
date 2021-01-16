@@ -17,6 +17,7 @@ export const createDropdown = (
     setItems: (items: DropdownItem[]) => void;
     getItems: () => DropdownItem[];
     setSelectedItemById: (id: string) => void;
+    setSelectedItemByIndex: (index: number) => void;
     getSelectedItem: () => DropdownItem | null;
     clearSelection: () => void;
   }
@@ -73,6 +74,9 @@ export const createDropdown = (
     });
   };
 
+  const setSelectedItemByIndex = (index: number) =>
+    setSelectedItemById(itemElements[index].item.id);
+
   const getSelectedItem = () => selectedItem;
   const clearSelection = () => {
     itemElements.forEach(ie => (ie.element.selected = false));
@@ -85,8 +89,32 @@ export const createDropdown = (
       setItems,
       getItems,
       setSelectedItemById,
+      setSelectedItemByIndex,
       getSelectedItem,
       clearSelection,
     },
   ];
+};
+
+export const createElementsDropdown = (
+  elements: { id: string; display: string; element: HTMLElement }[]
+) => {
+  const [optionsElement, optionsController] = createDropdown(
+    item => {
+      if (!item) return;
+
+      elements.forEach(oe => oe.element.classList.add("hidden"));
+      elements.find(i => i.id === item.id).element.classList.remove("hidden");
+    },
+    "",
+    { emptyItem: false }
+  );
+  optionsController.setItems(
+    elements.map(e => ({
+      id: e.id,
+      display: e.display,
+    }))
+  );
+  optionsController.setSelectedItemByIndex(0);
+  return optionsElement;
 };

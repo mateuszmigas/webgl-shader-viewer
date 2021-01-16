@@ -6,7 +6,10 @@ import {
   Vector3,
   Vector4,
 } from "../../components/inputNumber";
-import { createDropdown } from "../../components/dropdown";
+import {
+  createDropdown,
+  createElementsDropdown,
+} from "../../components/dropdown";
 import { createColor3, createColor4 } from "../../components/inputColor";
 import { UniformInfo, UniformType } from "./uniform";
 import { CompositeKeyMap } from "../compositeKeyMap";
@@ -84,30 +87,6 @@ export const createUniformNotSupported = () => {
   return div;
 };
 
-export const createUniformSelection = (elements: {
-  [key: string]: { display: string; element: HTMLElement };
-}) => {
-  const [optionsElement, optionsController] = createDropdown(
-    item => {
-      if (!item) return;
-
-      Object.values(elements).forEach(oe => oe.element.classList.add("hidden"));
-
-      elements[item.id].element.classList.remove("hidden");
-    },
-    "",
-    { emptyItem: false }
-  );
-  optionsController.setItems(
-    Object.entries(elements).map(([key, value]) => ({
-      id: key,
-      display: value.display,
-    }))
-  );
-  optionsController.setSelectedItemById("custom");
-  return optionsElement;
-};
-
 const createUniformForVec2 = (update: (value: Vector2) => void) => {
   const [customElement, customController] = createVector2(update);
   customController.setValues([0, 0]);
@@ -129,16 +108,18 @@ const createUniformForVec3 = (update: (value: Vector3) => void) => {
   const [colorElement, colorController] = createColor3(update);
   colorController.setValues([1, 0, 0]);
 
-  const optionsElement = createUniformSelection({
-    custom: {
+  const optionsElement = createElementsDropdown([
+    {
+      id: "custom",
       display: "Custom",
       element: customElement,
     },
-    color: {
+    {
+      id: "color",
       display: "Color",
       element: colorElement,
     },
-  });
+  ]);
 
   return createDiv("column-with-gap", [
     optionsElement,
@@ -157,16 +138,10 @@ const createUniformForVec4 = (
   const [colorElement, colorController] = createColor4(update);
   colorController.setValues(initialValue);
 
-  const optionsElement = createUniformSelection({
-    custom: {
-      display: "Custom",
-      element: customElement,
-    },
-    color: {
-      display: "Color",
-      element: colorElement,
-    },
-  });
+  const optionsElement = createElementsDropdown([
+    { id: "custom", display: "Custom", element: customElement },
+    { id: "color", display: "Color", element: colorElement },
+  ]);
 
   return createDiv("column-with-gap", [
     optionsElement,
