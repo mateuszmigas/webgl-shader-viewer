@@ -8,6 +8,7 @@ import { Unsubscribe, foo } from "../../../../common/types";
 import { Vector2, Vector3, Vector4 } from "../../components/inputNumber";
 import { createDiv, withLabel } from "../../components/wrappers";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
+import { Observable } from "../observable";
 
 type CacheKey = {
   name: string;
@@ -42,7 +43,8 @@ const rebuildCache = (newValues: { key: CacheKey; value: CacheValue }[]) => {
 export type AttributeBufferBinding = {
   name: string;
   type: AttributeBufferType;
-  subscribeToChange: (newValue: any) => Unsubscribe;
+  value: Observable<any>;
+  //subscribeToChangeWithLatest: (newValue: any) => Unsubscribe;
 };
 
 export const createAttributeBufferComponents = (
@@ -156,9 +158,10 @@ const createBindingOptions = (
 } => {
   const options = attributeBufferBindings.map(binding => {
     const element = previewElementFactory();
-    const unsubscribe = binding.subscribeToChange((value: any) => {
-      attributeBufferInfo.setValue(value);
-    });
+    const callback = (value: any) => attributeBufferInfo.setValue(value);
+    binding.value.attach(callback);
+    callback(binding.value.getValue());
+    const unsubscribe = () => binding.value.detach(callback);
 
     return {
       id: uuidv4(),

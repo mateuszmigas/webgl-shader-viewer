@@ -1,3 +1,4 @@
+import { Observable } from "./utils/observable";
 import { translations } from "../../common/translations";
 import { createDropdown } from "./components/dropdown";
 import { createSectionTitle } from "./components/header";
@@ -18,9 +19,23 @@ import {
 } from "./utils/webgl/attributeBufferComponent";
 import { createWebGLCanvas } from "./components/webglCanvas";
 import { ViewerEndpoint } from "../../common/communication/viewerEndpoint";
-import { AttributeBufferType } from "./utils/webgl/attributeBuffer";
+import {
+  AttributeBufferInfo,
+  AttributeBufferType,
+} from "./utils/webgl/attributeBuffer";
 
 const createViewer = async () => {
+  const abbind = {
+    //listeners here
+    name: "Binding - Cube normals",
+    type: AttributeBufferType.FLOAT_VEC4,
+    subscribeToChangeWithLatest: (
+      callback: (value: [number, number, number, number]) => void
+    ) => {
+      callback([1, 2, 3, 4]);
+      return () => {};
+    },
+  };
   const meshData = new Map<
     string,
     { display: string; attributeBufferBindings: AttributeBufferBinding[] }
@@ -33,12 +48,12 @@ const createViewer = async () => {
           {
             name: "Binding - Cube normals",
             type: AttributeBufferType.FLOAT_VEC4,
-            subscribeToChange: () => () => {},
+            value: new Observable([1, 2, 3, 4]),
           },
           {
             name: "Binding - Cube tangents",
             type: AttributeBufferType.FLOAT_VEC4,
-            subscribeToChange: () => () => {},
+            value: new Observable([1, 2, 3, 4]),
           },
         ],
       },
@@ -79,7 +94,12 @@ const createViewer = async () => {
   let selectedVertexContent: string | null;
   let selectedFragmentContent: string | null;
   let animationFrameHandle: number = null;
+  let attributeBufferInfos: AttributeBufferInfo[] = [];
 
+  const onMeshChanged = () => {
+    //attributeBufferInfos.
+  };
+  //todo seperate module
   const onShaderContentChanged = () => {
     shaderOptions.innerHTML = "";
     const context = webGLController.context;
@@ -98,7 +118,7 @@ const createViewer = async () => {
         );
       } else {
         showContent("canvas");
-        const selectedMesh = meshController.getSelectedItem();
+        const selectedMesh = meshDropdownController.getSelectedItem();
         const program = result as WebGLProgram;
         const uniforms = getProgramUniforms(context, program);
         const attributeBuffers = getProgramAttributeBuffers(context, program);
@@ -125,7 +145,7 @@ const createViewer = async () => {
         );
 
         const uniformInfos = uniformComponents.map(uc => uc.uniformInfo);
-        const attributeBufferInfos = attributeBufferComponents.map(
+        attributeBufferInfos = attributeBufferComponents.map(
           abc => abc.attributeBufferInfo
         );
 
@@ -201,16 +221,16 @@ const createViewer = async () => {
     withLabel(fragmentDropdownElement, "Fragment Shader")
   );
 
-  const [meshElement, meshController] = createDropdown(() =>
+  const [meshDropdownElement, meshDropdownController] = createDropdown(() =>
     onShaderContentChanged()
   );
-  meshController.setItems(
+  meshDropdownController.setItems(
     Array.from(meshData.entries()).map(e => ({
       id: e[0],
       display: e[1].display,
     }))
   );
-  viewerOptions.appendChild(withLabel(meshElement, "Mesh"));
+  viewerOptions.appendChild(withLabel(meshDropdownElement, "Mesh"));
 
   viewerOptions.appendChild(shaderOptions);
 
