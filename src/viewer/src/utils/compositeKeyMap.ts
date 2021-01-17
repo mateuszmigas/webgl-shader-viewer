@@ -12,7 +12,19 @@ export class CompositeKeyMap<TKey, TValue> {
   }
 
   has(key: TKey) {
-    this.map.has(this.keySelector(key));
+    return this.map.has(this.keySelector(key));
+  }
+
+  entriesStrKey() {
+    return Array.from(this.map.entries());
+  }
+
+  deleteStrKey(key: string) {
+    this.map.delete(key);
+  }
+
+  delete(key: TKey) {
+    this.map.delete(this.keySelector(key));
   }
 
   clear() {

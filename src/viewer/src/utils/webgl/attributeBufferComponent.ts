@@ -1,11 +1,14 @@
-import { createElementsDropdown } from "./../../components/dropdown";
+import { uuidv4 } from "../../../../common/uuid";
+import {
+  createCustomElementOption,
+  createElementsDropdown,
+} from "./../../components/dropdown";
 import { CompositeKeyMap } from "../../utils/compositeKeyMap";
 import { Unsubscribe, foo } from "../../../../common/types";
 import { Vector2, Vector3, Vector4 } from "../../components/inputNumber";
-import { withLabel } from "../../components/wrappers";
+import { createDiv, withLabel } from "../../components/wrappers";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
 
-console.log(foo);
 type CacheKey = {
   name: string;
   type: AttributeBufferType;
@@ -17,18 +20,26 @@ type CacheValue = {
   dispose: () => void;
 };
 
-const componentCache = new CompositeKeyMap<CacheKey, CacheValue>(
-  key => `${key.name};${key.type}`
-);
+const keySelector = (key: CacheKey): string => `${key.name};${key.type}`;
+const componentCache = new CompositeKeyMap<CacheKey, CacheValue>(keySelector);
 
 const rebuildCache = (newValues: { key: CacheKey; value: CacheValue }[]) => {
-  //dispose here
-  //abi.dispose();
-  //componentCache.clear();
-  //attributeBufferComponents.forEach(uc => componentCache.set(uc.key, uc.value));
+  const newValuesStrKeys = newValues.map(v => keySelector(v.key));
+  const componentsToRemove = componentCache
+    .entriesStrKey()
+    .filter(e => !newValuesStrKeys.includes(e[0]));
+
+  componentsToRemove.forEach(c => {
+    c[1].dispose();
+    componentCache.deleteStrKey(c[0]);
+  });
+
+  newValues.forEach(nw => {
+    if (!componentCache.has(nw.key)) componentCache.set(nw.key, nw.value);
+  });
 };
 
-type AttributeBufferBinding = {
+export type AttributeBufferBinding = {
   name: string;
   type: AttributeBufferType;
   subscribeToChange: (newValue: any) => Unsubscribe;
@@ -38,7 +49,7 @@ export const createAttributeBufferComponents = (
   context: WebGLRenderingContext,
   program: WebGLProgram,
   attributeBuffers: { name: string; type: AttributeBufferType }[],
-  attributeBufferBindings?: AttributeBufferBinding[]
+  attributeBufferBindings: AttributeBufferBinding[]
 ) => {
   const components = attributeBuffers.map(attributeBuffer => {
     const key = {
@@ -58,22 +69,27 @@ export const createAttributeBufferComponents = (
         attributeBuffer.type
       );
 
-      const customElement = createAttributeBufferComponent(attributeBufferInfo);
+      const customElement = createAttributeBufferComponent(
+        attributeBufferInfo,
+        true
+      );
 
-      const [bindingOptions, unsubscribe] = createBindingOptions(
-        value => {
-          attributeBufferInfo.setValue(value);
-        },
+      const { options, unsubscribe } = createBindingOptions(
+        attributeBufferInfo,
         attributeBufferBindings.filter(
           b => b.type === attributeBufferInfo.getAttributeBufferType()
         ),
-        () => null //todo
+        () => createAttributeBufferComponent(attributeBufferInfo, false)
       );
 
-      const element = bindingOptions.length
-        ? createElementsDropdown([
-            createCustomOption(customElement),
-            ...bindingOptions,
+      const element = options.length
+        ? createDiv("column-with-gap", [
+            createElementsDropdown([
+              createCustomElementOption(customElement),
+              ...options,
+            ]),
+            customElement,
+            ...options.map(o => o.element),
           ])
         : customElement;
 
@@ -95,20 +111,15 @@ export const createAttributeBufferComponents = (
   return components.map(c => c.value);
 };
 
-const createCustomOption = (element: HTMLElement) => ({
-  id: "custom",
-  display: "Custom",
-  element,
-});
-
 const createAttributeBufferComponent = (
-  attributeBufferInfo: AttributeBufferInfo
+  attributeBufferInfo: AttributeBufferInfo,
+  editable: boolean
 ) => {
   switch (attributeBufferInfo.getAttributeBufferType()) {
     case AttributeBufferType.FLOAT_VEC3:
       return createAttributeBufferInputVec3(value => {
         attributeBufferInfo.setValue(value);
-      });
+      }, editable);
     case AttributeBufferType.FLOAT_VEC4:
       const initialValue: Vector4[] = [
         [0, 0, 0, 1],
@@ -116,9 +127,13 @@ const createAttributeBufferComponent = (
         [0.7, 0, 0, 1],
       ];
       attributeBufferInfo.setValue(initialValue);
-      return createAttributeBufferInputVec4(initialValue, value => {
-        attributeBufferInfo.setValue(value);
-      });
+      return createAttributeBufferInputVec4(
+        initialValue,
+        value => {
+          attributeBufferInfo.setValue(value);
+        },
+        editable
+      );
     default:
       return createAttributeBufferNotSupported();
   }
@@ -131,34 +146,39 @@ const createAttributeBufferNotSupported = () => {
   return div;
 };
 
-//vec3
-//binding
-
 const createBindingOptions = (
-  update: (newValue: any) => void,
+  attributeBufferInfo: AttributeBufferInfo,
   attributeBufferBindings: AttributeBufferBinding[],
   previewElementFactory: () => HTMLElement
-): [{ id: string; display: string; element: HTMLElement }[], Unsubscribe] => {
-  const xx = attributeBufferBindings.map(b => {
-    const unsub = b.subscribeToChange(update);
+): {
+  options: { id: string; display: string; element: HTMLElement }[];
+  unsubscribe: Unsubscribe;
+} => {
+  const options = attributeBufferBindings.map(binding => {
     const element = previewElementFactory();
-    const display = b.name;
+    const unsubscribe = binding.subscribeToChange((value: any) => {
+      attributeBufferInfo.setValue(value);
+    });
 
     return {
-      id: "dupa",
-      unsub,
+      id: uuidv4(),
+      unsubscribe,
       element,
-      display,
+      display: binding.name,
     };
   });
 
-  const unsub = () => xx.forEach(x => x.unsub());
-  return [xx, unsub];
+  const unsubscribeAll = () => options.forEach(x => x.unsubscribe());
+  return { options, unsubscribe: unsubscribeAll };
 };
 
-const createAttributeBufferInputVec3 = (update: (value: Vector3[]) => void) => {
+const createAttributeBufferInputVec3 = (
+  update: (value: Vector3[]) => void,
+  editable: boolean
+) => {
   const input = document.createElement("input");
   input.className = "edit-input";
+  input.disabled = !editable;
   input.oninput = () => {
     try {
       const result = JSON.parse(input.value);
@@ -202,12 +222,14 @@ const createAttributeBufferInputVec3 = (update: (value: Vector3[]) => void) => {
 
 const createAttributeBufferInputVec4 = (
   initialValue: Vector4[],
-  update: (value: Vector4[]) => void
+  update: (value: Vector4[]) => void,
+  editable: boolean
 ) => {
   const input = document.createElement("input");
   //const itemElement = { element: input, value };
   //Object.assign(input, inputOptions);
   input.className = "edit-input";
+  input.disabled = !editable;
   input.value = JSON.stringify(initialValue);
   input.oninput = () => {
     try {
