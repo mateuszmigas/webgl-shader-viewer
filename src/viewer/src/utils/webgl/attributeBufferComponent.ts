@@ -71,21 +71,21 @@ export const createAttributeBufferComponents = (
         attributeBuffer.type
       );
 
-      const customElement = createAttributeBufferComponent(
-        attributeBufferInfo,
-        true
-      );
+      //const onChange = ()
+      const {
+        element: customElement,
+        triggerUpdate,
+      } = createAttributeBufferComponent(attributeBufferInfo, true);
 
       const applicableBindings = attributeBufferBindings.filter(
         b => b.type === attributeBufferInfo.getAttributeBufferType()
       );
 
       const { element, unsubscribe } = applicableBindings.length
-        ? createDropdownWithBindings(
-            attributeBufferInfo,
-            applicableBindings,
-            customElement
-          )
+        ? createDropdownWithBindings(attributeBufferInfo, applicableBindings, {
+            element: customElement,
+            triggerUpdate,
+          })
         : {
             element: customElement,
             unsubscribe: undefined,
@@ -144,16 +144,18 @@ const createAttributeBufferNotSupported = () => {
   const div = document.createElement("div");
   div.className = "unsupported-error";
   div.innerText = "Not supported attribute buffer";
-  return div;
+  return { element: div, triggerUpdate: () => {} };
 };
 
 export const createDropdownWithBindings = (
   attributeBufferInfo: AttributeBufferInfo,
   attributeBufferBindings: AttributeBufferBinding[],
-  customElement: HTMLElement
+  customElement: { element: HTMLElement; triggerUpdate: () => void }
 ) => {
   const options = attributeBufferBindings.map(binding => {
-    const element = createAttributeBufferComponent(attributeBufferInfo, false);
+    const element = createAttributeBufferComponent(attributeBufferInfo, false)
+      .element;
+
     return {
       id: uuidv4(),
       element,
@@ -162,33 +164,37 @@ export const createDropdownWithBindings = (
     };
   });
 
-  let unsubscribe: () => void = undefined;
+  let detach: () => void = undefined;
   const element = createDiv("column-with-gap", [
     createElementsDropdown(
-      [createCustomElementOption(customElement), ...options],
+      [createCustomElementOption(customElement.element), ...options],
       id => {
-        unsubscribe?.();
+        detach?.();
 
         const option = options.find(o => o.id === id);
-        if (!option) return;
-
-        const callback = (value: any) => attributeBufferInfo.setValue(value);
-        option.value.attach(callback);
-        callback(option.value.getValue());
-        unsubscribe = () => option.value.detach(callback);
+        if (option) {
+          //todo from custom
+          //attributeBufferInfo.
+          const callback = (value: any) => attributeBufferInfo.setValue(value);
+          option.value.attach(callback);
+          callback(option.value.getValue());
+          detach = () => option.value.detach(callback);
+        } else {
+          customElement.triggerUpdate?.();
+        }
       }
     ),
-    customElement,
+    customElement.element,
     ...options.map(o => o.element),
   ]);
 
-  return { element, unsubscribe };
+  return { element, unsubscribe: () => detach() };
 };
 
 const createAttributeBufferInputVec3 = (
   update: (value: Vector3[]) => void,
   editable: boolean
-) => {
+): { element: HTMLElement; triggerUpdate: () => void } => {
   const input = document.createElement("input");
   input.className = "edit-input";
   input.disabled = !editable;
@@ -230,20 +236,21 @@ const createAttributeBufferInputVec3 = (
   // }
 
   //Wrong format! Should be [[x1,y1], [x2,y2], ...]
-  return input;
+  return { element: input, triggerUpdate: () => {} };
 };
 
 const createAttributeBufferInputVec4 = (
   initialValue: Vector4[],
   update: (value: Vector4[]) => void,
   editable: boolean
-) => {
+): { element: HTMLElement; triggerUpdate: () => void } => {
   const input = document.createElement("input");
   //const itemElement = { element: input, value };
   //Object.assign(input, inputOptions);
   input.className = "edit-input";
   input.disabled = !editable;
   input.value = JSON.stringify(initialValue);
+  let currentValue = initialValue;
   input.oninput = () => {
     try {
       const result = JSON.parse(input.value);
@@ -259,11 +266,12 @@ const createAttributeBufferInputVec4 = (
           //  console.log("not every element id the arra is same size");
         }
       }
+      currentValue = result;
       update(result);
     } catch (error) {
       console.log("this is not a json");
     }
   };
   //Wrong format! Should be [[x1,y1], [x2,y2], ...]
-  return input;
+  return { element: input, triggerUpdate: () => update(currentValue) };
 };
