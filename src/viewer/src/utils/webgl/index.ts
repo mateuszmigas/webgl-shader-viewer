@@ -130,8 +130,8 @@ export const renderProgram = (
   context: WebGLRenderingContext,
   program: WebGLProgram,
   renderInfo: {
-    uniforms: UniformInfo[];
-    attributeBuffers: AttributeBufferInfo[];
+    uniformInfos: UniformInfo[];
+    attributeBufferInfos: AttributeBufferInfo[];
     //textures
   }
 ) => {
@@ -140,16 +140,17 @@ export const renderProgram = (
   context.clearColor(0, 0, 0, 0);
   context.clear(context.COLOR_BUFFER_BIT);
 
-  renderInfo.uniforms.forEach(u => u.setUniform());
-  renderInfo.attributeBuffers.forEach(ab => ab.setAttributeBuffer());
-  // const numElements = Math.min(
-  //   ...renderInfo.attributeBuffers.map((ab) => ab.getElementsCount())
-  // );
+  renderInfo.uniformInfos.forEach(u => u.setUniform());
+  renderInfo.attributeBufferInfos.forEach(ab => ab.setAttributeBuffer());
+  const numElements = Math.min(
+    ...renderInfo.attributeBufferInfos.map(ab => ab.getNumElements())
+  );
 
   const primitiveType = context.TRIANGLES;
   const offset = 0;
-  const count = 3;
-  context.drawArrays(primitiveType, offset, count);
+  console.log("drawing", numElements);
+
+  context.drawArrays(primitiveType, offset, numElements);
 };
 
 export type ShaderCompileErrors = [

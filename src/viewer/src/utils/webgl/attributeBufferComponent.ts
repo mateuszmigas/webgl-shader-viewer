@@ -76,24 +76,20 @@ export const createAttributeBufferComponents = (
         true
       );
 
-      const { options, unsubscribe } = createBindingOptions(
-        attributeBufferInfo,
-        attributeBufferBindings.filter(
-          b => b.type === attributeBufferInfo.getAttributeBufferType()
-        ),
-        () => createAttributeBufferComponent(attributeBufferInfo, false)
+      const applicableBindings = attributeBufferBindings.filter(
+        b => b.type === attributeBufferInfo.getAttributeBufferType()
       );
 
-      const element = options.length
-        ? createDiv("column-with-gap", [
-            createElementsDropdown([
-              createCustomElementOption(customElement),
-              ...options,
-            ]),
-            customElement,
-            ...options.map(o => o.element),
-          ])
-        : customElement;
+      const { element, unsubscribe } = applicableBindings.length
+        ? createDropdownWithBindings(
+            attributeBufferInfo,
+            applicableBindings,
+            customElement
+          )
+        : {
+            element: customElement,
+            unsubscribe: undefined,
+          };
 
       return {
         key,
@@ -102,7 +98,7 @@ export const createAttributeBufferComponents = (
           attributeBufferInfo,
           dispose: () => {
             attributeBufferInfo.deleteBuffer();
-            unsubscribe();
+            unsubscribe?.();
           },
         },
       };
@@ -126,7 +122,10 @@ const createAttributeBufferComponent = (
       const initialValue: Vector4[] = [
         [0, 0, 0, 1],
         [0, 0.5, 0, 1],
+        [0.9, 0, 0, 1],
+        [0, 0.5, 0, 1],
         [0.7, 0, 0, 1],
+        [0.7, 0.5, 0, 1],
       ];
       attributeBufferInfo.setValue(initialValue);
       return createAttributeBufferInputVec4(
@@ -148,31 +147,42 @@ const createAttributeBufferNotSupported = () => {
   return div;
 };
 
-const createBindingOptions = (
+export const createDropdownWithBindings = (
   attributeBufferInfo: AttributeBufferInfo,
   attributeBufferBindings: AttributeBufferBinding[],
-  previewElementFactory: () => HTMLElement
-): {
-  options: { id: string; display: string; element: HTMLElement }[];
-  unsubscribe: Unsubscribe;
-} => {
+  customElement: HTMLElement
+) => {
   const options = attributeBufferBindings.map(binding => {
-    const element = previewElementFactory();
-    const callback = (value: any) => attributeBufferInfo.setValue(value);
-    binding.value.attach(callback);
-    callback(binding.value.getValue());
-    const unsubscribe = () => binding.value.detach(callback);
-
+    const element = createAttributeBufferComponent(attributeBufferInfo, false);
     return {
       id: uuidv4(),
-      unsubscribe,
       element,
       display: binding.name,
+      value: binding.value,
     };
   });
 
-  const unsubscribeAll = () => options.forEach(x => x.unsubscribe());
-  return { options, unsubscribe: unsubscribeAll };
+  let unsubscribe: () => void = undefined;
+  const element = createDiv("column-with-gap", [
+    createElementsDropdown(
+      [createCustomElementOption(customElement), ...options],
+      id => {
+        unsubscribe?.();
+
+        const option = options.find(o => o.id === id);
+        if (!option) return;
+
+        const callback = (value: any) => attributeBufferInfo.setValue(value);
+        option.value.attach(callback);
+        callback(option.value.getValue());
+        unsubscribe = () => option.value.detach(callback);
+      }
+    ),
+    customElement,
+    ...options.map(o => o.element),
+  ]);
+
+  return { element, unsubscribe };
 };
 
 const createAttributeBufferInputVec3 = (

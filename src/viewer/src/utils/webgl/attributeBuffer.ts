@@ -8,6 +8,7 @@ export enum AttributeBufferType {
 export class AttributeBufferInfo {
   private buffer: WebGLBuffer | null;
   private location: number;
+  private numElements: number = 0;
 
   constructor(
     private context: WebGLRenderingContext,
@@ -24,9 +25,11 @@ export class AttributeBufferInfo {
   }
 
   setValue(newValue: number[][]) {
-    //numElements = value.length;
+    this.numElements = newValue.length;
     this.context.bindBuffer(this.context.ARRAY_BUFFER, this.buffer);
     const flatten = [].concat(...newValue);
+    console.log("setting value", flatten);
+
     this.context.bufferData(
       this.context.ARRAY_BUFFER,
       new Float32Array(flatten),
@@ -56,6 +59,10 @@ export class AttributeBufferInfo {
 
   getAttributeBufferType() {
     return this.type;
+  }
+
+  getNumElements() {
+    return this.numElements;
   }
 
   deleteBuffer() {
