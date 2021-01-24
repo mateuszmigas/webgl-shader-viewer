@@ -72,20 +72,18 @@ export const createAttributeBufferComponents = (
       );
 
       //const onChange = ()
-      const {
-        element: customElement,
-        triggerUpdate,
-      } = createAttributeBufferComponent(attributeBufferInfo, true);
+      const customElement = createAttributeBufferComponent(
+        attributeBufferInfo.getAttributeBufferType(),
+        true,
+        value => attributeBufferInfo.setValue(value)
+      );
 
       const applicableBindings = attributeBufferBindings.filter(
         b => b.type === attributeBufferInfo.getAttributeBufferType()
       );
 
       const { element, unsubscribe } = applicableBindings.length
-        ? createDropdownWithBindings(attributeBufferInfo, applicableBindings, {
-            element: customElement,
-            triggerUpdate,
-          })
+        ? createDropdownWithBindings(attributeBufferInfo, applicableBindings)
         : {
             element: customElement,
             unsubscribe: undefined,
@@ -110,14 +108,13 @@ export const createAttributeBufferComponents = (
 };
 
 const createAttributeBufferComponent = (
-  attributeBufferInfo: AttributeBufferInfo,
-  editable: boolean
+  attributeBufferType: AttributeBufferType,
+  editable: boolean,
+  onUpdate: (value: any) => void
 ) => {
-  switch (attributeBufferInfo.getAttributeBufferType()) {
+  switch (attributeBufferType) {
     case AttributeBufferType.FLOAT_VEC3:
-      return createAttributeBufferInputVec3(value => {
-        attributeBufferInfo.setValue(value);
-      }, editable);
+      return createAttributeBufferInputVec3(onUpdate, editable);
     case AttributeBufferType.FLOAT_VEC4:
       const initialValue: Vector4[] = [
         [0, 0, 0, 1],
@@ -127,14 +124,8 @@ const createAttributeBufferComponent = (
         [0.7, 0, 0, 1],
         [0.7, 0.5, 0, 1],
       ];
-      attributeBufferInfo.setValue(initialValue);
-      return createAttributeBufferInputVec4(
-        initialValue,
-        value => {
-          attributeBufferInfo.setValue(value);
-        },
-        editable
-      );
+      onUpdate(initialValue);
+      return createAttributeBufferInputVec4(initialValue, onUpdate, editable);
     default:
       return createAttributeBufferNotSupported();
   }
@@ -144,17 +135,19 @@ const createAttributeBufferNotSupported = () => {
   const div = document.createElement("div");
   div.className = "unsupported-error";
   div.innerText = "Not supported attribute buffer";
-  return { element: div, triggerUpdate: () => {} };
+  return div;
 };
 
 export const createDropdownWithBindings = (
   attributeBufferInfo: AttributeBufferInfo,
-  attributeBufferBindings: AttributeBufferBinding[],
-  customElement: { element: HTMLElement; triggerUpdate: () => void }
+  attributeBufferBindings: AttributeBufferBinding[]
 ) => {
   const options = attributeBufferBindings.map(binding => {
-    const element = createAttributeBufferComponent(attributeBufferInfo, false)
-      .element;
+    const element = createAttributeBufferComponent(
+      attributeBufferInfo.getAttributeBufferType(),
+      false,
+      value => attributeBufferInfo.setValue(value)
+    );
 
     return {
       id: uuidv4(),
@@ -164,27 +157,35 @@ export const createDropdownWithBindings = (
     };
   });
 
+  let lastCustomValue: any = null;
+  let customElement = createAttributeBufferComponent(
+    attributeBufferInfo.getAttributeBufferType(),
+    false,
+    value => {
+      lastCustomValue = value;
+      attributeBufferInfo.setValue(value);
+    }
+  );
+
   let detach: () => void = undefined;
   const element = createDiv("column-with-gap", [
     createElementsDropdown(
-      [createCustomElementOption(customElement.element), ...options],
+      [createCustomElementOption(customElement), ...options],
       id => {
         detach?.();
 
         const option = options.find(o => o.id === id);
         if (option) {
-          //todo from custom
-          //attributeBufferInfo.
           const callback = (value: any) => attributeBufferInfo.setValue(value);
           option.value.attach(callback);
           callback(option.value.getValue());
           detach = () => option.value.detach(callback);
         } else {
-          customElement.triggerUpdate?.();
+          attributeBufferInfo.setValue(lastCustomValue);
         }
       }
     ),
-    customElement.element,
+    customElement,
     ...options.map(o => o.element),
   ]);
 
@@ -194,7 +195,7 @@ export const createDropdownWithBindings = (
 const createAttributeBufferInputVec3 = (
   update: (value: Vector3[]) => void,
   editable: boolean
-): { element: HTMLElement; triggerUpdate: () => void } => {
+) => {
   const input = document.createElement("input");
   input.className = "edit-input";
   input.disabled = !editable;
@@ -219,31 +220,15 @@ const createAttributeBufferInputVec3 = (
     }
   };
 
-  // if (attributeBufferBindings.length) {
-  //   //attributeBufferBindings.map(b => b.)
-  //   //preview element
-  //   const unsub = attributeBufferBindings[9].subscribeToChange(update);
-  //   const bind = {
-  //     display: "Bind - ",
-  //   };
-  //   //const { bindingOptions, unsubscribe } =
-  //   const optionsElement = createElementsDropdown({
-  //     custom: {
-  //       display: "Custom",
-  //       element: input,
-  //     },
-  //   });
-  // }
-
   //Wrong format! Should be [[x1,y1], [x2,y2], ...]
-  return { element: input, triggerUpdate: () => {} };
+  return input;
 };
 
 const createAttributeBufferInputVec4 = (
   initialValue: Vector4[],
   update: (value: Vector4[]) => void,
   editable: boolean
-): { element: HTMLElement; triggerUpdate: () => void } => {
+) => {
   const input = document.createElement("input");
   //const itemElement = { element: input, value };
   //Object.assign(input, inputOptions);
@@ -273,5 +258,5 @@ const createAttributeBufferInputVec4 = (
     }
   };
   //Wrong format! Should be [[x1,y1], [x2,y2], ...]
-  return { element: input, triggerUpdate: () => update(currentValue) };
+  return input;
 };
