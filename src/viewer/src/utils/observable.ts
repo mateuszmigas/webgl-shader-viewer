@@ -14,6 +14,10 @@ export class Observable<T> {
     ArrayUtils.remove(this.observers, observer);
   }
 
+  detachAll() {
+    this.observers.length = 0;
+  }
+
   setValue(newValue: T) {
     this.value = newValue;
     this.notify();
@@ -21,6 +25,10 @@ export class Observable<T> {
 
   getValue() {
     return this.value;
+  }
+
+  forceNotify() {
+    this.notify();
   }
 
   private notify() {

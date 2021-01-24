@@ -27,12 +27,26 @@ const createViewer = async () => {
     {
       name: "Binding - Cube normals",
       type: AttributeBufferType.FLOAT_VEC4,
-      value: new Observable([1, 2, 3, 4]),
+      value: new Observable([
+        [0, 0, 0, 1],
+        [0, 0.5, 0, 1],
+        [0.4, 0, 0, 1],
+        [0, 0.5, 0, 1],
+        [0.7, 0, 0, 1],
+        [0.7, 0.5, 0, 1],
+      ]),
     },
     {
       name: "Binding - Cube tangents",
       type: AttributeBufferType.FLOAT_VEC4,
-      value: new Observable([1, 2, 3, 4]),
+      value: new Observable([
+        [0, 0, 0, 1],
+        [0, 0.5, 0, 1],
+        [0.5, 0, 0, 1],
+        [0, 0.5, 0, 1],
+        [0.7, 0, 0, 1],
+        [0.7, 0.5, 0, 1],
+      ]),
     },
   ];
 
