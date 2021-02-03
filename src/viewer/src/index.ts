@@ -7,16 +7,14 @@ import { createDiv, withLabel } from "./components/wrappers";
 import { createUniformComponents } from "./utils/webgl/uniformComponent";
 import {
   compileShadersFromSource,
+  DrawOptions,
   formatShaderCompileErrors,
   getProgramAttributeBuffers,
   getProgramUniforms,
   renderProgram,
   ShaderCompileErrors,
 } from "./utils/webgl/index";
-import {
-  AttributeBufferBinding,
-  createAttributeBufferComponents,
-} from "./utils/webgl/attributeBufferComponent";
+import { createAttributeBufferComponents } from "./utils/webgl/attributeBufferComponent";
 import { createWebGLCanvas } from "./components/webglCanvas";
 import { ViewerEndpoint } from "../../common/communication/viewerEndpoint";
 import { createMeshBindings, meshes } from "./meshes";
@@ -29,6 +27,7 @@ const createViewer = async () => {
   const shaderCompilationErrors = createDiv("viewer-content shader-errors");
   const [webGLCanvas, webGLController] = createWebGLCanvas("viewer-content");
   const meshAttributeBindings = createMeshBindings();
+  const drawOptions: DrawOptions = { drawMode: "arrays" };
 
   viewer.appendChild(webGLCanvas);
   viewer.appendChild(shaderCompilationErrors);
@@ -60,9 +59,9 @@ const createViewer = async () => {
   let animationFrameHandle: number = null;
 
   const onMeshChanged = (id: string) => {
-    const { positions, normals } = meshes.get(id);
+    const { positions } = meshes.get(id);
     meshAttributeBindings.get("positions").value.setValue(positions);
-    meshAttributeBindings.get("normals").value.setValue(normals);
+    //meshAttributeBindings.get("normals").value.setValue(normals);
   };
 
   const onShaderContentChanged = () => {
@@ -118,10 +117,15 @@ const createViewer = async () => {
           cancelAnimationFrame(animationFrameHandle);
 
         const render = () => {
-          renderProgram(context, program, {
-            uniformInfos,
-            attributeBufferInfos,
-          });
+          renderProgram(
+            context,
+            program,
+            {
+              uniformInfos,
+              attributeBufferInfos,
+            },
+            drawOptions
+          );
           animationFrameHandle = requestAnimationFrame(render);
         };
 
@@ -200,6 +204,18 @@ const createViewer = async () => {
   meshDropdownController.setSelectedItemByIndex(0);
 
   viewerOptions.appendChild(withLabel(meshDropdownElement, "Mesh"));
+
+  const [drawModeElement, drawModeController] = createDropdown(
+    item => item && (drawOptions.drawMode = item.id as "arrays" | "elements"),
+    undefined,
+    { emptyItem: false }
+  );
+  drawModeController.setItems([
+    { id: "arrays", display: "Arrays" },
+    { id: "elements", display: "Elements" },
+  ]);
+  viewerOptions.appendChild(withLabel(drawModeElement, "Draw mode"));
+
   viewerOptions.appendChild(shaderOptions);
 
   syncShaderDocuments();

@@ -3,6 +3,10 @@ import { hasProperty } from "../typeGuards";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
 import { UniformInfo, UniformType } from "./uniform";
 
+export type DrawOptions = {
+  drawMode: "elements" | "arrays";
+};
+
 export const compileShader = (
   renderingContext: WebGLRenderingContext,
   type: GLenum,
@@ -133,7 +137,8 @@ export const renderProgram = (
     uniformInfos: UniformInfo[];
     attributeBufferInfos: AttributeBufferInfo[];
     //textures
-  }
+  },
+  drawOptions: DrawOptions
 ) => {
   context.useProgram(program);
   context.viewport(0, 0, context.canvas.width, context.canvas.height);
@@ -150,7 +155,16 @@ export const renderProgram = (
   const offset = 0;
   console.log("drawing", numElements);
 
-  context.drawArrays(primitiveType, offset, numElements);
+  if (drawOptions.drawMode === "arrays")
+    context.drawArrays(primitiveType, offset, numElements);
+  else {
+    context.drawElements(
+      primitiveType,
+      numElements,
+      context.UNSIGNED_SHORT,
+      offset
+    );
+  }
 };
 
 export type ShaderCompileErrors = [
