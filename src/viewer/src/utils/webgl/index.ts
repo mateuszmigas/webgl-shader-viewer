@@ -1,3 +1,4 @@
+import { IndexBufferInfo } from "./indexBuffer";
 import { removeLast } from "../../../../common/array";
 import { hasProperty } from "../typeGuards";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
@@ -136,6 +137,7 @@ export const renderProgram = (
   renderInfo: {
     uniformInfos: UniformInfo[];
     attributeBufferInfos: AttributeBufferInfo[];
+    indexBufferInfo: IndexBufferInfo;
     //textures
   },
   drawOptions: DrawOptions
@@ -158,6 +160,7 @@ export const renderProgram = (
   if (drawOptions.drawMode === "arrays")
     context.drawArrays(primitiveType, offset, numElements);
   else {
+    renderInfo.indexBufferInfo.setIndexBuffer();
     context.drawElements(
       primitiveType,
       numElements,

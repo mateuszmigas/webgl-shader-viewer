@@ -1,3 +1,4 @@
+import { IndexBufferInfo } from "./utils/webgl/indexBuffer";
 import { Observable } from "./utils/observable";
 import { translations } from "../../common/translations";
 import { createDropdown } from "./components/dropdown";
@@ -64,6 +65,10 @@ const createViewer = async () => {
     //meshAttributeBindings.get("normals").value.setValue(normals);
   };
 
+  //
+
+  //
+
   const onShaderContentChanged = () => {
     shaderOptions.innerHTML = "";
     const context = webGLController.context;
@@ -113,6 +118,46 @@ const createViewer = async () => {
           abc => abc.attributeBufferInfo
         );
 
+        const indexBufferInfo = new IndexBufferInfo(context);
+        indexBufferInfo.setValue([
+          0,
+          1,
+          2,
+          0,
+          2,
+          3, // front
+          4,
+          5,
+          6,
+          4,
+          6,
+          7, // back
+          8,
+          9,
+          10,
+          8,
+          10,
+          11, // top
+          12,
+          13,
+          14,
+          12,
+          14,
+          15, // bottom
+          16,
+          17,
+          18,
+          16,
+          18,
+          19, // right
+          20,
+          21,
+          22,
+          20,
+          22,
+          23, // left
+        ]);
+
         if (animationFrameHandle !== null)
           cancelAnimationFrame(animationFrameHandle);
 
@@ -123,6 +168,7 @@ const createViewer = async () => {
             {
               uniformInfos,
               attributeBufferInfos,
+              indexBufferInfo,
             },
             drawOptions
           );
