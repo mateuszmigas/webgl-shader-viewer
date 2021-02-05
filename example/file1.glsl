@@ -1,10 +1,10 @@
-// an attribute will receive data from a buffer
-attribute vec4 a_position2;
+attribute vec4 aVertexPosition;
+attribute vec4 aVertexColor;
+uniform mat4 uModelViewMatrix;
+uniform mat4 uProjectionMatrix;
+varying lowp vec4 vColor;
 
-// all shaders have a main function
-void main(){
-    
-    // gl_Position is a special variable a vertex shader
-    // is responsible for setting
-    gl_Position=a_position2;
+void main(void){
+    gl_Position=uProjectionMatrix*uModelViewMatrix*aVertexPosition;
+    vColor=aVertexColor;
 }

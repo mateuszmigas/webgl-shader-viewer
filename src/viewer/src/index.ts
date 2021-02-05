@@ -19,6 +19,7 @@ import { createAttributeBufferComponents } from "./utils/webgl/attributeBufferCo
 import { createWebGLCanvas } from "./components/webglCanvas";
 import { ViewerEndpoint } from "../../common/communication/viewerEndpoint";
 import { createMeshBindings, meshes } from "./meshes";
+import { mat4 } from "./utils/math";
 
 const createViewer = async () => {
   const viewerEndpoint = new ViewerEndpoint();
@@ -60,8 +61,9 @@ const createViewer = async () => {
   let animationFrameHandle: number = null;
 
   const onMeshChanged = (id: string) => {
-    const { positions } = meshes.get(id);
+    const { positions, colors } = meshes.get(id);
     meshAttributeBindings.get("positions").value.setValue(positions);
+    meshAttributeBindings.get("colors").value.setValue(colors);
     //meshAttributeBindings.get("normals").value.setValue(normals);
   };
 
@@ -161,7 +163,67 @@ const createViewer = async () => {
         if (animationFrameHandle !== null)
           cancelAnimationFrame(animationFrameHandle);
 
-        const render = () => {
+        let cubeRotation = 0;
+        const view = uniformInfos.find(
+          u => u.getUniformName() === "uModelViewMatrix"
+        );
+        const projection = uniformInfos.find(
+          u => u.getUniformName() === "uProjectionMatrix"
+        );
+
+        let then = 0;
+
+        // Draw the scene repeatedly
+        // function render(now) {
+        //   now *= 0.001;  // convert to seconds
+        //   const deltaTime = now - then;
+        //   then = now;
+
+        //   drawScene(gl, programInfo, buffers, deltaTime);
+
+        //   requestAnimationFrame(render);
+        // }
+
+        const render = (now: number) => {
+          now *= 0.001;
+          const deltaTime = now - then;
+          then = now;
+          const fieldOfView = (45 * Math.PI) / 180; // in radians
+          const canvas = context.canvas as HTMLCanvasElement;
+          const aspect = canvas.clientWidth / canvas.clientHeight;
+          const zNear = 0.1;
+          const zFar = 100.0;
+          const projectionMatrix = mat4.create();
+
+          // note: glmatrix.js always has the first argument
+          // as the destination to receive the result.
+          mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
+
+          // Set the drawing position to the "identity" point, which is
+          // the center of the scene.
+          const modelViewMatrix = mat4.create();
+
+          mat4.translate(
+            modelViewMatrix, // destination matrix
+            modelViewMatrix, // matrix to translate
+            [-0.0, 0.0, -6.0]
+          ); // amount to translate
+          mat4.rotate(
+            modelViewMatrix, // destination matrix
+            modelViewMatrix, // matrix to rotate
+            cubeRotation, // amount to rotate in radians
+            [0, 0, 1]
+          ); // axis to rotate around (Z)
+          mat4.rotate(
+            modelViewMatrix, // destination matrix
+            modelViewMatrix, // matrix to rotate
+            cubeRotation * 0.7, // amount to rotate in radians
+            [0, 1, 0]
+          ); // axis to rotate around (X)
+
+          projection.setValue(projectionMatrix);
+          view.setValue(modelViewMatrix);
+
           renderProgram(
             context,
             program,
@@ -172,10 +234,12 @@ const createViewer = async () => {
             },
             drawOptions
           );
+
+          cubeRotation += deltaTime;
           animationFrameHandle = requestAnimationFrame(render);
         };
 
-        render();
+        render(0);
       }
     } else {
       showContent("none");

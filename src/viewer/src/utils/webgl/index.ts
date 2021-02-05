@@ -144,8 +144,15 @@ export const renderProgram = (
 ) => {
   context.useProgram(program);
   context.viewport(0, 0, context.canvas.width, context.canvas.height);
-  context.clearColor(0, 0, 0, 0);
-  context.clear(context.COLOR_BUFFER_BIT);
+  //context.clearColor(0, 0, 0, 0);
+  context.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
+  context.clearDepth(1.0); // Clear everything
+  // gl.enable(gl.DEPTH_TEST);           // Enable depth testing
+  context.enable(context.DEPTH_TEST);
+
+  context.depthFunc(context.LEQUAL); // Near things obscure far things
+  context.clear(context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
+  //context.enable(context.CULL_FACE);
 
   renderInfo.uniformInfos.forEach(u => u.setUniform());
   renderInfo.attributeBufferInfos.forEach(ab => ab.setAttributeBuffer());
@@ -155,7 +162,6 @@ export const renderProgram = (
 
   const primitiveType = context.TRIANGLES;
   const offset = 0;
-  console.log("drawing", numElements);
 
   if (drawOptions.drawMode === "arrays")
     context.drawArrays(primitiveType, offset, numElements);
@@ -163,7 +169,7 @@ export const renderProgram = (
     renderInfo.indexBufferInfo.setIndexBuffer();
     context.drawElements(
       primitiveType,
-      numElements,
+      36, //numElements,
       context.UNSIGNED_SHORT,
       offset
     );

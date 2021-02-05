@@ -118,9 +118,9 @@ export const createMeshBindings = () =>
       },
     ],
     [
-      "normals",
+      "colors",
       {
-        name: "Binding - Mesh normals",
+        name: "Binding - Mesh colors",
         type: AttributeBufferType.FLOAT_VEC4,
         value: new Observable([]),
       },
