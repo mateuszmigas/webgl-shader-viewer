@@ -118,9 +118,3 @@ export const createElementsDropdown = (
   optionsController.setSelectedItemByIndex(0);
   return optionsElement;
 };
-
-export const createCustomElementOption = (element: HTMLElement) => ({
-  id: "custom",
-  display: "Custom",
-  element,
-});

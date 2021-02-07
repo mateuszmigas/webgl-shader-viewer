@@ -1,12 +1,9 @@
+import { Observable } from "./../observable";
 import { uuidv4 } from "../../../../common/uuid";
-import {
-  createCustomElementOption,
-  createElementsDropdown,
-} from "./../../components/dropdown";
+import { createElementsDropdown } from "./../../components/dropdown";
 import { CompositeKeyMap } from "../../utils/compositeKeyMap";
 import { createDiv, withLabel } from "../../components/wrappers";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
-import { Observable } from "../observable";
 import { Vector4 } from "../../types";
 
 type CacheKey = {
@@ -84,12 +81,18 @@ export const createAttributeBufferComponents = (
         b => b.type === attributeBufferInfo.getAttributeBufferType()
       );
 
+      const updateBuffer = (value: number[][]) =>
+        attributeBufferInfo.setValue(value);
+
       const { element, dispose } = applicableBindings.length
-        ? createDropdownWithEditableAndBindingsViews(
-            attributeBufferInfo,
-            applicableBindings
+        ? createSelectionComponent(
+            [
+              createCustomOption(attributeBufferInfo),
+              ...createBindingOptions(applicableBindings, attributeBufferInfo),
+            ],
+            updateBuffer
           )
-        : createEditableComponent(attributeBufferInfo);
+        : createEditableComponent(attributeBufferInfo, updateBuffer);
 
       return {
         key,
@@ -122,6 +125,26 @@ const createAttributeBufferComponent = (
   }
 };
 
+const createBindingOptions = (
+  attributeBufferBindings: AttributeBufferBinding[],
+  attributeBufferInfo: AttributeBufferInfo
+) => {
+  return attributeBufferBindings.map(binding => {
+    const element = createAttributeBufferComponent(
+      attributeBufferInfo.getAttributeBufferType(),
+      false,
+      binding.value
+    );
+
+    return {
+      id: uuidv4(),
+      element,
+      display: binding.name,
+      value: binding.value,
+    };
+  });
+};
+
 const createAttributeBufferNotSupported = () => {
   const div = document.createElement("div");
   div.className = "unsupported-error";
@@ -129,13 +152,26 @@ const createAttributeBufferNotSupported = () => {
   return div;
 };
 
-const createEditableComponent = (attributeBufferInfo: AttributeBufferInfo) => {
+const createCustomOption = (attributeBufferInfo: AttributeBufferInfo) => {
+  return {
+    id: "custom",
+    display: "Custom",
+    ...createEditableComponent(attributeBufferInfo),
+  };
+};
+
+const createEditableComponent = (
+  attributeBufferInfo: AttributeBufferInfo,
+  onChange?: (value: any) => void
+) => {
   const customValue = new Observable<any>(
     getDefaultValue(attributeBufferInfo.getAttributeBufferType())
   );
-  customValue.attach((value: any) => {
-    attributeBufferInfo.setValue(value);
-  });
+
+  if (onChange)
+    customValue.attach((value: any) => {
+      attributeBufferInfo.setValue(value);
+    });
 
   const element = createAttributeBufferComponent(
     attributeBufferInfo.getAttributeBufferType(),
@@ -150,59 +186,32 @@ const createEditableComponent = (attributeBufferInfo: AttributeBufferInfo) => {
   };
 };
 
-const createDropdownWithEditableAndBindingsViews = (
-  attributeBufferInfo: AttributeBufferInfo,
-  attributeBufferBindings: AttributeBufferBinding[]
+type DupeczkaOPt = {
+  id: string;
+  display: string;
+  value: Observable<any>;
+  element: HTMLElement;
+};
+const createSelectionComponent = (
+  options: DupeczkaOPt[],
+  onChange: (value: any) => void
 ) => {
-  const options = attributeBufferBindings.map(binding => {
-    const element = createAttributeBufferComponent(
-      attributeBufferInfo.getAttributeBufferType(),
-      false,
-      binding.value
-    );
-
-    return {
-      id: uuidv4(),
-      element,
-      display: binding.name,
-      value: binding.value,
-    };
-  });
-
-  const {
-    element: customElement,
-    value: customValue,
-    dispose: customDispose,
-  } = createEditableComponent(attributeBufferInfo);
-
   let detach: () => void = undefined;
   const element = createDiv("column-with-gap", [
-    createElementsDropdown(
-      [createCustomElementOption(customElement), ...options],
-      id => {
-        detach?.();
-
-        const option = options.find(o => o.id === id);
-        if (option) {
-          const callback = (value: any) => attributeBufferInfo.setValue(value);
-          option.value.attach(callback);
-          callback(option.value.getValue());
-          detach = () => option.value.detach(callback);
-        } else {
-          customValue.forceNotify();
-        }
-      }
-    ),
-    customElement,
+    createElementsDropdown(options, id => {
+      detach?.();
+      const option = options.find(o => o.id === id);
+      const callback = (value: any) => onChange(value);
+      option.value.attach(callback);
+      callback(option.value.getValue());
+      detach = () => option.value.detach(callback);
+    }),
     ...options.map(o => o.element),
   ]);
 
   return {
     element,
-    dispose: () => {
-      detach?.();
-      customDispose();
-    },
+    dispose: () => detach?.(),
   };
 };
 

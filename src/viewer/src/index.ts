@@ -25,7 +25,6 @@ import { mat4 } from "./utils/math";
 const createViewer = async () => {
   const viewerEndpoint = new ViewerEndpoint();
   const viewerState = getState();
-  //console.log("state2", getState());
   const viewer = document.getElementById("viewer");
   const viewerOptions = createDiv("viewer-options");
   const shaderOptions = createDiv("viewer-shader-options");
@@ -356,6 +355,8 @@ const createViewer = async () => {
   ]);
   drawModeController.setSelectedItemById(viewerState.drawMode);
   viewerOptions.appendChild(withLabel(drawModeElement, "Draw mode"));
+
+  //indexes
 
   viewerOptions.appendChild(shaderOptions);
 
