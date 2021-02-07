@@ -1,4 +1,4 @@
-import { Vector4 } from "./components/inputNumber";
+import { Vector4 } from "./types";
 import { Observable } from "./utils/observable";
 import { AttributeBufferType } from "./utils/webgl/attributeBuffer";
 

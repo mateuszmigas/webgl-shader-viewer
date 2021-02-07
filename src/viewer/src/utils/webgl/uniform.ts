@@ -1,7 +1,5 @@
-import { Matrix4 } from "./../../components/inputMatrix";
-import { Vector2, Vector3, Vector4 } from "../../components/inputNumber";
+import { Matrix4, Vector2, Vector3, Vector4 } from "../../types";
 import { assertNever } from "../typeGuards";
-import { loadavg } from "os";
 
 export enum UniformType {
   FLOAT_VEC2 = 35664,

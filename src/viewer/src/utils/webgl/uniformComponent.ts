@@ -2,19 +2,14 @@ import {
   createVector2,
   createVector3,
   createVector4,
-  Vector2,
-  Vector3,
-  Vector4,
-} from "../../components/inputNumber";
-import {
-  createDropdown,
-  createElementsDropdown,
-} from "../../components/dropdown";
+} from "../../components/inputVector";
+import { createElementsDropdown } from "../../components/dropdown";
 import { createColor3, createColor4 } from "../../components/inputColor";
 import { UniformInfo, UniformType } from "./uniform";
 import { CompositeKeyMap } from "../compositeKeyMap";
 import { createDiv, withLabel } from "../../components/wrappers";
 import { uuidv4 } from "../../../../common/uuid";
+import { Vector4, Vector2, Vector3 } from "../../types";
 
 const uniformComponentCache = new CompositeKeyMap<
   { name: string; type: UniformType },
@@ -75,16 +70,10 @@ const createUniformComponent = (uniformInfo: UniformInfo) => {
         //load with debounce => then
         uniformInfo.setValue({ slot: value.slot, textureData: true });
       });
+    case UniformType.FLOAT_MAT4:
     default:
       return createUniformNotSupported();
   }
-};
-
-export const createUniformNotSupported = () => {
-  const div = document.createElement("div");
-  div.className = "unsupported-error";
-  div.innerText = "Not supported uniform";
-  return div;
 };
 
 const createUniformForVec2 = (update: (value: Vector2) => void) => {
@@ -93,12 +82,11 @@ const createUniformForVec2 = (update: (value: Vector2) => void) => {
   return customElement;
 };
 
-const createUniformForTexture = (
-  update: (value: { slot: number; textureSrc: string }) => void
-) => {
-  const [customElement, customController] = createVector3();
-  customController.setValues([0, 0, 0]);
-  return customElement;
+const createUniformNotSupported = () => {
+  const div = document.createElement("div");
+  div.className = "unsupported-error";
+  div.innerText = "Not supported uniform";
+  return div;
 };
 
 const createUniformForVec3 = (update: (value: Vector3) => void) => {
@@ -109,16 +97,8 @@ const createUniformForVec3 = (update: (value: Vector3) => void) => {
   colorController.setValues([1, 0, 0]);
 
   const optionsElement = createElementsDropdown([
-    {
-      id: "custom",
-      display: "Custom",
-      element: customElement,
-    },
-    {
-      id: "color",
-      display: "Color",
-      element: colorElement,
-    },
+    { id: "custom", display: "Custom", element: customElement },
+    { id: "color", display: "Color", element: colorElement },
   ]);
 
   return createDiv("column-with-gap", [
@@ -148,4 +128,13 @@ const createUniformForVec4 = (
     customElement,
     colorElement,
   ]);
+};
+
+//todo
+const createUniformForTexture = (
+  update: (value: { slot: number; textureSrc: string }) => void
+) => {
+  const [customElement, customController] = createVector3();
+  customController.setValues([0, 0, 0]);
+  return customElement;
 };

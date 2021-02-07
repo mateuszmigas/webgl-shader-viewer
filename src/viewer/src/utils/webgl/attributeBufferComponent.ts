@@ -4,10 +4,10 @@ import {
   createElementsDropdown,
 } from "./../../components/dropdown";
 import { CompositeKeyMap } from "../../utils/compositeKeyMap";
-import { Vector3, Vector4 } from "../../components/inputNumber";
 import { createDiv, withLabel } from "../../components/wrappers";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
 import { Observable } from "../observable";
+import { Vector4 } from "../../types";
 
 type CacheKey = {
   name: string;
@@ -85,8 +85,11 @@ export const createAttributeBufferComponents = (
       );
 
       const { element, dispose } = applicableBindings.length
-        ? createDropdownWithBindings(attributeBufferInfo, applicableBindings)
-        : createSingle(attributeBufferInfo);
+        ? createDropdownWithEditableAndBindingsViews(
+            attributeBufferInfo,
+            applicableBindings
+          )
+        : createEditableComponent(attributeBufferInfo);
 
       return {
         key,
@@ -126,7 +129,7 @@ const createAttributeBufferNotSupported = () => {
   return div;
 };
 
-export const createSingle = (attributeBufferInfo: AttributeBufferInfo) => {
+const createEditableComponent = (attributeBufferInfo: AttributeBufferInfo) => {
   const customValue = new Observable<any>(
     getDefaultValue(attributeBufferInfo.getAttributeBufferType())
   );
@@ -140,10 +143,14 @@ export const createSingle = (attributeBufferInfo: AttributeBufferInfo) => {
     customValue
   );
 
-  return { element, dispose: () => customValue.detachAll() };
+  return {
+    element,
+    value: customValue,
+    dispose: () => customValue.detachAll(),
+  };
 };
 
-export const createDropdownWithBindings = (
+const createDropdownWithEditableAndBindingsViews = (
   attributeBufferInfo: AttributeBufferInfo,
   attributeBufferBindings: AttributeBufferBinding[]
 ) => {
@@ -162,16 +169,11 @@ export const createDropdownWithBindings = (
     };
   });
 
-  const customValue = new Observable<any>(
-    getDefaultValue(attributeBufferInfo.getAttributeBufferType())
-  );
-  customValue.attach((value: any) => attributeBufferInfo.setValue(value));
-
-  let customElement = createAttributeBufferComponent(
-    attributeBufferInfo.getAttributeBufferType(),
-    true,
-    customValue
-  );
+  const {
+    element: customElement,
+    value: customValue,
+    dispose: customDispose,
+  } = createEditableComponent(attributeBufferInfo);
 
   let detach: () => void = undefined;
   const element = createDiv("column-with-gap", [
@@ -199,7 +201,7 @@ export const createDropdownWithBindings = (
     element,
     dispose: () => {
       detach?.();
-      customValue.detachAll();
+      customDispose();
     },
   };
 };
