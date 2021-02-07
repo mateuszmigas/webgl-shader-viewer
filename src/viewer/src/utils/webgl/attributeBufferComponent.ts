@@ -112,17 +112,12 @@ export const createAttributeBufferComponents = (
   return components.map(c => c.value);
 };
 
-const createAttributeBufferComponent = (
-  attributeBufferType: AttributeBufferType,
-  editable: boolean,
-  currentValue: Observable<any>
-) => {
-  switch (attributeBufferType) {
-    case AttributeBufferType.FLOAT_VEC4:
-      return createAttributeBufferInputVec4(currentValue, editable);
-    default:
-      return createAttributeBufferNotSupported();
-  }
+const createCustomOption = (attributeBufferInfo: AttributeBufferInfo) => {
+  return {
+    id: "custom",
+    display: "Custom",
+    ...createEditableComponent(attributeBufferInfo),
+  };
 };
 
 const createBindingOptions = (
@@ -130,7 +125,7 @@ const createBindingOptions = (
   attributeBufferInfo: AttributeBufferInfo
 ) => {
   return attributeBufferBindings.map(binding => {
-    const element = createAttributeBufferComponent(
+    const element = createElementForType(
       attributeBufferInfo.getAttributeBufferType(),
       false,
       binding.value
@@ -145,55 +140,13 @@ const createBindingOptions = (
   });
 };
 
-const createAttributeBufferNotSupported = () => {
-  const div = document.createElement("div");
-  div.className = "unsupported-error";
-  div.innerText = "Not supported attribute buffer";
-  return div;
-};
-
-const createCustomOption = (attributeBufferInfo: AttributeBufferInfo) => {
-  return {
-    id: "custom",
-    display: "Custom",
-    ...createEditableComponent(attributeBufferInfo),
-  };
-};
-
-const createEditableComponent = (
-  attributeBufferInfo: AttributeBufferInfo,
-  onChange?: (value: any) => void
-) => {
-  const customValue = new Observable<any>(
-    getDefaultValue(attributeBufferInfo.getAttributeBufferType())
-  );
-
-  if (onChange)
-    customValue.attach((value: any) => {
-      attributeBufferInfo.setValue(value);
-    });
-
-  const element = createAttributeBufferComponent(
-    attributeBufferInfo.getAttributeBufferType(),
-    true,
-    customValue
-  );
-
-  return {
-    element,
-    value: customValue,
-    dispose: () => customValue.detachAll(),
-  };
-};
-
-type DupeczkaOPt = {
-  id: string;
-  display: string;
-  value: Observable<any>;
-  element: HTMLElement;
-};
 const createSelectionComponent = (
-  options: DupeczkaOPt[],
+  options: {
+    id: string;
+    display: string;
+    value: Observable<any>;
+    element: HTMLElement;
+  }[],
   onChange: (value: any) => void
 ) => {
   let detach: () => void = undefined;
@@ -215,10 +168,53 @@ const createSelectionComponent = (
   };
 };
 
-const createAttributeBufferInputVec4 = (
-  value: Observable<Vector4>,
-  editable: boolean
+const createEditableComponent = (
+  attributeBufferInfo: AttributeBufferInfo,
+  onChange?: (value: any) => void
 ) => {
+  const customValue = new Observable<any>(
+    getDefaultValue(attributeBufferInfo.getAttributeBufferType())
+  );
+
+  if (onChange)
+    customValue.attach((value: any) => {
+      attributeBufferInfo.setValue(value);
+    });
+
+  const element = createElementForType(
+    attributeBufferInfo.getAttributeBufferType(),
+    true,
+    customValue
+  );
+
+  return {
+    element,
+    value: customValue,
+    dispose: () => customValue.detachAll(),
+  };
+};
+
+const createElementForType = (
+  attributeBufferType: AttributeBufferType,
+  editable: boolean,
+  currentValue: Observable<any>
+) => {
+  switch (attributeBufferType) {
+    case AttributeBufferType.FLOAT_VEC4:
+      return createElementVec4(currentValue, editable);
+    default:
+      return createElementNotSupported();
+  }
+};
+
+const createElementNotSupported = () => {
+  const div = document.createElement("div");
+  div.className = "unsupported-error";
+  div.innerText = "Not supported attribute buffer";
+  return div;
+};
+
+const createElementVec4 = (value: Observable<Vector4>, editable: boolean) => {
   const input = document.createElement("input");
   input.className = "edit-input";
   input.disabled = !editable;
