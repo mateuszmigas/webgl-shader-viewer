@@ -1,3 +1,4 @@
+import { getState, setState } from "./../../common/state";
 import { IndexBufferInfo } from "./utils/webgl/indexBuffer";
 import { Observable } from "./utils/observable";
 import { translations } from "../../common/translations";
@@ -23,6 +24,8 @@ import { mat4 } from "./utils/math";
 
 const createViewer = async () => {
   const viewerEndpoint = new ViewerEndpoint();
+  const viewerState = getState();
+  //console.log("state2", getState());
   const viewer = document.getElementById("viewer");
   const viewerOptions = createDiv("viewer-options");
   const shaderOptions = createDiv("viewer-shader-options");
@@ -50,7 +53,24 @@ const createViewer = async () => {
       }));
 
       vertexDropdownController.setItems(files);
+
+      if (
+        viewerState.vertexFilePath &&
+        files.some(f => f.id === viewerState.vertexFilePath)
+      )
+        vertexDropdownController.setSelectedItemById(
+          viewerState.vertexFilePath
+        );
+
       fragmentDropdownController.setItems(files);
+
+      if (
+        viewerState.fragmentFilePath &&
+        files.some(f => f.id === viewerState.fragmentFilePath)
+      )
+        fragmentDropdownController.setSelectedItemById(
+          viewerState.fragmentFilePath
+        );
     });
   };
 
@@ -271,9 +291,12 @@ const createViewer = async () => {
       selectedVertexContent = newVertex
         ? await viewerEndpoint.getDocumentText(newVertex.id)
         : "";
+
+      setState({ vertexFilePath: newVertex ? newVertex.id : null });
       onShaderContentChanged();
     }
   );
+  vertexDropdownController.setSelectedItemById(viewerState.vertexFilePath);
   viewerOptions.appendChild(withLabel(vertexDropdownElement, "Vertex Shader"));
 
   const [fragmentDropdownElement, fragmentDropdownController] = createDropdown(
@@ -293,9 +316,12 @@ const createViewer = async () => {
       selectedFragmentContent = newFragment
         ? await viewerEndpoint.getDocumentText(newFragment.id)
         : "";
+
+      setState({ fragmentFilePath: newFragment ? newFragment.id : null });
       onShaderContentChanged();
     }
   );
+  fragmentDropdownController.setSelectedItemById(viewerState.fragmentFilePath);
   viewerOptions.appendChild(
     withLabel(fragmentDropdownElement, "Fragment Shader")
   );
@@ -316,7 +342,11 @@ const createViewer = async () => {
   viewerOptions.appendChild(withLabel(meshDropdownElement, "Mesh"));
 
   const [drawModeElement, drawModeController] = createDropdown(
-    item => item && (drawOptions.drawMode = item.id as "arrays" | "elements"),
+    item => {
+      if (!item) return;
+      drawOptions.drawMode = item.id as "arrays" | "elements";
+      setState({ drawMode: item.id });
+    },
     undefined,
     { emptyItem: false }
   );
@@ -324,6 +354,7 @@ const createViewer = async () => {
     { id: "arrays", display: "Arrays" },
     { id: "elements", display: "Elements" },
   ]);
+  drawModeController.setSelectedItemById(viewerState.drawMode);
   viewerOptions.appendChild(withLabel(drawModeElement, "Draw mode"));
 
   viewerOptions.appendChild(shaderOptions);

@@ -44,10 +44,6 @@ export const createDropdown = (
     element.innerHTML = "";
     itemElements.length = 0;
 
-    if (!items.find(i => i.id === selectedItem?.id)) {
-      setSelectedItem(null);
-    }
-
     const newItems = combinedOptions.emptyItem
       ? [{ id: "", display: "" }, ...items]
       : [...items];
@@ -63,7 +59,6 @@ export const createDropdown = (
 
   const getItems = () => itemElements.map(ie => ie.item);
   const setSelectedItemById = (id: string) => {
-    setSelectedItem(null);
     itemElements.forEach(ie => {
       if (ie.item.id === id) {
         ie.element.selected = true;

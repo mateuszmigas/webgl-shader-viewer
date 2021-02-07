@@ -1,14 +1,7 @@
 import { remove } from "../array";
 import { uuidv4 } from "../uuid";
-import { MessageRequest, MessageResponse } from "./messages";
-
-declare const acquireVsCodeApi: () => {
-  //getState: () => any;
-  //setState: (state: any) => void;
-  postMessage: (message: MessageRequest) => void;
-};
-
-export const vscodeApi = acquireVsCodeApi();
+import { MessageResponse } from "./messages";
+import { vscodeApi } from "./vscodeApi";
 
 type ResponseListener = (message: MessageResponse) => void;
 
