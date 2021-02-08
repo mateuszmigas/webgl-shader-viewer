@@ -142,6 +142,7 @@ export const renderProgram = (
   },
   drawOptions: DrawOptions
 ) => {
+  //todo
   context.useProgram(program);
   context.viewport(0, 0, context.canvas.width, context.canvas.height);
   //context.clearColor(0, 0, 0, 0);
@@ -156,20 +157,20 @@ export const renderProgram = (
 
   renderInfo.uniformInfos.forEach(u => u.setUniform());
   renderInfo.attributeBufferInfos.forEach(ab => ab.setAttributeBuffer());
-  const numElements = Math.min(
-    ...renderInfo.attributeBufferInfos.map(ab => ab.getNumElements())
-  );
 
   const primitiveType = context.TRIANGLES;
   const offset = 0;
 
-  if (drawOptions.drawMode === "arrays")
+  if (drawOptions.drawMode === "arrays") {
+    const numElements = Math.min(
+      ...renderInfo.attributeBufferInfos.map(ab => ab.getCount())
+    );
     context.drawArrays(primitiveType, offset, numElements);
-  else {
+  } else {
     renderInfo.indexBufferInfo.setIndexBuffer();
     context.drawElements(
       primitiveType,
-      36, //numElements,
+      renderInfo.indexBufferInfo.getCount(), //numElements,
       context.UNSIGNED_SHORT,
       offset
     );

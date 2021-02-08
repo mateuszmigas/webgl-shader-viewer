@@ -8,7 +8,7 @@ export enum AttributeBufferType {
 export class AttributeBufferInfo {
   private buffer: WebGLBuffer | null;
   private location: number;
-  private numElements: number = 0;
+  private count: number = 0;
 
   constructor(
     private context: WebGLRenderingContext,
@@ -25,7 +25,7 @@ export class AttributeBufferInfo {
   }
 
   setValue(newValue: number[][]) {
-    this.numElements = newValue.length;
+    this.count = newValue.length;
     this.context.bindBuffer(this.context.ARRAY_BUFFER, this.buffer);
     const flatten = [].concat(...newValue);
     console.log("setting value", flatten);
@@ -61,8 +61,8 @@ export class AttributeBufferInfo {
     return this.type;
   }
 
-  getNumElements() {
-    return this.numElements;
+  getCount() {
+    return this.count;
   }
 
   deleteBuffer() {

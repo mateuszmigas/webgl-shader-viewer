@@ -149,7 +149,7 @@ const createSelectionComponent = (
   }[],
   onChange: (value: any) => void
 ) => {
-  let detach: () => void = undefined;
+  let detach: () => void = null;
   const element = createDiv("column-with-gap", [
     createElementsDropdown(options, id => {
       detach?.();
