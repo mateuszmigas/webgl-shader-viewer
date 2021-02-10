@@ -28,8 +28,6 @@ export class AttributeBufferInfo {
     this.count = newValue.length;
     this.context.bindBuffer(this.context.ARRAY_BUFFER, this.buffer);
     const flatten = [].concat(...newValue);
-    console.log("setting value", flatten);
-
     this.context.bufferData(
       this.context.ARRAY_BUFFER,
       new Float32Array(flatten),

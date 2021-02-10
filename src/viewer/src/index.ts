@@ -1,6 +1,10 @@
+import {
+  CameraPosition,
+  CameraPositionManipulator,
+  cameraPositionToVector3,
+} from "./utils/cameraManipulator";
 import { getState, setState } from "./../../common/state";
 import { IndexBufferInfo } from "./utils/webgl/indexBuffer";
-import { Observable } from "./utils/observable";
 import { translations } from "../../common/translations";
 import { createDropdown } from "./components/dropdown";
 import { createSectionTitle } from "./components/header";
@@ -20,7 +24,7 @@ import { createAttributeBufferComponents } from "./utils/webgl/attributeBufferCo
 import { createWebGLCanvas } from "./components/webglCanvas";
 import { ViewerEndpoint } from "../../common/communication/viewerEndpoint";
 import { createMeshBindings, meshes } from "./meshes";
-import { mat4 } from "./utils/math";
+import { mat4, vec3 } from "./utils/math";
 
 const createViewer = async () => {
   const viewerEndpoint = new ViewerEndpoint();
@@ -32,6 +36,15 @@ const createViewer = async () => {
   const [webGLCanvas, webGLController] = createWebGLCanvas("viewer-content");
   const meshAttributeBindings = createMeshBindings();
   const drawOptions: DrawOptions = { drawMode: "arrays" };
+  let cameraPosition: CameraPosition = { longitude: 1, latitude: 1, radius: 2 };
+  const cameraPositionManipulator = new CameraPositionManipulator(
+    webGLCanvas,
+    () => cameraPosition,
+    newPosition => {
+      cameraPosition = newPosition;
+      console.log("viewport", cameraPosition);
+    }
+  );
 
   viewer.appendChild(webGLCanvas);
   viewer.appendChild(shaderCompilationErrors);
@@ -221,30 +234,38 @@ const createViewer = async () => {
           // Set the drawing position to the "identity" point, which is
           // the center of the scene.
           const modelViewMatrix = mat4.create();
+          const vec = cameraPositionToVector3(cameraPosition);
 
-          mat4.translate(
-            modelViewMatrix, // destination matrix
-            modelViewMatrix, // matrix to translate
-            [-0.0, 0.0, -6.0]
-          ); // amount to translate
-          mat4.rotate(
-            modelViewMatrix, // destination matrix
-            modelViewMatrix, // matrix to rotate
-            cubeRotation, // amount to rotate in radians
-            [0, 0, 1]
-          ); // axis to rotate around (Z)
-          mat4.rotate(
-            modelViewMatrix, // destination matrix
-            modelViewMatrix, // matrix to rotate
-            cubeRotation * 0.7, // amount to rotate in radians
-            [0, 1, 0]
-          ); // axis to rotate around (X)
-          mat4.rotate(
-            modelViewMatrix, // destination matrix
-            modelViewMatrix, // matrix to rotate
-            cubeRotation * 0.2, // amount to rotate in radians
-            [1, 0, 0]
-          ); // axis to rotate around (Y)
+          mat4.lookAt(
+            modelViewMatrix,
+            vec3.fromValues(vec.x, vec.y, vec.z),
+            vec3.create(),
+            vec3.fromValues(0, 1, 0)
+          );
+
+          // mat4.translate(
+          //   modelViewMatrix, // destination matrix
+          //   modelViewMatrix, // matrix to translate
+          //   [-0.0, 0.0, -6.0]
+          // ); // amount to translate
+          // mat4.rotate(
+          //   modelViewMatrix, // destination matrix
+          //   modelViewMatrix, // matrix to rotate
+          //   cubeRotation, // amount to rotate in radians
+          //   [0, 0, 1]
+          // ); // axis to rotate around (Z)
+          // mat4.rotate(
+          //   modelViewMatrix, // destination matrix
+          //   modelViewMatrix, // matrix to rotate
+          //   cubeRotation * 0.7, // amount to rotate in radians
+          //   [0, 1, 0]
+          // ); // axis to rotate around (X)
+          // mat4.rotate(
+          //   modelViewMatrix, // destination matrix
+          //   modelViewMatrix, // matrix to rotate
+          //   cubeRotation * 0.2, // amount to rotate in radians
+          //   [1, 0, 0]
+          // ); // axis to rotate around (Y)
 
           projection.setValue(projectionMatrix);
           view.setValue(modelViewMatrix);

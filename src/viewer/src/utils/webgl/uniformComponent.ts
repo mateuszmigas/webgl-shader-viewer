@@ -9,7 +9,7 @@ import { UniformInfo, UniformType } from "./uniform";
 import { CompositeKeyMap } from "../compositeKeyMap";
 import { createDiv, withLabel } from "../../components/wrappers";
 import { uuidv4 } from "../../../../common/uuid";
-import { Vector4, Vector2, Vector3 } from "../../types";
+import { Vector4Array, Vector2Array, Vector3Array } from "../../types";
 
 const uniformComponentCache = new CompositeKeyMap<
   { name: string; type: UniformType },
@@ -59,7 +59,7 @@ const createUniformComponent = (uniformInfo: UniformInfo) => {
     case UniformType.FLOAT_VEC3:
       return createUniformForVec3(value => uniformInfo.setValue(value));
     case UniformType.FLOAT_VEC4:
-      const initialValue: Vector4 = [1, 0, 0, 1];
+      const initialValue: Vector4Array = [1, 0, 0, 1];
       uniformInfo.setValue(initialValue);
       return createUniformForVec4(initialValue, value =>
         uniformInfo.setValue(value)
@@ -76,7 +76,7 @@ const createUniformComponent = (uniformInfo: UniformInfo) => {
   }
 };
 
-const createUniformForVec2 = (update: (value: Vector2) => void) => {
+const createUniformForVec2 = (update: (value: Vector2Array) => void) => {
   const [customElement, customController] = createVector2(update);
   customController.setValues([0, 0]);
   return customElement;
@@ -89,7 +89,7 @@ const createUniformNotSupported = () => {
   return div;
 };
 
-const createUniformForVec3 = (update: (value: Vector3) => void) => {
+const createUniformForVec3 = (update: (value: Vector3Array) => void) => {
   const [customElement, customController] = createVector3(update);
   customController.setValues([0, 0, 0]);
 
@@ -109,8 +109,8 @@ const createUniformForVec3 = (update: (value: Vector3) => void) => {
 };
 
 const createUniformForVec4 = (
-  initialValue: Vector4,
-  update: (value: Vector4) => void
+  initialValue: Vector4Array,
+  update: (value: Vector4Array) => void
 ) => {
   const [customElement, customController] = createVector4(update);
   customController.setValues(initialValue);

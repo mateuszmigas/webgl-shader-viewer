@@ -1,11 +1,11 @@
-import { Vector4 } from "./types";
+import { Vector4Array } from "./types";
 import { Observable } from "./utils/observable";
 import { AttributeBufferType } from "./utils/webgl/attributeBuffer";
 
 type MeshInfo = {
   display: string;
-  positions: Vector4[];
-  colors: Vector4[];
+  positions: Vector4Array[];
+  colors: Vector4Array[];
   indices: number[];
 };
 

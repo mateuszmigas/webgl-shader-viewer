@@ -4,7 +4,7 @@ import { createElementsDropdown } from "./../../components/dropdown";
 import { CompositeKeyMap } from "../../utils/compositeKeyMap";
 import { createDiv, withLabel } from "../../components/wrappers";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
-import { Vector4 } from "../../types";
+import { Vector4Array } from "../../types";
 
 type CacheKey = {
   name: string;
@@ -214,13 +214,17 @@ const createElementNotSupported = () => {
   return div;
 };
 
-const createElementVec4 = (value: Observable<Vector4>, editable: boolean) => {
+const createElementVec4 = (
+  value: Observable<Vector4Array>,
+  editable: boolean
+) => {
   const input = document.createElement("input");
   input.className = "edit-input";
   input.disabled = !editable;
 
   if (!editable) {
-    const listener = (value: Vector4) => (input.value = JSON.stringify(value));
+    const listener = (value: Vector4Array) =>
+      (input.value = JSON.stringify(value));
     value.attach(listener);
   }
 

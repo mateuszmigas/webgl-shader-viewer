@@ -1,4 +1,9 @@
-import { Matrix4, Vector2, Vector3, Vector4 } from "../../types";
+import {
+  Matrix4Array,
+  Vector2Array,
+  Vector3Array,
+  Vector4Array,
+} from "../../types";
 import { assertNever } from "../typeGuards";
 
 export enum UniformType {
@@ -59,13 +64,13 @@ const createUniformSetter = (
 ): ((value: any) => void) => {
   switch (type) {
     case UniformType.FLOAT_VEC2:
-      return (value: Vector2) => context.uniform2f(location, ...value);
+      return (value: Vector2Array) => context.uniform2f(location, ...value);
     case UniformType.FLOAT_VEC3:
-      return (value: Vector3) => context.uniform3f(location, ...value);
+      return (value: Vector3Array) => context.uniform3f(location, ...value);
     case UniformType.FLOAT_VEC4:
-      return (value: Vector4) => context.uniform4f(location, ...value);
+      return (value: Vector4Array) => context.uniform4f(location, ...value);
     case UniformType.FLOAT_MAT4:
-      return (value: Matrix4) =>
+      return (value: Matrix4Array) =>
         context.uniformMatrix4fv(location, false, value);
     case UniformType.SAMPLER_2D:
       return (value: { slot: number; textureData: boolean }) => {
