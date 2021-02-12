@@ -1,9 +1,0 @@
-.rvmrc
-.DS_Store
-tmp
-node_modules
-npm-debug.log
-package-lock.json
-dist
-!dist/gl-matrix.js
-!dist/gl-matrix.min.js

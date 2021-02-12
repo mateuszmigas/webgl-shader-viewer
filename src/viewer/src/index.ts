@@ -24,7 +24,7 @@ import { createAttributeBufferComponents } from "./utils/webgl/attributeBufferCo
 import { createWebGLCanvas } from "./components/webglCanvas";
 import { ViewerEndpoint } from "../../common/communication/viewerEndpoint";
 import { createMeshBindings, meshes } from "./meshes";
-import { mat4, vec3 } from "./utils/math";
+import { mat4 } from "./utils/math";
 
 const createViewer = async () => {
   const viewerEndpoint = new ViewerEndpoint();
@@ -238,9 +238,9 @@ const createViewer = async () => {
 
           mat4.lookAt(
             modelViewMatrix,
-            vec3.fromValues(vec.x, vec.y, vec.z),
-            vec3.create(),
-            vec3.fromValues(0, 1, 0)
+            [vec.x, vec.y, vec.z],
+            [0, 0, 0],
+            [0, 1, 0]
           );
 
           // mat4.translate(
@@ -281,7 +281,6 @@ const createViewer = async () => {
             drawOptions
           );
 
-          cubeRotation += deltaTime;
           animationFrameHandle = requestAnimationFrame(render);
         };
 
