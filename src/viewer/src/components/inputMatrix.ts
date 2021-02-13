@@ -4,7 +4,7 @@ import { createMultiNumberInput } from "./helpers";
 export const createMatrix = <T extends number[]>(
   size: number,
   onChange?: (newValue: T) => void
-) => createMultiNumberInput<T>(onChange, size, size);
+) => createMultiNumberInput<T>(size, size, onChange);
 
 // export const createMatrix3 = (onChange?: (newValue: Matrix3Array) => void) =>
 //   createMultiNumberInput<Matrix3Array>(onChange, 3, 3);

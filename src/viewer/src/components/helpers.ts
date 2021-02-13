@@ -1,8 +1,7 @@
 export const createMultiNumberInput = <T extends number[]>(
-  onChange: (newValue: T) => void,
   rows: number,
   columns: number,
-  inputOptions?: Partial<HTMLInputElement>
+  onChange?: (newValue: T) => void
 ): [
   HTMLDivElement,
   {
@@ -33,10 +32,11 @@ export const createMultiNumberInput = <T extends number[]>(
       const value = 0;
       const input = document.createElement("input");
       const itemElement = { element: input, value };
-      Object.assign(input, inputOptions);
+      //Object.assign(input, inputOptions);
       input.className = "edit-input";
       input.type = "number";
       input.value = value?.toString();
+      input.disabled = !onChange;
       input.oninput = () => {
         itemElements[index].value = Number(input.value);
         console.log("calling on change");

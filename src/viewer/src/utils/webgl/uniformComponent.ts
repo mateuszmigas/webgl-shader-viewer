@@ -244,9 +244,12 @@ const createElementMatrix = <T extends number[]>(
   value: Observable<T>,
   editable: boolean
 ) => {
-  const [customElement, customController] = createMatrix(size, v => {
-    value.setValue(v as T);
-  });
+  const onChange = editable
+    ? (v: T) => {
+        value.setValue(v as T);
+      }
+    : undefined;
+  const [customElement, customController] = createMatrix(size, onChange);
   customController.setValues(value.getValue());
 
   if (!editable) {

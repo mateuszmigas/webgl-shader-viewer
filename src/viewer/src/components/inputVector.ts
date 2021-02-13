@@ -4,7 +4,7 @@ import { createMultiNumberInput } from "./helpers";
 export const createVector = <T extends number[]>(
   elements: number,
   onChange?: (newValue: T) => void
-) => createMultiNumberInput<T>(onChange, 1, elements);
+) => createMultiNumberInput<T>(1, elements, onChange);
 
 // export const createVector2 = (onChange?: (newValue: Vector2Array) => void) =>
 //   createMultiNumberInput<Vector2Array>(onChange, 1, 2);
