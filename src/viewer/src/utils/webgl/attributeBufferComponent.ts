@@ -5,6 +5,7 @@ import { CompositeKeyMap } from "../../utils/compositeKeyMap";
 import { createDiv, withLabel } from "../../components/wrappers";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
 import { Vector4Array } from "../../types";
+import { createElementNotSupported } from "./common";
 
 type CacheKey = {
   name: string;
@@ -202,20 +203,15 @@ const createElementForType = (
 ) => {
   switch (attributeBufferType) {
     case AttributeBufferType.FLOAT_VEC4:
-      return createElementVec4(currentValue, editable);
+      return createElementArray(4, currentValue, editable);
     default:
       return createElementNotSupported();
   }
 };
 
-const createElementNotSupported = () => {
-  const div = document.createElement("div");
-  div.className = "unsupported-error";
-  div.innerText = "Not supported attribute buffer";
-  return div;
-};
-
-const createElementVec4 = (
+//todo better parser
+const createElementArray = (
+  itemSize: number,
   value: Observable<Vector4Array>,
   editable: boolean
 ) => {

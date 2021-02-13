@@ -1,3 +1,5 @@
+//import { createMatrix3 } from "./../../components/inputMatrix";
+import { assertNever } from "./../typeGuards";
 import { createVector } from "../../components/inputVector";
 import { createElementsDropdown } from "../../components/dropdown";
 import { UniformInfo, UniformType } from "./uniform";
@@ -5,6 +7,8 @@ import { CompositeKeyMap } from "../compositeKeyMap";
 import { createDiv, withLabel } from "../../components/wrappers";
 import { uuidv4 } from "../../../../common/uuid";
 import { Observable } from "../observable";
+import { createElementNotSupported } from "./common";
+import { createMatrix } from "../../components/inputMatrix";
 
 type CacheKey = {
   name: string;
@@ -37,14 +41,20 @@ const rebuildCache = (newValues: { key: CacheKey; value: CacheValue }[]) => {
   });
 };
 
+//todo
 const getDefaultValue = (type: UniformType) => {
-  if (type === UniformType.FLOAT_VEC4) {
-    return [1, 0, 0, 1];
+  switch (type) {
+    case UniformType.FLOAT_VEC2:
+      return [1, 1];
+    case UniformType.FLOAT_VEC3:
+      return [1, 1, 1];
+    case UniformType.FLOAT_VEC4:
+      return [1, 1, 1, 1];
+    case UniformType.FLOAT_MAT4:
+      return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+    default:
+      assertNever(type);
   }
-  if (type === UniformType.FLOAT_VEC3) {
-    return [1, 0, 0];
-  }
-  return [1, 0];
 };
 
 export type UniformBinding = {
@@ -198,50 +208,25 @@ const createElementForType = (
 ) => {
   switch (uniformType) {
     case UniformType.FLOAT_VEC2:
-      return createUniformForVecX(2, currentValue, editable);
+      return createElementVector(2, currentValue, editable);
     case UniformType.FLOAT_VEC3:
-      return createUniformForVecX(3, currentValue, editable);
+      return createElementVector(3, currentValue, editable);
     case UniformType.FLOAT_VEC4:
-      return createUniformForVecX(4, currentValue, editable);
-    case UniformType.SAMPLER_2D:
+      return createElementVector(4, currentValue, editable);
+    case UniformType.FLOAT_MAT4:
+      return createElementMatrix(4, currentValue, editable);
+    //case UniformType.SAMPLER_2D:
     default:
-      return createUniformNotSupported();
+      return createElementNotSupported();
   }
 };
 
-const createUniformNotSupported = () => {
-  const div = document.createElement("div");
-  div.className = "unsupported-error";
-  div.innerText = "Not supported uniform";
-  return div;
-};
-
-//todo editable
-// const createUniformForVec2 = (
-//   value: Observable<Vector2Array>,
-//   editable: boolean
-// ) => {
-//   const [customElement, customController] = createVector2(v =>
-//     value.setValue(v)
-//   );
-//   customController.setValues(value.getValue());
-
-//   if (!editable) {
-//     const listener = (value: Vector2Array) => customController.setValues(value);
-//     value.attach(listener);
-//   }
-
-//   return customElement;
-// };
-
-const createUniformForVecX = <T extends number[]>(
-  numElements: number,
+const createElementVector = <T extends number[]>(
+  size: number,
   value: Observable<T>,
   editable: boolean
 ) => {
-  const [customElement, customController] = createVector(numElements, v => {
-    console.log("on change", v);
-
+  const [customElement, customController] = createVector(size, v => {
     value.setValue(v as T);
   });
   customController.setValues(value.getValue());
@@ -254,36 +239,20 @@ const createUniformForVecX = <T extends number[]>(
   return customElement;
 };
 
-// const createUniformForVec3 = (
-//   value: Observable<Vector3Array>,
-//   editable: boolean
-// ) => {
-//   const [customElement, customController] = createVector3(v =>
-//     value.setValue(v)
-//   );
-//   customController.setValues(value.getValue());
+const createElementMatrix = <T extends number[]>(
+  size: number,
+  value: Observable<T>,
+  editable: boolean
+) => {
+  const [customElement, customController] = createMatrix(size, v => {
+    value.setValue(v as T);
+  });
+  customController.setValues(value.getValue());
 
-//   if (!editable) {
-//     const listener = (value: Vector3Array) => customController.setValues(value);
-//     value.attach(listener);
-//   }
+  if (!editable) {
+    const listener = (value: T) => customController.setValues(value);
+    value.attach(listener);
+  }
 
-//   return customElement;
-// };
-
-// const createUniformForVec4 = (
-//   value: Observable<Vector4Array>,
-//   editable: boolean
-// ) => {
-//   const [customElement, customController] = createVector4(v =>
-//     value.setValue(v)
-//   );
-//   customController.setValues(value.getValue());
-
-//   if (!editable) {
-//     const listener = (value: Vector4Array) => customController.setValues(value);
-//     value.attach(listener);
-//   }
-
-//   return customElement;
-// };
+  return customElement;
+};

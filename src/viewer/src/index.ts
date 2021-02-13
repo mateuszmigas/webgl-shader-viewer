@@ -32,13 +32,13 @@ import { UniformType } from "./utils/webgl/uniform";
 import { Observable } from "./utils/observable";
 
 export const createUniformBindings = () =>
-  new Map([
+  new Map<string, UniformBinding>([
     [
-      "dupeczka",
+      "localToProjected",
       {
-        name: "Binding - dupeczka",
-        type: UniformType.FLOAT_VEC3,
-        value: new Observable([]),
+        name: "Binding - LocalToProjected",
+        type: UniformType.FLOAT_MAT4,
+        value: new Observable([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]),
       },
     ],
   ]);
@@ -52,19 +52,33 @@ const createViewer = async () => {
   const shaderCompilationErrors = createDiv("viewer-content shader-errors");
   const [webGLCanvas, webGLController] = createWebGLCanvas("viewer-content");
   const meshAttributeBindings = createMeshBindings();
-  const uniformBindings: UniformBinding[] = [
-    {
-      name: "Binding - Cam",
-      type: UniformType.FLOAT_VEC2,
-      value: new Observable([0, 1]),
-    },
-  ];
+  const uniformBindings = createUniformBindings();
   const drawOptions: DrawOptions = { drawMode: "arrays" };
   let cameraPosition: CameraPosition = { longitude: 1, latitude: 1, radius: 2 };
   const cameraPositionManipulator = new CameraPositionManipulator(
     webGLCanvas,
     () => cameraPosition,
-    newPosition => (cameraPosition = newPosition)
+    newPosition => {
+      cameraPosition = newPosition;
+
+      const fieldOfView = (45 * Math.PI) / 180; // in radians
+      //todo cache this
+      const aspect = webGLCanvas.clientWidth / webGLCanvas.clientHeight;
+      const zNear = 0.1;
+      const zFar = 100.0;
+      const projectionMatrix = mat4.create();
+      mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
+
+      const modelViewMatrix = mat4.create();
+      const vec = cameraPositionToVector3(cameraPosition);
+
+      mat4.lookAt(modelViewMatrix, [vec.x, vec.y, vec.z], [0, 0, 0], [0, 1, 0]);
+
+      const res = mat4.create();
+      mat4.multiply(res, projectionMatrix, modelViewMatrix);
+
+      uniformBindings.get("localToProjected").value.setValue(res);
+    }
   );
 
   viewer.appendChild(webGLCanvas);
@@ -217,35 +231,7 @@ const createViewer = async () => {
         if (animationFrameHandle !== null)
           cancelAnimationFrame(animationFrameHandle);
 
-        const view = uniformInfos.find(
-          u => u.getUniformName() === "uModelViewMatrix"
-        );
-        const projection = uniformInfos.find(
-          u => u.getUniformName() === "uProjectionMatrix"
-        );
-
         const render = () => {
-          const fieldOfView = (45 * Math.PI) / 180; // in radians
-          const canvas = context.canvas as HTMLCanvasElement;
-          const aspect = canvas.clientWidth / canvas.clientHeight;
-          const zNear = 0.1;
-          const zFar = 100.0;
-          const projectionMatrix = mat4.create();
-          mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
-
-          const modelViewMatrix = mat4.create();
-          const vec = cameraPositionToVector3(cameraPosition);
-
-          mat4.lookAt(
-            modelViewMatrix,
-            [vec.x, vec.y, vec.z],
-            [0, 0, 0],
-            [0, 1, 0]
-          );
-
-          projection.setValue(projectionMatrix);
-          view.setValue(modelViewMatrix);
-
           renderProgram(
             context,
             program,

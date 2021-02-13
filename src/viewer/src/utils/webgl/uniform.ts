@@ -11,7 +11,7 @@ export enum UniformType {
   FLOAT_VEC3 = 35665,
   FLOAT_VEC4 = 35666,
   FLOAT_MAT4 = 35676,
-  SAMPLER_2D = 35678,
+  //SAMPLER_2D = 35678,
 }
 
 //5120 (BYTE), 5121 (UNSIGNED_BYTE), 5122 (SHORT), 5123 (UNSIGNED_SHORT), 5124 (INT),
@@ -72,10 +72,10 @@ const createUniformSetter = (
     case UniformType.FLOAT_MAT4:
       return (value: Matrix4Array) =>
         context.uniformMatrix4fv(location, false, value);
-    case UniformType.SAMPLER_2D:
-      return (value: { slot: number; textureData: boolean }) => {
-        //context.texi(value.slot);
-      };
+    //case UniformType.SAMPLER_2D:
+    //      return (value: { slot: number; textureData: boolean }) => {
+    //context.texi(value.slot);
+    //    };
     default:
       assertNever(type);
   }
