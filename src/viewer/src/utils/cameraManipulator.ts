@@ -29,8 +29,10 @@ type Action =
   | { type: "zoomOutAt" };
 
 const clampLatitude = (latitude: number) => {
-  const limitTop = Math.PI / 2.0 - 0.1;
-  return Math.min(Math.max(latitude, 0), limitTop);
+  return Math.min(
+    Math.max(latitude, -Math.PI / 2.0 + 0.1),
+    Math.PI / 2.0 - 0.1
+  );
 };
 
 const clampLongitude = (longitude: number) => {

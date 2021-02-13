@@ -1,5 +1,4 @@
 export const createMultiNumberInput = <T extends number[]>(
-  initialValue: T,
   onChange: (newValue: T) => void,
   rows: number,
   columns: number,
@@ -31,7 +30,7 @@ export const createMultiNumberInput = <T extends number[]>(
 
     for (let column = 0; column < columns; column++) {
       const index = row * columns + column;
-      const value = initialValue[index];
+      const value = 0;
       const input = document.createElement("input");
       const itemElement = { element: input, value };
       Object.assign(input, inputOptions);
@@ -40,6 +39,8 @@ export const createMultiNumberInput = <T extends number[]>(
       input.value = value?.toString();
       input.oninput = () => {
         itemElements[index].value = Number(input.value);
+        console.log("calling on change");
+
         onChange?.(getValues());
       };
       itemElements.push(itemElement);

@@ -10,7 +10,10 @@ import { createDropdown } from "./components/dropdown";
 import { createSectionTitle } from "./components/header";
 import { createButton as createButton } from "./components/button";
 import { createDiv, withLabel } from "./components/wrappers";
-import { createUniformComponents } from "./utils/webgl/uniformComponent";
+import {
+  createUniformComponents,
+  UniformBinding,
+} from "./utils/webgl/uniformComponent";
 import {
   compileShadersFromSource,
   DrawOptions,
@@ -25,6 +28,20 @@ import { createWebGLCanvas } from "./components/webglCanvas";
 import { ViewerEndpoint } from "../../common/communication/viewerEndpoint";
 import { createMeshBindings, meshes } from "./meshes";
 import { mat4 } from "./utils/math";
+import { UniformType } from "./utils/webgl/uniform";
+import { Observable } from "./utils/observable";
+
+export const createUniformBindings = () =>
+  new Map([
+    [
+      "dupeczka",
+      {
+        name: "Binding - dupeczka",
+        type: UniformType.FLOAT_VEC3,
+        value: new Observable([]),
+      },
+    ],
+  ]);
 
 const createViewer = async () => {
   const viewerEndpoint = new ViewerEndpoint();
@@ -35,15 +52,19 @@ const createViewer = async () => {
   const shaderCompilationErrors = createDiv("viewer-content shader-errors");
   const [webGLCanvas, webGLController] = createWebGLCanvas("viewer-content");
   const meshAttributeBindings = createMeshBindings();
+  const uniformBindings: UniformBinding[] = [
+    {
+      name: "Binding - Cam",
+      type: UniformType.FLOAT_VEC2,
+      value: new Observable([0, 1]),
+    },
+  ];
   const drawOptions: DrawOptions = { drawMode: "arrays" };
   let cameraPosition: CameraPosition = { longitude: 1, latitude: 1, radius: 2 };
   const cameraPositionManipulator = new CameraPositionManipulator(
     webGLCanvas,
     () => cameraPosition,
-    newPosition => {
-      cameraPosition = newPosition;
-      console.log("viewport", cameraPosition);
-    }
+    newPosition => (cameraPosition = newPosition)
   );
 
   viewer.appendChild(webGLCanvas);
@@ -131,7 +152,8 @@ const createViewer = async () => {
         const uniformComponents = createUniformComponents(
           context,
           program,
-          programUniforms
+          programUniforms,
+          Array.from(uniformBindings.values())
         );
         uniformComponents.forEach(uc =>
           shaderOptions.appendChild(uc.component)
@@ -195,7 +217,6 @@ const createViewer = async () => {
         if (animationFrameHandle !== null)
           cancelAnimationFrame(animationFrameHandle);
 
-        let cubeRotation = 0;
         const view = uniformInfos.find(
           u => u.getUniformName() === "uModelViewMatrix"
         );
@@ -203,36 +224,15 @@ const createViewer = async () => {
           u => u.getUniformName() === "uProjectionMatrix"
         );
 
-        let then = 0;
-
-        // Draw the scene repeatedly
-        // function render(now) {
-        //   now *= 0.001;  // convert to seconds
-        //   const deltaTime = now - then;
-        //   then = now;
-
-        //   drawScene(gl, programInfo, buffers, deltaTime);
-
-        //   requestAnimationFrame(render);
-        // }
-
-        const render = (now: number) => {
-          now *= 0.001;
-          const deltaTime = now - then;
-          then = now;
+        const render = () => {
           const fieldOfView = (45 * Math.PI) / 180; // in radians
           const canvas = context.canvas as HTMLCanvasElement;
           const aspect = canvas.clientWidth / canvas.clientHeight;
           const zNear = 0.1;
           const zFar = 100.0;
           const projectionMatrix = mat4.create();
-
-          // note: glmatrix.js always has the first argument
-          // as the destination to receive the result.
           mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
 
-          // Set the drawing position to the "identity" point, which is
-          // the center of the scene.
           const modelViewMatrix = mat4.create();
           const vec = cameraPositionToVector3(cameraPosition);
 
@@ -242,30 +242,6 @@ const createViewer = async () => {
             [0, 0, 0],
             [0, 1, 0]
           );
-
-          // mat4.translate(
-          //   modelViewMatrix, // destination matrix
-          //   modelViewMatrix, // matrix to translate
-          //   [-0.0, 0.0, -6.0]
-          // ); // amount to translate
-          // mat4.rotate(
-          //   modelViewMatrix, // destination matrix
-          //   modelViewMatrix, // matrix to rotate
-          //   cubeRotation, // amount to rotate in radians
-          //   [0, 0, 1]
-          // ); // axis to rotate around (Z)
-          // mat4.rotate(
-          //   modelViewMatrix, // destination matrix
-          //   modelViewMatrix, // matrix to rotate
-          //   cubeRotation * 0.7, // amount to rotate in radians
-          //   [0, 1, 0]
-          // ); // axis to rotate around (X)
-          // mat4.rotate(
-          //   modelViewMatrix, // destination matrix
-          //   modelViewMatrix, // matrix to rotate
-          //   cubeRotation * 0.2, // amount to rotate in radians
-          //   [1, 0, 0]
-          // ); // axis to rotate around (Y)
 
           projection.setValue(projectionMatrix);
           view.setValue(modelViewMatrix);
@@ -284,7 +260,7 @@ const createViewer = async () => {
           animationFrameHandle = requestAnimationFrame(render);
         };
 
-        render(0);
+        render();
       }
     } else {
       showContent("none");

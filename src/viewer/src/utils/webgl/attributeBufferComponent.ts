@@ -36,7 +36,7 @@ const rebuildCache = (newValues: { key: CacheKey; value: CacheValue }[]) => {
   });
 };
 
-export const getDefaultValue = (type: AttributeBufferType) => {
+const getDefaultValue = (type: AttributeBufferType) => {
   return [
     [0, 0, 0, 1],
     [0, 0.5, 0, 1],
@@ -172,14 +172,15 @@ const createEditableComponent = (
   attributeBufferInfo: AttributeBufferInfo,
   onChange?: (value: any) => void
 ) => {
-  const customValue = new Observable<any>(
-    getDefaultValue(attributeBufferInfo.getAttributeBufferType())
+  const initialValue = getDefaultValue(
+    attributeBufferInfo.getAttributeBufferType()
   );
+  const customValue = new Observable<any>(initialValue);
 
-  if (onChange)
-    customValue.attach((value: any) => {
-      attributeBufferInfo.setValue(value);
-    });
+  if (onChange) {
+    customValue.attach((value: any) => onChange(value));
+    onChange(initialValue);
+  }
 
   const element = createElementForType(
     attributeBufferInfo.getAttributeBufferType(),

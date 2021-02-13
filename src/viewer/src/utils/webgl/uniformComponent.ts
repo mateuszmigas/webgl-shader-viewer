@@ -1,27 +1,65 @@
-import {
-  createVector2,
-  createVector3,
-  createVector4,
-} from "../../components/inputVector";
+import { createVector } from "../../components/inputVector";
 import { createElementsDropdown } from "../../components/dropdown";
-import { createColor3, createColor4 } from "../../components/inputColor";
 import { UniformInfo, UniformType } from "./uniform";
 import { CompositeKeyMap } from "../compositeKeyMap";
 import { createDiv, withLabel } from "../../components/wrappers";
 import { uuidv4 } from "../../../../common/uuid";
-import { Vector4Array, Vector2Array, Vector3Array } from "../../types";
+import { Observable } from "../observable";
 
-const uniformComponentCache = new CompositeKeyMap<
-  { name: string; type: UniformType },
-  { component: HTMLElement; uniformInfo: UniformInfo }
->(key => `${key.name};${key.type}`);
+type CacheKey = {
+  name: string;
+  type: UniformType;
+};
+
+type CacheValue = {
+  component: HTMLElement;
+  uniformInfo: UniformInfo;
+};
+
+const keySelector = (key: CacheKey): string => `${key.name};${key.type}`;
+const uniformComponentCache = new CompositeKeyMap<CacheKey, CacheValue>(
+  keySelector
+);
+
+const rebuildCache = (newValues: { key: CacheKey; value: CacheValue }[]) => {
+  const newValuesStrKeys = newValues.map(v => keySelector(v.key));
+  const componentsToRemove = uniformComponentCache
+    .entriesStrKey()
+    .filter(e => !newValuesStrKeys.includes(e[0]));
+
+  componentsToRemove.forEach(c => {
+    uniformComponentCache.deleteStrKey(c[0]);
+  });
+
+  newValues.forEach(nw => {
+    if (!uniformComponentCache.has(nw.key))
+      uniformComponentCache.set(nw.key, nw.value);
+  });
+};
+
+const getDefaultValue = (type: UniformType) => {
+  if (type === UniformType.FLOAT_VEC4) {
+    return [1, 0, 0, 1];
+  }
+  if (type === UniformType.FLOAT_VEC3) {
+    return [1, 0, 0];
+  }
+  return [1, 0];
+};
+
+export type UniformBinding = {
+  name: string;
+  type: UniformType;
+  value: Observable<any>;
+};
 
 export const createUniformComponents = (
   context: WebGLRenderingContext,
   program: WebGLProgram,
-  uniforms: { name: string; type: UniformType }[]
+  uniforms: { name: string; type: UniformType }[],
+  uniformBindings: UniformBinding[]
 ) => {
-  const uniformComponents = uniforms.map(uniform => {
+  const components = uniforms.map(uniform => {
     const key = {
       ...uniform,
     };
@@ -38,48 +76,137 @@ export const createUniformComponents = (
         uniform.name,
         uniform.type
       );
-      const component = withLabel(
-        createUniformComponent(uniformInfo),
-        uniform.name
+
+      const applicableBindings = uniformBindings.filter(
+        b => b.type === uniformInfo.getUniformType()
       );
-      return { key, value: { component, uniformInfo } };
+
+      const updateUniform = (value: any) => uniformInfo.setValue(value);
+
+      const { element, dispose } = applicableBindings.length
+        ? createSelectionComponent(
+            [
+              createCustomOption(uniformInfo),
+              ...createBindingOptions(applicableBindings, uniformInfo),
+            ],
+            updateUniform
+          )
+        : createEditableComponent(uniformInfo, updateUniform);
+
+      return {
+        key,
+        value: {
+          component: withLabel(element, uniform.name),
+          uniformInfo,
+          dispose: () => {
+            dispose?.();
+          },
+        },
+      };
     }
   });
 
-  uniformComponentCache.clear();
-  uniformComponents.forEach(uc => uniformComponentCache.set(uc.key, uc.value));
-
-  return uniformComponents.map(uc => uc.value);
+  rebuildCache(components);
+  return components.map(uc => uc.value);
 };
 
-const createUniformComponent = (uniformInfo: UniformInfo) => {
-  switch (uniformInfo.getUniformType()) {
+const createCustomOption = (uniformInfo: UniformInfo) => {
+  return {
+    id: "custom",
+    display: "Custom",
+    ...createEditableComponent(uniformInfo),
+  };
+};
+
+const createBindingOptions = (
+  uniformBindings: UniformBinding[],
+  uniformInfo: UniformInfo
+) => {
+  return uniformBindings.map(binding => {
+    const element = createElementForType(
+      uniformInfo.getUniformType(),
+      false,
+      binding.value
+    );
+
+    return {
+      id: uuidv4(),
+      element,
+      display: binding.name,
+      value: binding.value,
+    };
+  });
+};
+
+const createSelectionComponent = (
+  options: {
+    id: string;
+    display: string;
+    value: Observable<any>;
+    element: HTMLElement;
+  }[],
+  onChange: (value: any) => void
+) => {
+  let detach: () => void = null;
+  const element = createDiv("column-with-gap", [
+    createElementsDropdown(options, id => {
+      detach?.();
+      const option = options.find(o => o.id === id);
+      const callback = (value: any) => onChange(value);
+      option.value.attach(callback);
+      callback(option.value.getValue());
+      detach = () => option.value.detach(callback);
+    }),
+    ...options.map(o => o.element),
+  ]);
+
+  return {
+    element,
+    dispose: () => detach?.(),
+  };
+};
+
+const createEditableComponent = (
+  uniformInfo: UniformInfo,
+  onChange?: (value: any) => void
+) => {
+  const initialValue = getDefaultValue(uniformInfo.getUniformType());
+  const customValue = new Observable<any>(initialValue);
+
+  if (onChange) {
+    customValue.attach((value: any) => onChange(value));
+    onChange(initialValue);
+  }
+
+  const element = createElementForType(
+    uniformInfo.getUniformType(),
+    true,
+    customValue
+  );
+
+  return {
+    element,
+    value: customValue,
+    dispose: () => customValue.detachAll(),
+  };
+};
+
+const createElementForType = (
+  uniformType: UniformType,
+  editable: boolean,
+  currentValue: Observable<any>
+) => {
+  switch (uniformType) {
     case UniformType.FLOAT_VEC2:
-      return createUniformForVec2(value => uniformInfo.setValue(value));
+      return createUniformForVecX(2, currentValue, editable);
     case UniformType.FLOAT_VEC3:
-      return createUniformForVec3(value => uniformInfo.setValue(value));
+      return createUniformForVecX(3, currentValue, editable);
     case UniformType.FLOAT_VEC4:
-      const initialValue: Vector4Array = [1, 0, 0, 1];
-      uniformInfo.setValue(initialValue);
-      return createUniformForVec4(initialValue, value =>
-        uniformInfo.setValue(value)
-      );
+      return createUniformForVecX(4, currentValue, editable);
     case UniformType.SAMPLER_2D:
-      return createUniformForTexture(value => {
-        const currentsetValue = uuidv4();
-        //load with debounce => then
-        uniformInfo.setValue({ slot: value.slot, textureData: true });
-      });
-    case UniformType.FLOAT_MAT4:
     default:
       return createUniformNotSupported();
   }
-};
-
-const createUniformForVec2 = (update: (value: Vector2Array) => void) => {
-  const [customElement, customController] = createVector2(update);
-  customController.setValues([0, 0]);
-  return customElement;
 };
 
 const createUniformNotSupported = () => {
@@ -89,52 +216,74 @@ const createUniformNotSupported = () => {
   return div;
 };
 
-const createUniformForVec3 = (update: (value: Vector3Array) => void) => {
-  const [customElement, customController] = createVector3(update);
-  customController.setValues([0, 0, 0]);
+//todo editable
+// const createUniformForVec2 = (
+//   value: Observable<Vector2Array>,
+//   editable: boolean
+// ) => {
+//   const [customElement, customController] = createVector2(v =>
+//     value.setValue(v)
+//   );
+//   customController.setValues(value.getValue());
 
-  const [colorElement, colorController] = createColor3(update);
-  colorController.setValues([1, 0, 0]);
+//   if (!editable) {
+//     const listener = (value: Vector2Array) => customController.setValues(value);
+//     value.attach(listener);
+//   }
 
-  const optionsElement = createElementsDropdown([
-    { id: "custom", display: "Custom", element: customElement },
-    { id: "color", display: "Color", element: colorElement },
-  ]);
+//   return customElement;
+// };
 
-  return createDiv("column-with-gap", [
-    optionsElement,
-    customElement,
-    colorElement,
-  ]);
-};
-
-const createUniformForVec4 = (
-  initialValue: Vector4Array,
-  update: (value: Vector4Array) => void
+const createUniformForVecX = <T extends number[]>(
+  numElements: number,
+  value: Observable<T>,
+  editable: boolean
 ) => {
-  const [customElement, customController] = createVector4(update);
-  customController.setValues(initialValue);
+  const [customElement, customController] = createVector(numElements, v => {
+    console.log("on change", v);
 
-  const [colorElement, colorController] = createColor4(update);
-  colorController.setValues(initialValue);
+    value.setValue(v as T);
+  });
+  customController.setValues(value.getValue());
 
-  const optionsElement = createElementsDropdown([
-    { id: "custom", display: "Custom", element: customElement },
-    { id: "color", display: "Color", element: colorElement },
-  ]);
+  if (!editable) {
+    const listener = (value: T) => customController.setValues(value);
+    value.attach(listener);
+  }
 
-  return createDiv("column-with-gap", [
-    optionsElement,
-    customElement,
-    colorElement,
-  ]);
-};
-
-//todo
-const createUniformForTexture = (
-  update: (value: { slot: number; textureSrc: string }) => void
-) => {
-  const [customElement, customController] = createVector3();
-  customController.setValues([0, 0, 0]);
   return customElement;
 };
+
+// const createUniformForVec3 = (
+//   value: Observable<Vector3Array>,
+//   editable: boolean
+// ) => {
+//   const [customElement, customController] = createVector3(v =>
+//     value.setValue(v)
+//   );
+//   customController.setValues(value.getValue());
+
+//   if (!editable) {
+//     const listener = (value: Vector3Array) => customController.setValues(value);
+//     value.attach(listener);
+//   }
+
+//   return customElement;
+// };
+
+// const createUniformForVec4 = (
+//   value: Observable<Vector4Array>,
+//   editable: boolean
+// ) => {
+//   const [customElement, customController] = createVector4(v =>
+//     value.setValue(v)
+//   );
+//   customController.setValues(value.getValue());
+
+//   if (!editable) {
+//     const listener = (value: Vector4Array) => customController.setValues(value);
+//     value.attach(listener);
+//   }
+
+//   return customElement;
+// };
