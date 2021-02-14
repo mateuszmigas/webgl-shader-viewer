@@ -1,8 +1,26 @@
-// export const createIndexBufferComponent = (
-//   context: WebGLRenderingContext,
-//   program: WebGLProgram,
-//   attributeBuffers: { name: string; type: AttributeBufferType }[],
-//   attributeBufferBindings: AttributeBufferBinding[]
-// ) => {
+import { Observable } from "../observable";
+import { createSelectionComponent, createElementArray } from "./common";
 
-// };
+export const createIndexBufferComponent = (
+  indexBufferBinding: Observable<number[]>,
+  onChange: (newValue: number[]) => void
+) => {
+  const customIndicesValue = new Observable<number[]>([]);
+  return createSelectionComponent(
+    [
+      {
+        id: "custom",
+        display: "Custom",
+        value: customIndicesValue,
+        element: createElementArray(1, customIndicesValue, true),
+      },
+      {
+        id: "binding",
+        display: "Binding - Mesh indices",
+        value: indexBufferBinding,
+        element: createElementArray(1, indexBufferBinding, false),
+      },
+    ],
+    onChange
+  );
+};

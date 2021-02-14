@@ -5,7 +5,11 @@ import { CompositeKeyMap } from "../../utils/compositeKeyMap";
 import { createDiv, withLabel } from "../../components/wrappers";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
 import { Vector4Array } from "../../types";
-import { createElementNotSupported } from "./common";
+import {
+  createElementArray,
+  createElementNotSupported,
+  createSelectionComponent,
+} from "./common";
 
 type CacheKey = {
   name: string;
@@ -141,34 +145,6 @@ const createBindingOptions = (
   });
 };
 
-const createSelectionComponent = (
-  options: {
-    id: string;
-    display: string;
-    value: Observable<any>;
-    element: HTMLElement;
-  }[],
-  onChange: (value: any) => void
-) => {
-  let detach: () => void = null;
-  const element = createDiv("column-with-gap", [
-    createElementsDropdown(options, id => {
-      detach?.();
-      const option = options.find(o => o.id === id);
-      const callback = (value: any) => onChange(value);
-      option.value.attach(callback);
-      callback(option.value.getValue());
-      detach = () => option.value.detach(callback);
-    }),
-    ...options.map(o => o.element),
-  ]);
-
-  return {
-    element,
-    dispose: () => detach?.(),
-  };
-};
-
 const createEditableComponent = (
   attributeBufferInfo: AttributeBufferInfo,
   onChange?: (value: any) => void
@@ -207,46 +183,4 @@ const createElementForType = (
     default:
       return createElementNotSupported();
   }
-};
-
-//todo better parser
-const createElementArray = (
-  itemSize: number,
-  value: Observable<Vector4Array>,
-  editable: boolean
-) => {
-  const input = document.createElement("input");
-  input.className = "edit-input";
-  input.disabled = !editable;
-
-  if (!editable) {
-    const listener = (value: Vector4Array) =>
-      (input.value = JSON.stringify(value));
-    value.attach(listener);
-  }
-
-  input.value = JSON.stringify(value.getValue());
-  input.oninput = () => {
-    try {
-      const result = JSON.parse(input.value);
-      //console.log("result", result);
-
-      if (!Array.isArray(result)) {
-        // console.log("this is not an array type");
-      } else {
-        const xxx = result.every(e =>
-          Array.isArray(e) ? e.length === 4 : false
-        );
-        if (!xxx) {
-          //  console.log("not every element id the arra is same size");
-        }
-      }
-      value.setValue(result);
-    } catch (error) {
-      console.log("this is not a json");
-    }
-  };
-
-  //Wrong format! Should be [[x1,y1], [x2,y2], ...]
-  return input;
 };

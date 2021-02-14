@@ -30,13 +30,18 @@ import { createMeshBindings, meshes } from "./meshes";
 import { mat4 } from "./utils/math";
 import { UniformType } from "./utils/webgl/uniform";
 import { Observable } from "./utils/observable";
+import {
+  createElementArray,
+  createSelectionComponent,
+} from "./utils/webgl/common";
+import { createIndexBufferComponent } from "./utils/webgl/indexBufferComponent";
 
 export const createUniformBindings = () =>
   new Map<string, UniformBinding>([
     [
       "localToProjected",
       {
-        name: "Binding - LocalToProjected",
+        name: "Binding - Camera LocalToProjected",
         type: UniformType.FLOAT_MAT4,
         value: new Observable([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]),
       },
@@ -51,8 +56,48 @@ const createViewer = async () => {
   const shaderOptions = createDiv("viewer-shader-options");
   const shaderCompilationErrors = createDiv("viewer-content shader-errors");
   const [webGLCanvas, webGLController] = createWebGLCanvas("viewer-content");
-  const meshAttributeBindings = createMeshBindings();
+  const meshBindings = createMeshBindings();
   const uniformBindings = createUniformBindings();
+  const indexBufferInfo = new IndexBufferInfo(webGLController.context);
+  const indexBufferBindingValue = new Observable<number[]>([]);
+  // indexBufferInfo.setValue([
+  //   0,
+  //   1,
+  //   2,
+  //   0,
+  //   2,
+  //   3, // front
+  //   4,
+  //   5,
+  //   6,
+  //   4,
+  //   6,
+  //   7, // back
+  //   8,
+  //   9,
+  //   10,
+  //   8,
+  //   10,
+  //   11, // top
+  //   12,
+  //   13,
+  //   14,
+  //   12,
+  //   14,
+  //   15, // bottom
+  //   16,
+  //   17,
+  //   18,
+  //   16,
+  //   18,
+  //   19, // right
+  //   20,
+  //   21,
+  //   22,
+  //   20,
+  //   22,
+  //   23, // left
+  // ]);
   const drawOptions: DrawOptions = { drawMode: "arrays" };
   let cameraPosition: CameraPosition = { longitude: 1, latitude: 1, radius: 2 };
   const cameraPositionManipulator = new CameraPositionManipulator(
@@ -62,8 +107,8 @@ const createViewer = async () => {
       cameraPosition = newPosition;
 
       const fieldOfView = (45 * Math.PI) / 180; // in radians
-      //todo cache this
-      const aspect = webGLCanvas.clientWidth / webGLCanvas.clientHeight;
+      const { width, height } = webGLController.getSize();
+      const aspect = width / height;
       const zNear = 0.1;
       const zFar = 100.0;
       const projectionMatrix = mat4.create();
@@ -128,15 +173,11 @@ const createViewer = async () => {
   let animationFrameHandle: number = null;
 
   const onMeshChanged = (id: string) => {
-    const { positions, colors } = meshes.get(id);
-    meshAttributeBindings.get("positions").value.setValue(positions);
-    meshAttributeBindings.get("colors").value.setValue(colors);
-    //meshAttributeBindings.get("normals").value.setValue(normals);
+    const { positions, colors, indices } = meshes.get(id);
+    meshBindings.get("positions").value.setValue(positions);
+    meshBindings.get("colors").value.setValue(colors);
+    indexBufferBindingValue.setValue(indices);
   };
-
-  //
-
-  //
 
   const onShaderContentChanged = () => {
     shaderOptions.innerHTML = "";
@@ -177,7 +218,7 @@ const createViewer = async () => {
           context,
           program,
           programAttributeBuffers,
-          Array.from(meshAttributeBindings.values())
+          Array.from(meshBindings.values())
         );
         attributeBufferComponents.forEach(ab =>
           shaderOptions.appendChild(ab.component)
@@ -187,46 +228,6 @@ const createViewer = async () => {
         const attributeBufferInfos = attributeBufferComponents.map(
           abc => abc.attributeBufferInfo
         );
-
-        const indexBufferInfo = new IndexBufferInfo(context);
-        indexBufferInfo.setValue([
-          0,
-          1,
-          2,
-          0,
-          2,
-          3, // front
-          4,
-          5,
-          6,
-          4,
-          6,
-          7, // back
-          8,
-          9,
-          10,
-          8,
-          10,
-          11, // top
-          12,
-          13,
-          14,
-          12,
-          14,
-          15, // bottom
-          16,
-          17,
-          18,
-          16,
-          18,
-          19, // right
-          20,
-          21,
-          22,
-          20,
-          22,
-          23, // left
-        ]);
 
         if (animationFrameHandle !== null)
           cancelAnimationFrame(animationFrameHandle);
@@ -344,7 +345,12 @@ const createViewer = async () => {
   drawModeController.setSelectedItemById(viewerState.drawMode);
   viewerOptions.appendChild(withLabel(drawModeElement, "Draw mode"));
 
-  //indexes
+  const {
+    element: indexBufferComponent,
+  } = createIndexBufferComponent(indexBufferBindingValue, newValue =>
+    indexBufferInfo.setValue(newValue)
+  );
+  viewerOptions.appendChild(withLabel(indexBufferComponent, "Indices"));
 
   viewerOptions.appendChild(shaderOptions);
 

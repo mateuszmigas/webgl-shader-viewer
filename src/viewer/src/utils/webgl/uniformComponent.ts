@@ -7,7 +7,12 @@ import { CompositeKeyMap } from "../compositeKeyMap";
 import { createDiv, withLabel } from "../../components/wrappers";
 import { uuidv4 } from "../../../../common/uuid";
 import { Observable } from "../observable";
-import { createElementNotSupported } from "./common";
+import {
+  createElementMatrix,
+  createElementNotSupported,
+  createElementVector,
+  createSelectionComponent,
+} from "./common";
 import { createMatrix } from "../../components/inputMatrix";
 
 type CacheKey = {
@@ -148,34 +153,6 @@ const createBindingOptions = (
   });
 };
 
-const createSelectionComponent = (
-  options: {
-    id: string;
-    display: string;
-    value: Observable<any>;
-    element: HTMLElement;
-  }[],
-  onChange: (value: any) => void
-) => {
-  let detach: () => void = null;
-  const element = createDiv("column-with-gap", [
-    createElementsDropdown(options, id => {
-      detach?.();
-      const option = options.find(o => o.id === id);
-      const callback = (value: any) => onChange(value);
-      option.value.attach(callback);
-      callback(option.value.getValue());
-      detach = () => option.value.detach(callback);
-    }),
-    ...options.map(o => o.element),
-  ]);
-
-  return {
-    element,
-    dispose: () => detach?.(),
-  };
-};
-
 const createEditableComponent = (
   uniformInfo: UniformInfo,
   onChange?: (value: any) => void
@@ -219,43 +196,4 @@ const createElementForType = (
     default:
       return createElementNotSupported();
   }
-};
-
-const createElementVector = <T extends number[]>(
-  size: number,
-  value: Observable<T>,
-  editable: boolean
-) => {
-  const [customElement, customController] = createVector(size, v => {
-    value.setValue(v as T);
-  });
-  customController.setValues(value.getValue());
-
-  if (!editable) {
-    const listener = (value: T) => customController.setValues(value);
-    value.attach(listener);
-  }
-
-  return customElement;
-};
-
-const createElementMatrix = <T extends number[]>(
-  size: number,
-  value: Observable<T>,
-  editable: boolean
-) => {
-  const onChange = editable
-    ? (v: T) => {
-        value.setValue(v as T);
-      }
-    : undefined;
-  const [customElement, customController] = createMatrix(size, onChange);
-  customController.setValues(value.getValue());
-
-  if (!editable) {
-    const listener = (value: T) => customController.setValues(value);
-    value.attach(listener);
-  }
-
-  return customElement;
 };

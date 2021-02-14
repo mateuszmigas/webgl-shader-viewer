@@ -125,4 +125,12 @@ export const createMeshBindings = () =>
         value: new Observable([]),
       },
     ],
+    // [
+    //   "indices",
+    //   {
+    //     name: "Binding - Mesh indices",
+    //     type: "dupa",
+    //     value: new Observable([]),
+    //   },
+    // ],
   ]);
