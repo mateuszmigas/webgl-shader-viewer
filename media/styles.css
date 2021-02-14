@@ -45,10 +45,14 @@ input::-webkit-inner-spin-button {
 
 .viewer-shaders-title {
   grid-area: shaders-title;
-  margin: 5px;
+  margin-left: 5px;
   display: flex;
   justify-content: space-between;
   align-items: stretch;
+}
+
+.viewer-refresh-button {
+  margin: 5px;
 }
 
 .viewer-shader-options {

@@ -30,10 +30,6 @@ import { createMeshBindings, meshes } from "./meshes";
 import { mat4 } from "./utils/math";
 import { UniformType } from "./utils/webgl/uniform";
 import { Observable } from "./utils/observable";
-import {
-  createElementArray,
-  createSelectionComponent,
-} from "./utils/webgl/common";
 import { createIndexBufferComponent } from "./utils/webgl/indexBufferComponent";
 
 export const createUniformBindings = () =>
@@ -48,6 +44,9 @@ export const createUniformBindings = () =>
     ],
   ]);
 
+const setElementVisibility = (element: HTMLElement, visible: boolean) =>
+  (element.style.display = visible ? "inherit" : "none");
+
 const createViewer = async () => {
   const viewerEndpoint = new ViewerEndpoint();
   const viewerState = getState();
@@ -60,44 +59,6 @@ const createViewer = async () => {
   const uniformBindings = createUniformBindings();
   const indexBufferInfo = new IndexBufferInfo(webGLController.context);
   const indexBufferBindingValue = new Observable<number[]>([]);
-  // indexBufferInfo.setValue([
-  //   0,
-  //   1,
-  //   2,
-  //   0,
-  //   2,
-  //   3, // front
-  //   4,
-  //   5,
-  //   6,
-  //   4,
-  //   6,
-  //   7, // back
-  //   8,
-  //   9,
-  //   10,
-  //   8,
-  //   10,
-  //   11, // top
-  //   12,
-  //   13,
-  //   14,
-  //   12,
-  //   14,
-  //   15, // bottom
-  //   16,
-  //   17,
-  //   18,
-  //   16,
-  //   18,
-  //   19, // right
-  //   20,
-  //   21,
-  //   22,
-  //   20,
-  //   22,
-  //   23, // left
-  // ]);
   const drawOptions: DrawOptions = { drawMode: "arrays" };
   let cameraPosition: CameraPosition = { longitude: 1, latitude: 1, radius: 2 };
   const cameraPositionManipulator = new CameraPositionManipulator(
@@ -135,6 +96,9 @@ const createViewer = async () => {
       content === "canvas" ? "visible" : "collapse";
     shaderCompilationErrors.style.visibility =
       content === "errors" ? "visible" : "collapse";
+
+    //setElementVisibility(webGLCanvas, content === "canvas");
+    //setElementVisibility(shaderCompilationErrors, content === "errors");
   };
 
   const syncShaderDocuments = () => {
@@ -210,6 +174,13 @@ const createViewer = async () => {
           programUniforms,
           Array.from(uniformBindings.values())
         );
+        if (uniformComponents.length > 0) {
+          shaderOptions.appendChild(
+            createDiv("viewer-shaders-title", [
+              createSectionTitle("UNIFORMS", "").element,
+            ])
+          );
+        }
         uniformComponents.forEach(uc =>
           shaderOptions.appendChild(uc.component)
         );
@@ -220,6 +191,13 @@ const createViewer = async () => {
           programAttributeBuffers,
           Array.from(meshBindings.values())
         );
+        if (attributeBufferComponents.length > 0) {
+          shaderOptions.appendChild(
+            createDiv("viewer-shaders-title", [
+              createSectionTitle("ATTRIBUTE BUFFERS", "").element,
+            ])
+          );
+        }
         attributeBufferComponents.forEach(ab =>
           shaderOptions.appendChild(ab.component)
         );
@@ -314,6 +292,12 @@ const createViewer = async () => {
     withLabel(fragmentDropdownElement, "Fragment Shader")
   );
 
+  viewerOptions.appendChild(
+    createDiv("viewer-shaders-title", [
+      createSectionTitle("DRAW OPTIONS", "").element,
+    ])
+  );
+
   const [meshDropdownElement, meshDropdownController] = createDropdown(
     item => item && onMeshChanged(item.id),
     undefined,
@@ -329,10 +313,21 @@ const createViewer = async () => {
 
   viewerOptions.appendChild(withLabel(meshDropdownElement, "Mesh"));
 
+  const {
+    element: indexBufferElement,
+  } = createIndexBufferComponent(indexBufferBindingValue, newValue =>
+    indexBufferInfo.setValue(newValue)
+  );
+  const indexBufferComponent = withLabel(indexBufferElement, "Indices");
+
   const [drawModeElement, drawModeController] = createDropdown(
     item => {
       if (!item) return;
       drawOptions.drawMode = item.id as "arrays" | "elements";
+      setElementVisibility(
+        indexBufferComponent,
+        drawOptions.drawMode === "elements"
+      );
       setState({ drawMode: item.id });
     },
     undefined,
@@ -345,12 +340,7 @@ const createViewer = async () => {
   drawModeController.setSelectedItemById(viewerState.drawMode);
   viewerOptions.appendChild(withLabel(drawModeElement, "Draw mode"));
 
-  const {
-    element: indexBufferComponent,
-  } = createIndexBufferComponent(indexBufferBindingValue, newValue =>
-    indexBufferInfo.setValue(newValue)
-  );
-  viewerOptions.appendChild(withLabel(indexBufferComponent, "Indices"));
+  viewerOptions.appendChild(indexBufferComponent);
 
   viewerOptions.appendChild(shaderOptions);
 
