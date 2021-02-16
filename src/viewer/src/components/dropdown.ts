@@ -4,7 +4,7 @@ export type DropdownItem = {
 };
 
 const defaultOptions = {
-  emptyItem: true,
+  emptyItem: false,
 };
 
 export const createDropdown = (
@@ -95,20 +95,16 @@ export const createElementsDropdown = (
   elements: { id: string; display: string; element: HTMLElement }[],
   onChange?: (id: string | null) => void
 ) => {
-  const [optionsElement, optionsController] = createDropdown(
-    item => {
-      if (!item) {
-        onChange?.(null);
-        return;
-      }
+  const [optionsElement, optionsController] = createDropdown(item => {
+    if (!item) {
+      onChange?.(null);
+      return;
+    }
 
-      elements.forEach(oe => oe.element.classList.add("hidden"));
-      elements.find(i => i.id === item.id).element.classList.remove("hidden");
-      onChange?.(item.id);
-    },
-    "",
-    { emptyItem: false }
-  );
+    elements.forEach(oe => oe.element.classList.add("hidden"));
+    elements.find(i => i.id === item.id).element.classList.remove("hidden");
+    onChange?.(item.id);
+  });
   optionsController.setItems(
     elements.map(e => ({
       id: e.id,

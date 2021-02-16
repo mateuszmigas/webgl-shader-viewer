@@ -298,19 +298,19 @@ const createViewer = async () => {
     ])
   );
 
-  const [meshDropdownElement, meshDropdownController] = createDropdown(
-    item => item && onMeshChanged(item.id),
-    undefined,
-    { emptyItem: false }
-  );
+  const [meshDropdownElement, meshDropdownController] = createDropdown(item => {
+    if (!item) return;
+
+    onMeshChanged(item.id);
+    setState({ meshId: item.id });
+  });
   meshDropdownController.setItems(
     Array.from(meshes.entries()).map(([key, value]) => ({
       id: key,
       display: value.display,
     }))
   );
-  meshDropdownController.setSelectedItemByIndex(0);
-
+  meshDropdownController.setSelectedItemById(viewerState.meshId);
   viewerOptions.appendChild(withLabel(meshDropdownElement, "Mesh"));
 
   const {
@@ -320,19 +320,15 @@ const createViewer = async () => {
   );
   const indexBufferComponent = withLabel(indexBufferElement, "Indices");
 
-  const [drawModeElement, drawModeController] = createDropdown(
-    item => {
-      if (!item) return;
-      drawOptions.drawMode = item.id as "arrays" | "elements";
-      setElementVisibility(
-        indexBufferComponent,
-        drawOptions.drawMode === "elements"
-      );
-      setState({ drawMode: item.id });
-    },
-    undefined,
-    { emptyItem: false }
-  );
+  const [drawModeElement, drawModeController] = createDropdown(item => {
+    if (!item) return;
+    drawOptions.drawMode = item.id as "arrays" | "elements";
+    setElementVisibility(
+      indexBufferComponent,
+      drawOptions.drawMode === "elements"
+    );
+    setState({ drawMode: item.id });
+  });
   drawModeController.setItems([
     { id: "arrays", display: "Arrays" },
     { id: "elements", display: "Elements" },

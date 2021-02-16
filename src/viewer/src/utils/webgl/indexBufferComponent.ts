@@ -5,7 +5,7 @@ export const createIndexBufferComponent = (
   indexBufferBinding: Observable<number[]>,
   onChange: (newValue: number[]) => void
 ) => {
-  const customIndicesValue = new Observable<number[]>([]);
+  const customIndicesValue = new Observable<number[]>([0, 1, 2]);
   return createSelectionComponent(
     [
       {

@@ -1,2 +1,2 @@
 show optimized uniforms with warning (not active for webgl), requires extra regex parsing
-indices handling
+loading textures
