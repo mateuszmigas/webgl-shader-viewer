@@ -1,6 +1,7 @@
 import { assertNever } from "../typeGuards";
 
 export enum AttributeBufferType {
+  FLOAT_VEC2 = 35664,
   FLOAT_VEC3 = 35665,
   FLOAT_VEC4 = 35666,
 }
@@ -71,6 +72,8 @@ export class AttributeBufferInfo {
 
 const getNumComponents = (bufferType: AttributeBufferType) => {
   switch (bufferType) {
+    case AttributeBufferType.FLOAT_VEC2:
+      return 2;
     case AttributeBufferType.FLOAT_VEC3:
       return 3;
     case AttributeBufferType.FLOAT_VEC4:

@@ -86,30 +86,39 @@ export const createProgram = (
   if (result) {
     return program;
   } else {
+    const infoLog = renderingContext.getProgramInfoLog(program);
     renderingContext.deleteProgram(program);
-
-    throw new Error(
-      `Creating program failed: ${renderingContext.getProgramInfoLog(program)}`
-    );
+    throw new Error(`Creating program failed: ${infoLog}`);
   }
 };
 
 export const getProgramUniforms = (
   context: WebGLRenderingContext,
   program: WebGLProgram
-) => {
+): {
+  dataUniforms: { name: string; type: UniformType }[];
+  textureUniforms: { name: string; unit: number }[];
+} => {
   const numUniforms = context.getProgramParameter(
     program,
     context.ACTIVE_UNIFORMS
   );
-  const result: { name: string; type: UniformType }[] = [];
+  const dataUniforms: { name: string; type: UniformType }[] = [];
+  const textureUniforms: { name: string; unit: number }[] = [];
 
   for (let index = 0; index < numUniforms; ++index) {
     const uniform = context.getActiveUniform(program, index);
-    result.push({ name: uniform.name, type: uniform.type });
+
+    //sampler2D
+    if (uniform.type === 35678) {
+      textureUniforms.push({
+        name: uniform.name,
+        unit: textureUniforms.length,
+      });
+    } else dataUniforms.push({ name: uniform.name, type: uniform.type });
   }
 
-  return result;
+  return { dataUniforms, textureUniforms };
 };
 
 export const getProgramAttributeBuffers = (
@@ -155,7 +164,7 @@ export const renderProgram = (
   context.clear(context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
   //context.enable(context.CULL_FACE);
 
-  renderInfo.uniformInfos.forEach(u => u.setUniform());
+  renderInfo.uniformInfos.forEach(u => u.prepareForRender());
   renderInfo.attributeBufferInfos.forEach(ab => ab.setAttributeBuffer());
 
   const primitiveType = context.TRIANGLES;

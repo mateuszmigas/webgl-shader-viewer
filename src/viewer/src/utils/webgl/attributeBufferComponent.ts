@@ -178,6 +178,10 @@ const createElementForType = (
   currentValue: Observable<any>
 ) => {
   switch (attributeBufferType) {
+    case AttributeBufferType.FLOAT_VEC2:
+      return createElementArray(2, currentValue, editable);
+    case AttributeBufferType.FLOAT_VEC3:
+      return createElementArray(3, currentValue, editable);
     case AttributeBufferType.FLOAT_VEC4:
       return createElementArray(4, currentValue, editable);
     default:

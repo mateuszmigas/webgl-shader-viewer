@@ -192,7 +192,6 @@ const createElementForType = (
       return createElementVector(4, currentValue, editable);
     case UniformType.FLOAT_MAT4:
       return createElementMatrix(4, currentValue, editable);
-    //case UniformType.SAMPLER_2D:
     default:
       return createElementNotSupported();
   }

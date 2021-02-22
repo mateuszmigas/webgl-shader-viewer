@@ -171,7 +171,7 @@ const createViewer = async () => {
         const uniformComponents = createUniformComponents(
           context,
           program,
-          programUniforms,
+          programUniforms.dataUniforms,
           Array.from(uniformBindings.values())
         );
         if (uniformComponents.length > 0) {
@@ -184,6 +184,8 @@ const createViewer = async () => {
         uniformComponents.forEach(uc =>
           shaderOptions.appendChild(uc.component)
         );
+
+        //const textureComponents =
 
         const attributeBufferComponents = createAttributeBufferComponents(
           context,
