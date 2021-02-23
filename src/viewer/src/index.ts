@@ -31,6 +31,7 @@ import { mat4 } from "./utils/math";
 import { UniformType } from "./utils/webgl/uniform";
 import { Observable } from "./utils/observable";
 import { createIndexBufferComponent } from "./utils/webgl/indexBufferComponent";
+import { createTextureComponents } from "./utils/webgl/textureComponent";
 
 export const createUniformBindings = () =>
   new Map<string, UniformBinding>([
@@ -137,9 +138,10 @@ const createViewer = async () => {
   let animationFrameHandle: number = null;
 
   const onMeshChanged = (id: string) => {
-    const { positions, colors, indices } = meshes.get(id);
+    const { positions, colors, textureCoordinates, indices } = meshes.get(id);
     meshBindings.get("positions").value.setValue(positions);
     meshBindings.get("colors").value.setValue(colors);
+    meshBindings.get("textureCoordinates").value.setValue(textureCoordinates);
     indexBufferBindingValue.setValue(indices);
   };
 
@@ -182,6 +184,22 @@ const createViewer = async () => {
           );
         }
         uniformComponents.forEach(uc =>
+          shaderOptions.appendChild(uc.component)
+        );
+
+        const textureComponents = createTextureComponents(
+          context,
+          program,
+          programUniforms.textureUniforms
+        );
+        if (textureComponents.length > 0) {
+          shaderOptions.appendChild(
+            createDiv("viewer-shaders-title", [
+              createSectionTitle("TEXTURES", "").element,
+            ])
+          );
+        }
+        textureComponents.forEach(uc =>
           shaderOptions.appendChild(uc.component)
         );
 

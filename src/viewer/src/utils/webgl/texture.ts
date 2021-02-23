@@ -17,6 +17,10 @@ export class TextureInfo {
     this.location = this.context.getUniformLocation(program, this.name);
   }
 
+  setUnit(newUnit: number) {
+    this.unit = newUnit;
+  }
+
   private isPowerOf2 = (value: number) => {
     return (value & (value - 1)) == 0;
   };
@@ -47,6 +51,7 @@ export class TextureInfo {
       pixel
     );
     const image = new Image();
+    image.crossOrigin = "";
     image.onload = () => {
       this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
       this.context.texImage2D(

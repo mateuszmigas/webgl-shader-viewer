@@ -1,4 +1,4 @@
-import { Vector4Array } from "./types";
+import { Vector2Array, Vector4Array } from "./types";
 import { Observable } from "./utils/observable";
 import { AttributeBufferType } from "./utils/webgl/attributeBuffer";
 
@@ -6,6 +6,7 @@ type MeshInfo = {
   display: string;
   positions: Vector4Array[];
   colors: Vector4Array[];
+  textureCoordinates: Vector2Array[];
   indices: number[];
 };
 
@@ -63,6 +64,38 @@ export const meshes = new Map<string, MeshInfo>([
         ...repeat4Times([1.0, 1.0, 0.0, 1.0]), // Right face: yellow
         ...repeat4Times([1.0, 0.0, 1.0, 1.0]), // Left face: purple
       ],
+      textureCoordinates: [
+        // Front
+        [0.0, 0.0],
+        [1.0, 0.0],
+        [1.0, 1.0],
+        [0.0, 1.0],
+        // Back
+        [0.0, 0.0],
+        [1.0, 0.0],
+        [1.0, 1.0],
+        [0.0, 1.0],
+        // Top
+        [0.0, 0.0],
+        [1.0, 0.0],
+        [1.0, 1.0],
+        [0.0, 1.0],
+        // Bottom
+        [0.0, 0.0],
+        [1.0, 0.0],
+        [1.0, 1.0],
+        [0.0, 1.0],
+        // Right
+        [0.0, 0.0],
+        [1.0, 0.0],
+        [1.0, 1.0],
+        [0.0, 1.0],
+        // Lef]t
+        [0.0, 0.0],
+        [1.0, 0.0],
+        [1.0, 1.0],
+        [0.0, 1.0],
+      ],
       indices: [
         0,
         1,
@@ -114,6 +147,12 @@ export const meshes = new Map<string, MeshInfo>([
         [-0.5, 0.5, 0, 1],
       ],
       colors: repeat4Times([1.0, 1.0, 1.0, 1.0]),
+      textureCoordinates: [
+        [0.0, 0.0],
+        [1.0, 0.0],
+        [1.0, 1.0],
+        [0.0, 1.0],
+      ],
       indices: [0, 1, 2, 0, 2, 3],
     },
   ],
@@ -128,6 +167,14 @@ export const createMeshBindings = () =>
       {
         name: "Binding - Mesh positions",
         type: AttributeBufferType.FLOAT_VEC4,
+        value: new Observable([]),
+      },
+    ],
+    [
+      "textureCoordinates",
+      {
+        name: "Binding - Mesh texture coords",
+        type: AttributeBufferType.FLOAT_VEC2,
         value: new Observable([]),
       },
     ],
