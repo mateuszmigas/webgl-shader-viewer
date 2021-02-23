@@ -93,7 +93,7 @@ export class TextureInfo {
 
   prepareForRender() {
     if (this.texture !== null) {
-      this.context.activeTexture(this.context.TEXTURE + this.unit);
+      this.context.activeTexture(this.context.TEXTURE0 + this.unit);
       this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
       this.context.uniform1i(this.location, this.unit);
     }

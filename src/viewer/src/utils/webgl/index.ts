@@ -1,3 +1,4 @@
+import { TextureInfo } from "./texture";
 import { IndexBufferInfo } from "./indexBuffer";
 import { removeLast } from "../../../../common/array";
 import { hasProperty } from "../typeGuards";
@@ -145,9 +146,9 @@ export const renderProgram = (
   program: WebGLProgram,
   renderInfo: {
     uniformInfos: UniformInfo[];
+    textureInfos: TextureInfo[];
     attributeBufferInfos: AttributeBufferInfo[];
     indexBufferInfo: IndexBufferInfo;
-    //textures
   },
   drawOptions: DrawOptions
 ) => {
@@ -165,6 +166,7 @@ export const renderProgram = (
   //context.enable(context.CULL_FACE);
 
   renderInfo.uniformInfos.forEach(u => u.prepareForRender());
+  renderInfo.textureInfos.forEach(u => u.prepareForRender());
   renderInfo.attributeBufferInfos.forEach(ab => ab.setAttributeBuffer());
 
   const primitiveType = context.TRIANGLES;
