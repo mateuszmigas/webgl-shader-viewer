@@ -56,7 +56,7 @@ export const createTextureComponents = (
       );
 
       const element = createElementUrl(
-        "https://raw.githubusercontent.com/mdn/webgl-examples/gh-pages/tutorial/sample6/cubetexture.png",
+        "https://i.imgur.com/vXDWqIH.jpeg",
         url => textureInfo.setUrl(url)
       );
 
