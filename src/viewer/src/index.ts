@@ -224,8 +224,6 @@ const createViewer = async () => {
 
         const uniformInfos = uniformComponents.map(uc => uc.uniformInfo);
         const textureInfos = textureComponents.map(tc => tc.textureInfo);
-        console.log("ti", textureInfos);
-
         const attributeBufferInfos = attributeBufferComponents.map(
           abc => abc.attributeBufferInfo
         );

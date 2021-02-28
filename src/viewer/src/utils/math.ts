@@ -1,3 +1,5 @@
+export const isPowerOf2 = (value: number) => (value & (value - 1)) == 0;
+
 //gl-matrix functions
 export namespace mat4 {
   const EPSILON = 0.000001;
