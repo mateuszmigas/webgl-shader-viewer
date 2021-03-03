@@ -1,3 +1,9 @@
+import { Observable } from "./../observable";
+import {
+  createObservableElement,
+  createSelectionComponent,
+  createTextInput,
+} from "./common";
 import { withLabel } from "../../components/wrappers";
 import { CompositeKeyMap } from "../compositeKeyMap";
 import { TextureInfo } from "./texture";
@@ -55,9 +61,11 @@ export const createTextureComponents = (
         index
       );
 
-      const element = createElementUrl(
-        "https://i.imgur.com/vXDWqIH.jpeg",
-        url => textureInfo.setUrl(url)
+      const updateUrl = (value: any) => textureInfo.setUrl(value);
+
+      const { element, dispose } = createSelectionComponent(
+        [createCustomOption()],
+        updateUrl
       );
 
       return {
@@ -67,7 +75,7 @@ export const createTextureComponents = (
           textureInfo,
           dispose: () => {
             textureInfo.deleteTexture();
-            //dispose?.();
+            dispose?.();
           },
         },
       };
@@ -78,17 +86,13 @@ export const createTextureComponents = (
   return components.map(c => c.value);
 };
 
-export const createElementUrl = (
-  initialValue: string,
-  onChange: (newValue: string) => void
-) => {
-  const input = document.createElement("input");
-  input.className = "edit-input";
-  input.value = initialValue;
-  input.onblur = () => {
-    onChange(input.value);
+const createCustomOption = () => {
+  return {
+    id: "custom",
+    display: "Custom",
+    ...createObservableElement(
+      value => createTextInput(value, true),
+      "https://i.imgur.com/vXDWqIH.jpeg"
+    ),
   };
-  onChange(initialValue);
-
-  return input;
 };

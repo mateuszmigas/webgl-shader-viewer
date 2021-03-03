@@ -11,9 +11,9 @@ import {
   createElementMatrix,
   createElementNotSupported,
   createElementVector,
+  createObservableElement,
   createSelectionComponent,
 } from "./common";
-import { createMatrix } from "../../components/inputMatrix";
 
 type CacheKey = {
   name: string;
@@ -46,7 +46,6 @@ const rebuildCache = (newValues: { key: CacheKey; value: CacheValue }[]) => {
   });
 };
 
-//todo
 const getDefaultValue = (type: UniformType) => {
   switch (type) {
     case UniformType.FLOAT_VEC2:
@@ -106,7 +105,12 @@ export const createUniformComponents = (
             ],
             updateUniform
           )
-        : createEditableComponent(uniformInfo, updateUniform);
+        : createObservableElement(
+            value =>
+              createElementForType(uniformInfo.getUniformType(), true, value),
+            getDefaultValue(uniformInfo.getUniformType()),
+            updateUniform
+          );
 
       return {
         key,
@@ -129,7 +133,10 @@ const createCustomOption = (uniformInfo: UniformInfo) => {
   return {
     id: "custom",
     display: "Custom",
-    ...createEditableComponent(uniformInfo),
+    ...createObservableElement(
+      value => createElementForType(uniformInfo.getUniformType(), true, value),
+      getDefaultValue(uniformInfo.getUniformType())
+    ),
   };
 };
 
@@ -153,45 +160,20 @@ const createBindingOptions = (
   });
 };
 
-const createEditableComponent = (
-  uniformInfo: UniformInfo,
-  onChange?: (value: any) => void
-) => {
-  const initialValue = getDefaultValue(uniformInfo.getUniformType());
-  const customValue = new Observable<any>(initialValue);
-
-  if (onChange) {
-    customValue.attach((value: any) => onChange(value));
-    onChange(initialValue);
-  }
-
-  const element = createElementForType(
-    uniformInfo.getUniformType(),
-    true,
-    customValue
-  );
-
-  return {
-    element,
-    value: customValue,
-    dispose: () => customValue.detachAll(),
-  };
-};
-
 const createElementForType = (
   uniformType: UniformType,
-  editable: boolean,
-  currentValue: Observable<any>
+  readonly: boolean,
+  value: Observable<any>
 ) => {
   switch (uniformType) {
     case UniformType.FLOAT_VEC2:
-      return createElementVector(2, currentValue, editable);
+      return createElementVector(2, value, readonly);
     case UniformType.FLOAT_VEC3:
-      return createElementVector(3, currentValue, editable);
+      return createElementVector(3, value, readonly);
     case UniformType.FLOAT_VEC4:
-      return createElementVector(4, currentValue, editable);
+      return createElementVector(4, value, readonly);
     case UniformType.FLOAT_MAT4:
-      return createElementMatrix(4, currentValue, editable);
+      return createElementMatrix(4, value, readonly);
     default:
       return createElementNotSupported();
   }
