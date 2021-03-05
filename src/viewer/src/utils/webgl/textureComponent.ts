@@ -1,4 +1,3 @@
-import { Observable } from "./../observable";
 import {
   createObservableElement,
   createSelectionComponent,
@@ -7,6 +6,9 @@ import {
 import { withLabel } from "../../components/wrappers";
 import { CompositeKeyMap } from "../compositeKeyMap";
 import { TextureInfo } from "./texture";
+import { loadImage } from "../image";
+import { viewerEndpoint } from "../../../../common/communication/viewerEndpoint";
+import { Observable } from "../observable";
 
 type CacheKey = {
   name: string;
@@ -61,10 +63,26 @@ export const createTextureComponents = (
         index
       );
 
-      const updateUrl = (value: any) => textureInfo.setUrl(value);
+      const updateUrl = (value: string | { type: string; value: string }) => {
+        console.log("update", value);
+
+        if (typeof value === "string") {
+          loadImage(value).then(img => textureInfo.setSource(img));
+        } else {
+          if (value.type === "vscode-webview-resource") {
+            viewerEndpoint.getExtensionFileUri(value.value).then(x => {
+              loadImage(x).then(img => textureInfo.setSource(img));
+            });
+          }
+        }
+      };
 
       const { element, dispose } = createSelectionComponent(
-        [createCustomOption()],
+        [
+          createCustomOption(),
+          createLocalImageOption("texture1.jpg") as any,
+          createLocalImageOption("texture2.jpg") as any,
+        ],
         updateUrl
       );
 
@@ -91,8 +109,20 @@ const createCustomOption = () => {
     id: "custom",
     display: "Custom",
     ...createObservableElement(
-      value => createTextInput(value, true),
+      value => createTextInput(value, false),
       "https://i.imgur.com/vXDWqIH.jpeg"
     ),
+  };
+};
+
+const createLocalImageOption = (fileName: string) => {
+  return {
+    id: fileName,
+    display: fileName,
+    value: new Observable<{ type: string; value: string }>({
+      type: "vscode-webview-resource",
+      value: fileName,
+    }),
+    element: document.createElement("div"),
   };
 };

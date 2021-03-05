@@ -1,3 +1,4 @@
+import * as vscode from "vscode";
 import { remove } from "../array";
 import { uuidv4 } from "../uuid";
 import { MessageResponse } from "./messages";
@@ -5,7 +6,7 @@ import { vscodeApi } from "./vscodeApi";
 
 type ResponseListener = (message: MessageResponse) => void;
 
-export class ViewerEndpoint {
+class ViewerEndpoint {
   eventListeners: ResponseListener[] = [];
 
   constructor() {
@@ -55,6 +56,30 @@ export class ViewerEndpoint {
     });
   }
 
+  getExtensionFileUri(fileName: string) {
+    const messageId = uuidv4();
+
+    vscodeApi.postMessage({
+      type: "getExtensionFileUri",
+      id: messageId,
+      payload: { fileName },
+    });
+
+    return new Promise<string>(resolve => {
+      const listener = (message: MessageResponse) => {
+        if (
+          message.type === "getExtensionFileUri" &&
+          message.id === messageId
+        ) {
+          resolve(message.payload.uri);
+          this.removeListener(listener);
+        }
+      };
+
+      this.eventListeners.push(listener);
+    });
+  }
+
   subscribeToDocumentSave(
     filePath: string,
     callback: (newContent: string) => void
@@ -87,3 +112,5 @@ export class ViewerEndpoint {
     remove(this.eventListeners, listener);
   }
 }
+
+export const viewerEndpoint = new ViewerEndpoint();

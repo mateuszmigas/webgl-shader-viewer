@@ -22,6 +22,7 @@ export class Panel {
       column || vscode.ViewColumn.One,
       {
         enableScripts: true,
+        enableCommandUris: true,
         localResourceRoots: [vscode.Uri.joinPath(extensionUri, "media")],
       }
     );
@@ -39,7 +40,8 @@ export class Panel {
   ) {
     this.panel.webview.html = this._getHtmlForWebview();
     const listener = panelEndpoint(
-      msg => this.panel.webview.postMessage(msg),
+      this.panel.webview,
+      extensionUri,
       this.disposables
     );
     this.panel.webview.onDidReceiveMessage(listener, null, this.disposables);

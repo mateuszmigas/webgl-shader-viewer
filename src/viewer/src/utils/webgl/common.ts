@@ -16,7 +16,7 @@ export const createSelectionComponent = <T>(
     id: string;
     display: string;
     value: Observable<T>;
-    element: HTMLElement;
+    element: HTMLElement | null;
   }[],
   onChange: (value: T) => void
 ) => {
@@ -30,7 +30,7 @@ export const createSelectionComponent = <T>(
       callback(option.value.getValue());
       detach = () => option.value.detach(callback);
     }),
-    ...options.map(o => o.element),
+    ...options.filter(o => !!o.element).map(o => o.element),
   ]);
 
   return {
@@ -105,7 +105,7 @@ export const createTextInput = (
 ) => {
   const input = document.createElement("input");
   input.className = "edit-input";
-  input.disabled = !readonly;
+  input.disabled = readonly;
   const listener = (value: string) => (input.value = value);
   value.attach(listener);
   input.value = value.getValue();

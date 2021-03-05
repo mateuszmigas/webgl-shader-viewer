@@ -1,4 +1,3 @@
-import { loadImage } from "../image";
 import { isPowerOf2 } from "../math";
 
 export class TextureInfo {
@@ -25,42 +24,40 @@ export class TextureInfo {
     this.unit = newUnit;
   }
 
-  setUrl(url: string) {
-    loadImage(url).then(image => {
-      const level = 0;
-      const internalFormat = this.context.RGBA;
-      const srcFormat = this.context.RGBA;
-      const srcType = this.context.UNSIGNED_BYTE;
-      this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
-      this.context.texImage2D(
+  setSource(source: TexImageSource) {
+    const level = 0;
+    const internalFormat = this.context.RGBA;
+    const srcFormat = this.context.RGBA;
+    const srcType = this.context.UNSIGNED_BYTE;
+    this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
+    this.context.texImage2D(
+      this.context.TEXTURE_2D,
+      level,
+      internalFormat,
+      srcFormat,
+      srcType,
+      source
+    );
+    //Generate mipmaps for power of 2 images
+    if (isPowerOf2(source.width) && isPowerOf2(source.height)) {
+      this.context.generateMipmap(this.context.TEXTURE_2D);
+    } else {
+      this.context.texParameteri(
         this.context.TEXTURE_2D,
-        level,
-        internalFormat,
-        srcFormat,
-        srcType,
-        image
+        this.context.TEXTURE_WRAP_S,
+        this.context.CLAMP_TO_EDGE
       );
-      //Generate mipmaps for power of 2 images
-      if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
-        this.context.generateMipmap(this.context.TEXTURE_2D);
-      } else {
-        this.context.texParameteri(
-          this.context.TEXTURE_2D,
-          this.context.TEXTURE_WRAP_S,
-          this.context.CLAMP_TO_EDGE
-        );
-        this.context.texParameteri(
-          this.context.TEXTURE_2D,
-          this.context.TEXTURE_WRAP_T,
-          this.context.CLAMP_TO_EDGE
-        );
-        this.context.texParameteri(
-          this.context.TEXTURE_2D,
-          this.context.TEXTURE_MIN_FILTER,
-          this.context.LINEAR
-        );
-      }
-    });
+      this.context.texParameteri(
+        this.context.TEXTURE_2D,
+        this.context.TEXTURE_WRAP_T,
+        this.context.CLAMP_TO_EDGE
+      );
+      this.context.texParameteri(
+        this.context.TEXTURE_2D,
+        this.context.TEXTURE_MIN_FILTER,
+        this.context.LINEAR
+      );
+    }
   }
 
   prepareForRender() {

@@ -1,3 +1,4 @@
+import { viewerEndpoint } from "./../../common/communication/viewerEndpoint";
 import {
   CameraPosition,
   CameraPositionManipulator,
@@ -26,13 +27,11 @@ import {
 } from "./utils/webgl/index";
 import { createAttributeBufferComponents } from "./utils/webgl/attributeBufferComponent";
 import { createWebGLCanvas } from "./components/webglCanvas";
-import { ViewerEndpoint } from "../../common/communication/viewerEndpoint";
 import { createMeshBindings, meshes } from "./meshes";
 import { mat4 } from "./utils/math";
 import { UniformType } from "./utils/webgl/uniform";
 import { Observable } from "./utils/observable";
 import { createIndexBufferComponent } from "./utils/webgl/indexBufferComponent";
-import { createTextureComponents } from "./utils/webgl/textureComponent";
 
 export const createUniformBindings = () =>
   new Map<string, UniformBinding>([
@@ -50,7 +49,6 @@ const setElementVisibility = (element: HTMLElement, visible: boolean) =>
   (element.style.display = visible ? "inherit" : "none");
 
 const createViewer = async () => {
-  const viewerEndpoint = new ViewerEndpoint();
   const viewerState = getState();
   const viewer = document.getElementById("viewer");
   const viewerOptions = createDiv("viewer-options");
