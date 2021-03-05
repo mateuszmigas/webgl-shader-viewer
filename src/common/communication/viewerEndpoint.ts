@@ -15,17 +15,21 @@ class ViewerEndpoint {
     });
   }
 
-  getShaderDocuments() {
+  getWorkspaceFilesOfTypes(extensions: string[]) {
     const messageId = uuidv4();
 
     vscodeApi.postMessage({
-      type: "getShaderDocuments",
+      type: "getWorkspaceFilesOfTypes",
       id: messageId,
+      payload: { extensions },
     });
 
-    return new Promise<{ filePath: string; fileName: string }[]>(resolve => {
+    return new Promise<{ uri: string; fileName: string }[]>(resolve => {
       const listener = (message: MessageResponse) => {
-        if (message.type === "getShaderDocuments" && message.id === messageId) {
+        if (
+          message.type === "getWorkspaceFilesOfTypes" &&
+          message.id === messageId
+        ) {
           resolve(message.payload.files);
           this.removeListener(listener);
         }

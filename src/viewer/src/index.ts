@@ -32,6 +32,7 @@ import { mat4 } from "./utils/math";
 import { UniformType } from "./utils/webgl/uniform";
 import { Observable } from "./utils/observable";
 import { createIndexBufferComponent } from "./utils/webgl/indexBufferComponent";
+import { imageExtensions, shaderExtensions } from "./constants";
 
 export const createUniformBindings = () =>
   new Map<string, UniformBinding>([
@@ -108,10 +109,10 @@ const createViewer = async () => {
     //setElementVisibility(shaderCompilationErrors, content === "errors");
   };
 
-  const syncShaderDocuments = () => {
-    viewerEndpoint.getShaderDocuments().then(sd => {
+  const sync = () => {
+    viewerEndpoint.getWorkspaceFilesOfTypes(shaderExtensions).then(sd => {
       const files = sd.map(f => ({
-        id: f.filePath,
+        id: f.uri,
         display: f.fileName,
       }));
 
@@ -134,6 +135,9 @@ const createViewer = async () => {
         fragmentDropdownController.setSelectedItemById(
           viewerState.fragmentFilePath
         );
+    });
+    viewerEndpoint.getWorkspaceFilesOfTypes(imageExtensions).then(id => {
+      console.log("id", id);
     });
   };
 
@@ -234,8 +238,7 @@ const createViewer = async () => {
   viewerOptions.appendChild(
     createDiv("viewer-shaders-title", [
       createSectionTitle(translations.shaders, "").element,
-      createButton("Sync", "viewer-refresh-button", syncShaderDocuments)
-        .element,
+      createButton("Sync", "viewer-refresh-button", sync).element,
     ])
   );
 
@@ -339,7 +342,7 @@ const createViewer = async () => {
 
   viewerOptions.appendChild(shaderOptions);
 
-  syncShaderDocuments();
+  sync();
 };
 
 createViewer();

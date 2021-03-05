@@ -1,7 +1,9 @@
-import * as vscode from "vscode";
-
 export type MessageRequest =
-  | { type: "getShaderDocuments"; id: string }
+  | {
+      type: "getWorkspaceFilesOfTypes";
+      id: string;
+      payload: { extensions: string[] };
+    }
   | { type: "getDocumentText"; id: string; payload: { fileName: string } }
   | { type: "getExtensionFileUri"; id: string; payload: { fileName: string } }
   | { type: "subscribeToDocumentTextChange"; payload: { fileName: string } }
@@ -9,9 +11,9 @@ export type MessageRequest =
 
 export type MessageResponse =
   | {
-      type: "getShaderDocuments";
+      type: "getWorkspaceFilesOfTypes";
       id: string;
-      payload: { files: { filePath: string; fileName: string }[] };
+      payload: { files: { uri: string; fileName: string }[] };
     }
   | {
       type: "getDocumentText";

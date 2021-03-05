@@ -27,18 +27,20 @@ export const panelEndpoint = (
     );
 
     switch (message.type) {
-      case "getShaderDocuments": {
-        vscode.workspace.findFiles("**/*.glsl").then(documents => {
-          postMessage({
-            ...message,
-            payload: {
-              files: documents.map(sd => ({
-                filePath: sd.fsPath,
-                fileName: path.basename(sd.fsPath),
-              })),
-            },
+      case "getWorkspaceFilesOfTypes": {
+        vscode.workspace
+          .findFiles(`**/*.{${message.payload.extensions.join(",")}}`)
+          .then(documents => {
+            postMessage({
+              ...message,
+              payload: {
+                files: documents.map(sd => ({
+                  uri: sd.fsPath,
+                  fileName: path.basename(sd.fsPath),
+                })),
+              },
+            });
           });
-        });
         break;
       }
       case "getDocumentText": {
