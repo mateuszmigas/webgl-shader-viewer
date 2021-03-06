@@ -27,6 +27,12 @@ export const panelEndpoint = (
     );
 
     switch (message.type) {
+      case "showWebViewDevTools": {
+        vscode.commands.executeCommand(
+          "workbench.action.webview.openDeveloperTools"
+        );
+        break;
+      }
       case "getWorkspaceFilesOfTypes": {
         vscode.workspace
           .findFiles(`**/*.{${message.payload.extensions.join(",")}}`)

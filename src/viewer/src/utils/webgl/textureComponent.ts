@@ -1,3 +1,4 @@
+import { imageExtensions } from "./../../constants";
 import {
   createObservableElement,
   createSelectionComponent,
@@ -76,6 +77,10 @@ export const createTextureComponents = (
           }
         }
       };
+
+      viewerEndpoint.getWorkspaceFilesOfTypes(imageExtensions).then(x => {
+        console.log(x);
+      });
 
       const { element, dispose } = createSelectionComponent(
         [

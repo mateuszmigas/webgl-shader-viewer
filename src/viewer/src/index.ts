@@ -343,6 +343,8 @@ const createViewer = async () => {
   viewerOptions.appendChild(shaderOptions);
 
   sync();
+
+  viewerEndpoint.showWebViewDevTools();
 };
 
 createViewer();

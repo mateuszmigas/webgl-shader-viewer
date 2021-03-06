@@ -1,2 +1,3 @@
 1. show optimized uniforms with warning (not active for webgl), requires extra regex parsing
 2. textures from workspace
+3. async loading at start
