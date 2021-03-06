@@ -1,3 +1,4 @@
+import { viewerEndpoint } from "./../../common/communication/viewerEndpoint";
 import {
   CameraPosition,
   CameraPositionManipulator,
@@ -16,6 +17,7 @@ import {
 } from "./utils/webgl/uniformComponent";
 import {
   compileShadersFromSource,
+  createComponentsForProgram,
   DrawOptions,
   formatShaderCompileErrors,
   getProgramAttributeBuffers,
@@ -25,12 +27,12 @@ import {
 } from "./utils/webgl/index";
 import { createAttributeBufferComponents } from "./utils/webgl/attributeBufferComponent";
 import { createWebGLCanvas } from "./components/webglCanvas";
-import { ViewerEndpoint } from "../../common/communication/viewerEndpoint";
 import { createMeshBindings, meshes } from "./meshes";
 import { mat4 } from "./utils/math";
 import { UniformType } from "./utils/webgl/uniform";
 import { Observable } from "./utils/observable";
 import { createIndexBufferComponent } from "./utils/webgl/indexBufferComponent";
+import { imageExtensions, shaderExtensions } from "./constants";
 
 export const createUniformBindings = () =>
   new Map<string, UniformBinding>([
@@ -48,7 +50,6 @@ const setElementVisibility = (element: HTMLElement, visible: boolean) =>
   (element.style.display = visible ? "inherit" : "none");
 
 const createViewer = async () => {
-  const viewerEndpoint = new ViewerEndpoint();
   const viewerState = getState();
   const viewer = document.getElementById("viewer");
   const viewerOptions = createDiv("viewer-options");
@@ -91,6 +92,13 @@ const createViewer = async () => {
   viewer.appendChild(shaderCompilationErrors);
   viewer.appendChild(viewerOptions);
 
+  const addSectionWithElements = (elements: HTMLElement[], title: string) => {
+    shaderOptions.appendChild(
+      createDiv("viewer-shaders-title", [createSectionTitle(title, "").element])
+    );
+    elements.forEach(e => shaderOptions.appendChild(e));
+  };
+
   const showContent = (content: "canvas" | "errors" | "none") => {
     webGLCanvas.style.visibility =
       content === "canvas" ? "visible" : "collapse";
@@ -101,10 +109,10 @@ const createViewer = async () => {
     //setElementVisibility(shaderCompilationErrors, content === "errors");
   };
 
-  const syncShaderDocuments = () => {
-    viewerEndpoint.getShaderDocuments().then(sd => {
+  const sync = () => {
+    viewerEndpoint.getWorkspaceFilesOfTypes(shaderExtensions).then(sd => {
       const files = sd.map(f => ({
-        id: f.filePath,
+        id: f.uri,
         display: f.fileName,
       }));
 
@@ -128,6 +136,9 @@ const createViewer = async () => {
           viewerState.fragmentFilePath
         );
     });
+    viewerEndpoint.getWorkspaceFilesOfTypes(imageExtensions).then(id => {
+      console.log("id", id);
+    });
   };
 
   let selectedVertexFileWatcherUnsubscribe: () => void | undefined;
@@ -137,9 +148,11 @@ const createViewer = async () => {
   let animationFrameHandle: number = null;
 
   const onMeshChanged = (id: string) => {
-    const { positions, colors, indices } = meshes.get(id);
+    const { positions, colors, textureCoordinates, indices } = meshes.get(id);
+    //todo make it strongly typed object
     meshBindings.get("positions").value.setValue(positions);
     meshBindings.get("colors").value.setValue(colors);
+    meshBindings.get("textureCoordinates").value.setValue(textureCoordinates);
     indexBufferBindingValue.setValue(indices);
   };
 
@@ -162,47 +175,36 @@ const createViewer = async () => {
       } else {
         showContent("canvas");
         const program = result as WebGLProgram;
-        const programUniforms = getProgramUniforms(context, program);
-        const programAttributeBuffers = getProgramAttributeBuffers(
-          context,
-          program
-        );
+        const {
+          uniformComponents,
+          textureComponents,
+          attributeBufferComponents,
+        } = createComponentsForProgram(context, program, {
+          uniform: uniformBindings,
+          mesh: meshBindings,
+        });
 
-        const uniformComponents = createUniformComponents(
-          context,
-          program,
-          programUniforms,
-          Array.from(uniformBindings.values())
-        );
         if (uniformComponents.length > 0) {
-          shaderOptions.appendChild(
-            createDiv("viewer-shaders-title", [
-              createSectionTitle("UNIFORMS", "").element,
-            ])
+          addSectionWithElements(
+            uniformComponents.map(uc => uc.component),
+            "UNIFORMS"
           );
         }
-        uniformComponents.forEach(uc =>
-          shaderOptions.appendChild(uc.component)
-        );
-
-        const attributeBufferComponents = createAttributeBufferComponents(
-          context,
-          program,
-          programAttributeBuffers,
-          Array.from(meshBindings.values())
-        );
+        if (textureComponents.length > 0) {
+          addSectionWithElements(
+            textureComponents.map(tc => tc.component),
+            "TEXTURES"
+          );
+        }
         if (attributeBufferComponents.length > 0) {
-          shaderOptions.appendChild(
-            createDiv("viewer-shaders-title", [
-              createSectionTitle("ATTRIBUTE BUFFERS", "").element,
-            ])
+          addSectionWithElements(
+            attributeBufferComponents.map(ab => ab.component),
+            "ATTRIBUTE BUFFERS"
           );
         }
-        attributeBufferComponents.forEach(ab =>
-          shaderOptions.appendChild(ab.component)
-        );
 
         const uniformInfos = uniformComponents.map(uc => uc.uniformInfo);
+        const textureInfos = textureComponents.map(tc => tc.textureInfo);
         const attributeBufferInfos = attributeBufferComponents.map(
           abc => abc.attributeBufferInfo
         );
@@ -216,6 +218,7 @@ const createViewer = async () => {
             program,
             {
               uniformInfos,
+              textureInfos,
               attributeBufferInfos,
               indexBufferInfo,
             },
@@ -235,8 +238,7 @@ const createViewer = async () => {
   viewerOptions.appendChild(
     createDiv("viewer-shaders-title", [
       createSectionTitle(translations.shaders, "").element,
-      createButton("Sync", "viewer-refresh-button", syncShaderDocuments)
-        .element,
+      createButton("Sync", "viewer-refresh-button", sync).element,
     ])
   );
 
@@ -340,7 +342,7 @@ const createViewer = async () => {
 
   viewerOptions.appendChild(shaderOptions);
 
-  syncShaderDocuments();
+  sync();
 };
 
 createViewer();

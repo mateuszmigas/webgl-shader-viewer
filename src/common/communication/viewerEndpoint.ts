@@ -1,3 +1,4 @@
+import * as vscode from "vscode";
 import { remove } from "../array";
 import { uuidv4 } from "../uuid";
 import { MessageResponse } from "./messages";
@@ -5,7 +6,7 @@ import { vscodeApi } from "./vscodeApi";
 
 type ResponseListener = (message: MessageResponse) => void;
 
-export class ViewerEndpoint {
+class ViewerEndpoint {
   eventListeners: ResponseListener[] = [];
 
   constructor() {
@@ -14,17 +15,21 @@ export class ViewerEndpoint {
     });
   }
 
-  getShaderDocuments() {
+  getWorkspaceFilesOfTypes(extensions: string[]) {
     const messageId = uuidv4();
 
     vscodeApi.postMessage({
-      type: "getShaderDocuments",
+      type: "getWorkspaceFilesOfTypes",
       id: messageId,
+      payload: { extensions },
     });
 
-    return new Promise<{ filePath: string; fileName: string }[]>(resolve => {
+    return new Promise<{ uri: string; fileName: string }[]>(resolve => {
       const listener = (message: MessageResponse) => {
-        if (message.type === "getShaderDocuments" && message.id === messageId) {
+        if (
+          message.type === "getWorkspaceFilesOfTypes" &&
+          message.id === messageId
+        ) {
           resolve(message.payload.files);
           this.removeListener(listener);
         }
@@ -47,6 +52,30 @@ export class ViewerEndpoint {
       const listener = (message: MessageResponse) => {
         if (message.type === "getDocumentText" && message.id === messageId) {
           resolve(message.payload.text);
+          this.removeListener(listener);
+        }
+      };
+
+      this.eventListeners.push(listener);
+    });
+  }
+
+  getExtensionFileUri(fileName: string) {
+    const messageId = uuidv4();
+
+    vscodeApi.postMessage({
+      type: "getExtensionFileUri",
+      id: messageId,
+      payload: { fileName },
+    });
+
+    return new Promise<string>(resolve => {
+      const listener = (message: MessageResponse) => {
+        if (
+          message.type === "getExtensionFileUri" &&
+          message.id === messageId
+        ) {
+          resolve(message.payload.uri);
           this.removeListener(listener);
         }
       };
@@ -87,3 +116,5 @@ export class ViewerEndpoint {
     remove(this.eventListeners, listener);
   }
 }
+
+export const viewerEndpoint = new ViewerEndpoint();

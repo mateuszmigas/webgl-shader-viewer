@@ -1,8 +1,13 @@
+import { TextureInfo } from "./texture";
 import { IndexBufferInfo } from "./indexBuffer";
 import { removeLast } from "../../../../common/array";
 import { hasProperty } from "../typeGuards";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
 import { UniformInfo, UniformType } from "./uniform";
+import { Observable } from "../observable";
+import { createAttributeBufferComponents } from "./attributeBufferComponent";
+import { createTextureComponents } from "./textureComponent";
+import { UniformBinding, createUniformComponents } from "./uniformComponent";
 
 export type DrawOptions = {
   drawMode: "elements" | "arrays";
@@ -86,30 +91,39 @@ export const createProgram = (
   if (result) {
     return program;
   } else {
+    const infoLog = renderingContext.getProgramInfoLog(program);
     renderingContext.deleteProgram(program);
-
-    throw new Error(
-      `Creating program failed: ${renderingContext.getProgramInfoLog(program)}`
-    );
+    throw new Error(`Creating program failed: ${infoLog}`);
   }
 };
 
 export const getProgramUniforms = (
   context: WebGLRenderingContext,
   program: WebGLProgram
-) => {
+): {
+  dataUniforms: { name: string; type: UniformType }[];
+  textureUniforms: { name: string; unit: number }[];
+} => {
   const numUniforms = context.getProgramParameter(
     program,
     context.ACTIVE_UNIFORMS
   );
-  const result: { name: string; type: UniformType }[] = [];
+  const dataUniforms: { name: string; type: UniformType }[] = [];
+  const textureUniforms: { name: string; unit: number }[] = [];
 
   for (let index = 0; index < numUniforms; ++index) {
     const uniform = context.getActiveUniform(program, index);
-    result.push({ name: uniform.name, type: uniform.type });
+
+    //sampler2D
+    if (uniform.type === 35678) {
+      textureUniforms.push({
+        name: uniform.name,
+        unit: textureUniforms.length,
+      });
+    } else dataUniforms.push({ name: uniform.name, type: uniform.type });
   }
 
-  return result;
+  return { dataUniforms, textureUniforms };
 };
 
 export const getProgramAttributeBuffers = (
@@ -136,9 +150,9 @@ export const renderProgram = (
   program: WebGLProgram,
   renderInfo: {
     uniformInfos: UniformInfo[];
+    textureInfos: TextureInfo[];
     attributeBufferInfos: AttributeBufferInfo[];
     indexBufferInfo: IndexBufferInfo;
-    //textures
   },
   drawOptions: DrawOptions
 ) => {
@@ -155,7 +169,8 @@ export const renderProgram = (
   context.clear(context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
   //context.enable(context.CULL_FACE);
 
-  renderInfo.uniformInfos.forEach(u => u.setUniform());
+  renderInfo.uniformInfos.forEach(u => u.prepareForRender());
+  renderInfo.textureInfos.forEach(u => u.prepareForRender());
   renderInfo.attributeBufferInfos.forEach(ab => ab.setAttributeBuffer());
 
   const primitiveType = context.TRIANGLES;
@@ -195,4 +210,44 @@ export const formatShaderCompileErrors = (result: ShaderCompileErrors) => {
   }
 
   return errors.join("\r\n");
+};
+
+export const createComponentsForProgram = (
+  context: WebGLRenderingContext,
+  program: WebGLProgram,
+  bindings: {
+    uniform: Map<string, UniformBinding>;
+    mesh: Map<
+      string,
+      {
+        name: string;
+        type: AttributeBufferType;
+        value: Observable<any[]>;
+      }
+    >;
+  }
+) => {
+  const programUniforms = getProgramUniforms(context, program);
+  const programAttributeBuffers = getProgramAttributeBuffers(context, program);
+
+  const uniformComponents = createUniformComponents(
+    context,
+    program,
+    programUniforms.dataUniforms,
+    Array.from(bindings.uniform.values())
+  );
+
+  const textureComponents = createTextureComponents(
+    context,
+    program,
+    programUniforms.textureUniforms
+  );
+
+  const attributeBufferComponents = createAttributeBufferComponents(
+    context,
+    program,
+    programAttributeBuffers,
+    Array.from(bindings.mesh.values())
+  );
+  return { uniformComponents, textureComponents, attributeBufferComponents };
 };
