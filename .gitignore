@@ -3,5 +3,4 @@ dist
 node_modules
 .vscode-test/
 *.vsix
-main.js
-media/main.js
+/media/main.js

@@ -7,7 +7,8 @@ export type MessageRequest =
   | { type: "getDocumentText"; id: string; payload: { fileName: string } }
   | { type: "getExtensionFileUri"; id: string; payload: { fileName: string } }
   | { type: "subscribeToDocumentTextChange"; payload: { fileName: string } }
-  | { type: "unsubscribeToDocumentTextChange"; payload: { fileName: string } };
+  | { type: "unsubscribeToDocumentTextChange"; payload: { fileName: string } }
+  | { type: "showWebViewDevTools" };
 
 export type MessageResponse =
   | {

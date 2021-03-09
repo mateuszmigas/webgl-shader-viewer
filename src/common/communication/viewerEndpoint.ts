@@ -114,6 +114,12 @@ class ViewerEndpoint {
     };
   }
 
+  showWebViewDevTools() {
+    vscodeApi.postMessage({
+      type: "showWebViewDevTools",
+    });
+  }
+
   private removeListener(listener: ResponseListener) {
     remove(this.eventListeners, listener);
   }

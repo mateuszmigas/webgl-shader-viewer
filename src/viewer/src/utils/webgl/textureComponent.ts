@@ -1,3 +1,4 @@
+import { imageExtensions } from "./../../constants";
 import {
   defaultTextureUrl,
   extensionTextures,
@@ -83,6 +84,10 @@ export const createTextureComponents = (
           }
         }
       };
+
+      viewerEndpoint.getWorkspaceFilesOfTypes(imageExtensions).then(x => {
+        console.log(x);
+      });
 
       const { element, dispose } = createSelectionComponent(
         [
