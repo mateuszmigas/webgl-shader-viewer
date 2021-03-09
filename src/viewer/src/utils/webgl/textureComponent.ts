@@ -1,4 +1,3 @@
-import { imageExtensions } from "./../../constants";
 import {
   defaultTextureUrl,
   extensionTextures,
