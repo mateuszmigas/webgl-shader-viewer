@@ -34,10 +34,13 @@ export const panelEndpoint = (
             postMessage({
               ...message,
               payload: {
-                files: documents.map(sd => ({
-                  uri: sd.fsPath,
-                  fileName: path.basename(sd.fsPath),
-                })),
+                files: documents.map(sd => {
+                  return {
+                    uri: webView.asWebviewUri(sd).toString(),
+                    filePath: sd.fsPath,
+                    fileName: path.basename(sd.fsPath),
+                  };
+                }),
               },
             });
           });

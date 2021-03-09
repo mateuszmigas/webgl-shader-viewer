@@ -13,7 +13,7 @@ export type MessageResponse =
   | {
       type: "getWorkspaceFilesOfTypes";
       id: string;
-      payload: { files: { uri: string; fileName: string }[] };
+      payload: { files: { fileName: string; filePath: string; uri: string }[] };
     }
   | {
       type: "getDocumentText";

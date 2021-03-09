@@ -39,8 +39,6 @@ export const createMultiNumberInput = <T extends number[]>(
       input.disabled = !onChange;
       input.oninput = () => {
         itemElements[index].value = Number(input.value);
-        console.log("calling on change");
-
         onChange?.(getValues());
       };
       itemElements.push(itemElement);

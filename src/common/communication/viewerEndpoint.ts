@@ -24,19 +24,21 @@ class ViewerEndpoint {
       payload: { extensions },
     });
 
-    return new Promise<{ uri: string; fileName: string }[]>(resolve => {
-      const listener = (message: MessageResponse) => {
-        if (
-          message.type === "getWorkspaceFilesOfTypes" &&
-          message.id === messageId
-        ) {
-          resolve(message.payload.files);
-          this.removeListener(listener);
-        }
-      };
+    return new Promise<{ fileName: string; filePath: string; uri: string }[]>(
+      resolve => {
+        const listener = (message: MessageResponse) => {
+          if (
+            message.type === "getWorkspaceFilesOfTypes" &&
+            message.id === messageId
+          ) {
+            resolve(message.payload.files);
+            this.removeListener(listener);
+          }
+        };
 
-      this.eventListeners.push(listener);
-    });
+        this.eventListeners.push(listener);
+      }
+    );
   }
 
   getDocumentText(fileName: string) {

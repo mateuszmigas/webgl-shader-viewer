@@ -158,8 +158,6 @@ export const meshes = new Map<string, MeshInfo>([
   ],
 ]);
 
-console.log(meshes);
-
 export const createMeshBindings = () =>
   new Map([
     [

@@ -1,4 +1,9 @@
 import {
+  defaultTextureUrl,
+  extensionTextures,
+  imageExtensions,
+} from "./../../constants";
+import {
   createObservableElement,
   createSelectionComponent,
   createTextInput,
@@ -9,6 +14,8 @@ import { TextureInfo } from "./texture";
 import { loadImage } from "../image";
 import { viewerEndpoint } from "../../../../common/communication/viewerEndpoint";
 import { Observable } from "../observable";
+
+type ImageType = "extension-image";
 
 type CacheKey = {
   name: string;
@@ -63,13 +70,13 @@ export const createTextureComponents = (
         index
       );
 
-      const updateUrl = (value: string | { type: string; value: string }) => {
-        console.log("update", value);
-
+      const updateUrl = (
+        value: string | { type: ImageType; value: string }
+      ) => {
         if (typeof value === "string") {
           loadImage(value).then(img => textureInfo.setSource(img));
         } else {
-          if (value.type === "vscode-webview-resource") {
+          if (value.type === "extension-image") {
             viewerEndpoint.getExtensionFileUri(value.value).then(x => {
               loadImage(x).then(img => textureInfo.setSource(img));
             });
@@ -80,8 +87,7 @@ export const createTextureComponents = (
       const { element, dispose } = createSelectionComponent(
         [
           createCustomOption(),
-          createLocalImageOption("texture1.jpg") as any,
-          createLocalImageOption("texture2.jpg") as any,
+          ...extensionTextures.map(createLocalImageOption),
         ],
         updateUrl
       );
@@ -110,7 +116,7 @@ const createCustomOption = () => {
     display: "Custom",
     ...createObservableElement(
       value => createTextInput(value, false),
-      "https://i.imgur.com/vXDWqIH.jpeg"
+      defaultTextureUrl
     ),
   };
 };
@@ -119,8 +125,8 @@ const createLocalImageOption = (fileName: string) => {
   return {
     id: fileName,
     display: fileName,
-    value: new Observable<{ type: string; value: string }>({
-      type: "vscode-webview-resource",
+    value: new Observable<{ type: ImageType; value: string }>({
+      type: "extension-image",
       value: fileName,
     }),
     element: document.createElement("div"),

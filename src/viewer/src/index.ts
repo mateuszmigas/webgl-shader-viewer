@@ -32,7 +32,7 @@ import { mat4 } from "./utils/math";
 import { UniformType } from "./utils/webgl/uniform";
 import { Observable } from "./utils/observable";
 import { createIndexBufferComponent } from "./utils/webgl/indexBufferComponent";
-import { imageExtensions, shaderExtensions } from "./constants";
+import { shaderExtensions } from "./constants";
 
 export const createUniformBindings = () =>
   new Map<string, UniformBinding>([
@@ -92,10 +92,21 @@ const createViewer = async () => {
   viewer.appendChild(shaderCompilationErrors);
   viewer.appendChild(viewerOptions);
 
-  const addSectionWithElements = (elements: HTMLElement[], title: string) => {
-    shaderOptions.appendChild(
-      createDiv("viewer-shaders-title", [createSectionTitle(title, "").element])
-    );
+  const addSectionWithElements = (
+    elements: HTMLElement[],
+    title: string,
+    syncCallback?: () => void
+  ) => {
+    const titleElements: HTMLElement[] = [
+      createSectionTitle(title, "").element,
+    ];
+
+    if (syncCallback) {
+      titleElements.push(
+        createButton("Sync", "viewer-refresh-button", syncCallback).element
+      );
+    }
+    shaderOptions.appendChild(createDiv("viewer-shaders-title", titleElements));
     elements.forEach(e => shaderOptions.appendChild(e));
   };
 
@@ -109,10 +120,10 @@ const createViewer = async () => {
     //setElementVisibility(shaderCompilationErrors, content === "errors");
   };
 
-  const sync = () => {
+  const syncShaderDocuments = () => {
     viewerEndpoint.getWorkspaceFilesOfTypes(shaderExtensions).then(sd => {
       const files = sd.map(f => ({
-        id: f.uri,
+        id: f.filePath,
         display: f.fileName,
       }));
 
@@ -135,9 +146,6 @@ const createViewer = async () => {
         fragmentDropdownController.setSelectedItemById(
           viewerState.fragmentFilePath
         );
-    });
-    viewerEndpoint.getWorkspaceFilesOfTypes(imageExtensions).then(id => {
-      console.log("id", id);
     });
   };
 
@@ -193,7 +201,8 @@ const createViewer = async () => {
         if (textureComponents.length > 0) {
           addSectionWithElements(
             textureComponents.map(tc => tc.component),
-            "TEXTURES"
+            "TEXTURES",
+            () => {}
           );
         }
         if (attributeBufferComponents.length > 0) {
@@ -238,7 +247,8 @@ const createViewer = async () => {
   viewerOptions.appendChild(
     createDiv("viewer-shaders-title", [
       createSectionTitle(translations.shaders, "").element,
-      createButton("Sync", "viewer-refresh-button", sync).element,
+      createButton("Sync", "viewer-refresh-button", syncShaderDocuments)
+        .element,
     ])
   );
 
@@ -342,7 +352,7 @@ const createViewer = async () => {
 
   viewerOptions.appendChild(shaderOptions);
 
-  sync();
+  syncShaderDocuments();
 };
 
 createViewer();
