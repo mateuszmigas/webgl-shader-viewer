@@ -1,43 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { viewerEndpoint } from "../../common/communication/viewerEndpoint";
-import {
-  CameraPosition,
-  CameraPositionManipulator,
-  cameraPositionToVector3,
-} from "./utils/cameraManipulator";
-import { getViewerState, setViewerState } from "../../common/state";
-import { IndexBufferInfo } from "./utils/webgl/indexBuffer";
-import { translations } from "../../common/translations";
-import { createDropdown } from "./components/Dropdown2";
-import { createSectionTitle } from "./components/header";
-import { createButton as createButton } from "./components/button";
-import { createDiv, withLabel } from "./components/wrappers";
-import {
-  createUniformComponents,
-  UniformBinding,
-} from "./utils/webgl/uniformComponent";
-import {
-  compileShadersFromSource,
-  createComponentsForProgram,
-  DrawOptions,
-  formatShaderCompileErrors,
-  getProgramAttributeBuffers,
-  getProgramUniforms,
-  renderProgram,
-  ShaderCompileErrors,
-} from "./utils/webgl/index";
-import { createAttributeBufferComponents } from "./utils/webgl/attributeBufferComponent";
-import { createWebGLCanvas } from "./components/webglCanvas";
-import { createMeshBindings, meshes } from "./meshes";
-import { mat4 } from "./utils/math";
-import { UniformType } from "./utils/webgl/uniform";
-import { Observable } from "./utils/observable";
-import { createIndexBufferComponent } from "./utils/webgl/indexBufferComponent";
-import { shaderExtensions } from "./constants";
+import { setExtensionState } from "../../common/extensionState";
 import { ViewerOptions } from "./components/ViewerOptions";
 import { ViewerContent } from "./components/ViewerContent";
-import { createStore, applyMiddleware, Store } from "redux";
+import { createStore, Store } from "redux";
 import { Provider } from "react-redux";
 import { reducer } from "./store/reducer";
 import { ViewerAction } from "./store/actions";
@@ -52,8 +18,8 @@ export const App = () => (
 
 const store: Store<ViewerState, ViewerAction> = createStore(reducer);
 store.subscribe(() => {
-  const state = store.getState();
-  setViewerState({ vertexFilePath: state.vertexFilePath });
+  const { counter, ...state } = store.getState();
+  setExtensionState(state);
 });
 
 ReactDOM.render(
@@ -193,33 +159,6 @@ ReactDOM.render(
 //     }
 //   };
 
-//   const [fragmentDropdownElement, fragmentDropdownController] = createDropdown(
-//     async newFragment => {
-//       selectedFragmentFileWatcherUnsubscribe?.();
-
-//       if (newFragment) {
-//         selectedFragmentFileWatcherUnsubscribe = viewerEndpoint.subscribeToDocumentSave(
-//           newFragment.id,
-//           newContent => {
-//             selectedFragmentContent = newContent;
-//             onShaderContentChanged();
-//           }
-//         );
-//       }
-
-//       selectedFragmentContent = newFragment
-//         ? await viewerEndpoint.getDocumentText(newFragment.id)
-//         : "";
-
-//       setState({ fragmentFilePath: newFragment ? newFragment.id : null });
-//       onShaderContentChanged();
-//     }
-//   );
-//   fragmentDropdownController.setSelectedItemById(viewerState.fragmentFilePath);
-//   viewerOptions.appendChild(
-//     withLabel(fragmentDropdownElement, "Fragment Shader")
-//   );
-
 //   viewerOptions.appendChild(
 //     createDiv("viewer-shaders-title", [
 //       createSectionTitle("DRAW OPTIONS", "").element,
@@ -265,12 +204,4 @@ ReactDOM.render(
 //   viewerOptions.appendChild(withLabel(drawModeElement, "Draw mode"));
 
 //   viewerOptions.appendChild(indexBufferComponent);
-
-//   viewerOptions.appendChild(shaderOptions);
-
-//   syncShaderDocuments();
-
-//   viewerEndpoint.showWebViewDevTools();
 // };
-
-// createViewer();

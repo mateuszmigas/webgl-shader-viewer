@@ -1,4 +1,5 @@
-export type ViewerState = {
-  vertexFilePath: string | null;
+import { ExtensionState } from "./../../../common/extensionState";
+
+export type ViewerState = ExtensionState & {
   counter: number;
 };

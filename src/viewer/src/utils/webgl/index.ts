@@ -42,7 +42,7 @@ export const compileShadersFromSource = (
   context: WebGLRenderingContext,
   vertexShaderContent: string,
   fragmentShaderContent: string
-) => {
+): WebGLProgram | ShaderCompileErrors => {
   const vertexShader = compileShader(
     context,
     context.VERTEX_SHADER,

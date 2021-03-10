@@ -34,7 +34,7 @@ export function mapDispatchToProps(dispatch: Dispatch<ViewerAction>) {
   };
 }
 
-export const ViewerOptions = connect(
+export const ShadersSelectorSection = connect(
   mapStateToProps,
   mapDispatchToProps
 )(
