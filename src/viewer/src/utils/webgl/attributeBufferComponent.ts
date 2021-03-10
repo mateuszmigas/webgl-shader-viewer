@@ -1,6 +1,6 @@
 import { Observable } from "./../observable";
 import { uuidv4 } from "../../../../common/uuid";
-import { createElementsDropdown } from "./../../components/dropdown";
+import { createElementsDropdown } from "../../components/Dropdown2";
 import { CompositeKeyMap } from "../../utils/compositeKeyMap";
 import { createDiv, withLabel } from "../../components/wrappers";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";

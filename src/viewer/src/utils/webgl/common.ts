@@ -1,4 +1,4 @@
-import { createElementsDropdown } from "../../components/dropdown";
+import { createElementsDropdown } from "../../components/Dropdown2";
 import { createMatrix } from "../../components/inputMatrix";
 import { createVector } from "../../components/inputVector";
 import { createDiv } from "../../components/wrappers";

@@ -14,6 +14,6 @@ const defaultState: State = {
   meshId: "cube",
 };
 
-export const getState = (): State => vscodeApi.getState() ?? defaultState;
-export const setState = (newState: Partial<State>) =>
-  vscodeApi.setState(Object.assign(getState(), newState));
+export const getViewerState = (): State => vscodeApi.getState() ?? defaultState;
+export const setViewerState = (newState: Partial<State>) =>
+  vscodeApi.setState(Object.assign(getViewerState(), newState));

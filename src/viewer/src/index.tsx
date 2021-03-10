@@ -6,10 +6,10 @@ import {
   CameraPositionManipulator,
   cameraPositionToVector3,
 } from "./utils/cameraManipulator";
-import { getState, setState } from "../../common/state";
+import { getViewerState, setViewerState } from "../../common/state";
 import { IndexBufferInfo } from "./utils/webgl/indexBuffer";
 import { translations } from "../../common/translations";
-import { createDropdown } from "./components/dropdown";
+import { createDropdown } from "./components/Dropdown2";
 import { createSectionTitle } from "./components/header";
 import { createButton as createButton } from "./components/button";
 import { createDiv, withLabel } from "./components/wrappers";
@@ -35,27 +35,33 @@ import { UniformType } from "./utils/webgl/uniform";
 import { Observable } from "./utils/observable";
 import { createIndexBufferComponent } from "./utils/webgl/indexBufferComponent";
 import { shaderExtensions } from "./constants";
+import { ViewerOptions } from "./components/ViewerOptions";
+import { ViewerContent } from "./components/ViewerContent";
+import { createStore, applyMiddleware, Store } from "redux";
+import { Provider } from "react-redux";
+import { reducer } from "./store/reducer";
+import { ViewerAction } from "./store/actions";
+import { ViewerState } from "./store/state";
 
-export const App = () => {
-  return <div>cycki</div>;
-};
+export const App = () => (
+  <>
+    <ViewerOptions></ViewerOptions>
+    <ViewerContent></ViewerContent>
+  </>
+);
 
-ReactDOM.render(<App />, document.getElementById("viewer"));
+const store: Store<ViewerState, ViewerAction> = createStore(reducer);
+store.subscribe(() => {
+  const state = store.getState();
+  setViewerState({ vertexFilePath: state.vertexFilePath });
+});
 
-// export const createUniformBindings = () =>
-//   new Map<string, UniformBinding>([
-//     [
-//       "localToProjected",
-//       {
-//         name: "Binding - Camera LocalToProjected",
-//         type: UniformType.FLOAT_MAT4,
-//         value: new Observable([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]),
-//       },
-//     ],
-//   ]);
-
-// const setElementVisibility = (element: HTMLElement, visible: boolean) =>
-//   (element.style.display = visible ? "inherit" : "none");
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById("viewer")
+);
 
 // const createViewer = async () => {
 //   const viewerState = getState();
@@ -69,32 +75,6 @@ ReactDOM.render(<App />, document.getElementById("viewer"));
 //   const indexBufferInfo = new IndexBufferInfo(webGLController.context);
 //   const indexBufferBindingValue = new Observable<number[]>([]);
 //   const drawOptions: DrawOptions = { drawMode: "arrays" };
-//   let cameraPosition: CameraPosition = { longitude: 1, latitude: 1, radius: 2 };
-//   const cameraPositionManipulator = new CameraPositionManipulator(
-//     webGLCanvas,
-//     () => cameraPosition,
-//     newPosition => {
-//       cameraPosition = newPosition;
-
-//       const fieldOfView = (45 * Math.PI) / 180; // in radians
-//       const { width, height } = webGLController.getSize();
-//       const aspect = width / height;
-//       const zNear = 0.1;
-//       const zFar = 100.0;
-//       const projectionMatrix = mat4.create();
-//       mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
-
-//       const modelViewMatrix = mat4.create();
-//       const vec = cameraPositionToVector3(cameraPosition);
-
-//       mat4.lookAt(modelViewMatrix, [vec.x, vec.y, vec.z], [0, 0, 0], [0, 1, 0]);
-
-//       const res = mat4.create();
-//       mat4.multiply(res, projectionMatrix, modelViewMatrix);
-
-//       uniformBindings.get("localToProjected").value.setValue(res);
-//     }
-//   );
 
 //   viewer.appendChild(webGLCanvas);
 //   viewer.appendChild(shaderCompilationErrors);
@@ -116,45 +96,6 @@ ReactDOM.render(<App />, document.getElementById("viewer"));
 //     }
 //     shaderOptions.appendChild(createDiv("viewer-shaders-title", titleElements));
 //     elements.forEach(e => shaderOptions.appendChild(e));
-//   };
-
-//   const showContent = (content: "canvas" | "errors" | "none") => {
-//     webGLCanvas.style.visibility =
-//       content === "canvas" ? "visible" : "collapse";
-//     shaderCompilationErrors.style.visibility =
-//       content === "errors" ? "visible" : "collapse";
-
-//     //setElementVisibility(webGLCanvas, content === "canvas");
-//     //setElementVisibility(shaderCompilationErrors, content === "errors");
-//   };
-
-//   const syncShaderDocuments = () => {
-//     viewerEndpoint.getWorkspaceFilesOfTypes(shaderExtensions).then(sd => {
-//       const files = sd.map(f => ({
-//         id: f.filePath,
-//         display: f.fileName,
-//       }));
-
-//       vertexDropdownController.setItems(files);
-
-//       if (
-//         viewerState.vertexFilePath &&
-//         files.some(f => f.id === viewerState.vertexFilePath)
-//       )
-//         vertexDropdownController.setSelectedItemById(
-//           viewerState.vertexFilePath
-//         );
-
-//       fragmentDropdownController.setItems(files);
-
-//       if (
-//         viewerState.fragmentFilePath &&
-//         files.some(f => f.id === viewerState.fragmentFilePath)
-//       )
-//         fragmentDropdownController.setSelectedItemById(
-//           viewerState.fragmentFilePath
-//         );
-//     });
 //   };
 
 //   let selectedVertexFileWatcherUnsubscribe: () => void | undefined;
@@ -251,39 +192,6 @@ ReactDOM.render(<App />, document.getElementById("viewer"));
 //       showContent("none");
 //     }
 //   };
-
-//   viewerOptions.appendChild(
-//     createDiv("viewer-shaders-title", [
-//       createSectionTitle(translations.shaders, "").element,
-//       createButton("Sync", "viewer-refresh-button", syncShaderDocuments)
-//         .element,
-//     ])
-//   );
-
-//   const [vertexDropdownElement, vertexDropdownController] = createDropdown(
-//     async newVertex => {
-//       selectedVertexFileWatcherUnsubscribe?.();
-
-//       if (newVertex) {
-//         selectedVertexFileWatcherUnsubscribe = viewerEndpoint.subscribeToDocumentSave(
-//           newVertex.id,
-//           newContent => {
-//             selectedVertexContent = newContent;
-//             onShaderContentChanged();
-//           }
-//         );
-//       }
-
-//       selectedVertexContent = newVertex
-//         ? await viewerEndpoint.getDocumentText(newVertex.id)
-//         : "";
-
-//       setState({ vertexFilePath: newVertex ? newVertex.id : null });
-//       onShaderContentChanged();
-//     }
-//   );
-//   vertexDropdownController.setSelectedItemById(viewerState.vertexFilePath);
-//   viewerOptions.appendChild(withLabel(vertexDropdownElement, "Vertex Shader"));
 
 //   const [fragmentDropdownElement, fragmentDropdownController] = createDropdown(
 //     async newFragment => {

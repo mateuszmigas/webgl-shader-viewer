@@ -14,10 +14,15 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: [ '.ts', '.js' ],
+    extensions: [".tsx", ".ts", ".js"],
   },
   output: {
     filename: 'main.js',
     path: path.resolve(__dirname, '../../media/'),
   },
+  performance: {
+    // todo
+    maxEntrypointSize: 2024000,
+    maxAssetSize: 2024000
+  }
 };
