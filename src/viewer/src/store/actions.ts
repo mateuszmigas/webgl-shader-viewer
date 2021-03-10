@@ -12,6 +12,10 @@ export type ViewerAction =
       payload: { name: string; type: number; value: string };
     }
   | {
+      type: "SET_TEXTURE";
+      payload: { name: string; optionId: string; optionValue: string };
+    }
+  | {
       type: "UPADTE_COUNTER";
       payload: { value: number };
     };

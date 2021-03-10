@@ -22,16 +22,24 @@ input::-webkit-inner-spin-button {
   grid-area: options;
   height: 100%;
   overflow: auto;
-  /* background-color: burlywood; */
   display: flex;
   flex-direction: column;
   background-color: blue;
-  /* grid-template-rows: 40px 50px 50px auto;
-  grid-template-areas:
-    "shaders-title"
-    "vertex-shader-selector"
-    "fragment-shader-selector"
-    "shader-options"; */
+}
+
+.viewer-options-section {
+  margin: 5px;
+}
+
+.viewer-options-section-title {
+  display: flex;
+  justify-content: space-between;
+}
+
+.viewer-options-section-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 5px;
 }
 
 .viewer-content {
@@ -48,25 +56,6 @@ input::-webkit-inner-spin-button {
   margin: 5px 5px 5px 1px;
 }
 
-.dropdown-base {
-  height: 20px;
-}
-
-.viewer-shaders-title {
-  grid-area: shaders-title;
-  margin-left: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: stretch;
-}
-
-.viewer-refresh-button {
-  margin: 5px;
-}
-
-.viewer-shader-options {
-}
-
 .viewer-options-grid {
   display: grid;
   grid-template-columns: 250px auto;
@@ -74,12 +63,6 @@ input::-webkit-inner-spin-button {
 
 .shader-errors {
   color: red;
-}
-
-.options-wrapper {
-  margin: 5px;
-  display: flex;
-  flex-direction: column;
 }
 
 .options-label {

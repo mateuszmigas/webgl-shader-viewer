@@ -8,27 +8,34 @@ import {
   getProgramUniforms,
 } from "../utils/webgl";
 import { AttributeBufferType } from "../utils/webgl/attributeBuffer";
-import { AttributeBufferSection } from "./AttributeBufferSection";
+import { UniformType } from "../utils/webgl/uniform";
+import { AttributeBufferFieldInfo, AttributeBufferSection } from "./AttributeBufferSection";
+import { DrawOptionsSection } from "./DrawOptionsSection";
 import { SectionTitle } from "./SectionTitle";
 import { ShadersSelectorSection } from "./ShadersSelectorSection";
+import { TextureFieldInfo, TextureSection } from "./TexturesSection";
 import { context } from "./WebGLHost";
 
-export function mapStateToProps(state: ViewerState) {
+const mapStateToProps = (state: ViewerState) => {
   return {
     selectedVertexFileId: state.vertexFilePath,
     selectedFragmentFileId: state.fragmentFilePath,
   };
-}
+};
 
 export const ViewerOptions = connect(mapStateToProps)(
   (props: { selectedVertexFileId: string; selectedFragmentFileId: string }) => {
     const { selectedVertexFileId, selectedFragmentFileId } = props;
 
-    const [attributeBuffers, setAttributeBuffers] = React.useState<
-      { name: string; type: AttributeBufferType }[]
-    >([]);
     const [selectedVertexFileText, setSelectedVertexFileText] = React.useState("");
     const [selectedFragmentFileText, setSelectedFragmentFileText] = React.useState("");
+    const [attributeBufferFieldsInfo, setAttributeBufferFieldsInfo] = React.useState<
+      AttributeBufferFieldInfo[]
+    >([]);
+    const [uniformFieldsInfo, setUniformFieldsInfo] = React.useState<
+      { name: string; type: UniformType }[]
+    >([]);
+    const [textureFieldsInfo, setTextureFieldsInfo] = React.useState<TextureFieldInfo[]>([]);
 
     //todo? debounce
     React.useEffect(() => {
@@ -44,7 +51,9 @@ export const ViewerOptions = connect(mapStateToProps)(
         } else {
           const programUniforms = getProgramUniforms(context, result);
           const resultAttributeBuffers = getProgramAttributeBuffers(context, result);
-          setAttributeBuffers(resultAttributeBuffers);
+          setUniformFieldsInfo(programUniforms.dataUniforms);
+          setTextureFieldsInfo(programUniforms.textureUniforms);
+          setAttributeBufferFieldsInfo(resultAttributeBuffers);
         }
       }
     }, [selectedVertexFileText, selectedFragmentFileText]);
@@ -74,10 +83,11 @@ export const ViewerOptions = connect(mapStateToProps)(
     return (
       <div className="viewer-options">
         <ShadersSelectorSection></ShadersSelectorSection>
-        <div className="viewer-shaders-title">
-          <SectionTitle text="Draw options"></SectionTitle>
-        </div>
-        <AttributeBufferSection elements={attributeBuffers}></AttributeBufferSection>
+        <DrawOptionsSection></DrawOptionsSection>
+        <AttributeBufferSection
+          attributeBufferFields={attributeBufferFieldsInfo}
+        ></AttributeBufferSection>
+        <TextureSection textureFields={textureFieldsInfo}></TextureSection>
       </div>
     );
   }

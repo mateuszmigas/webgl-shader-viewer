@@ -53,5 +53,5 @@ import React from "react";
 //   );
 
 export const ViewerContent = () => {
-  return <div className="viewer-content">content</div>;
+  return <div className="viewer-content">canvas here</div>;
 };

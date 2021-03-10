@@ -28,6 +28,13 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
         attributeBufferValues: { ...state.attributeBufferValues, [name]: rest },
       };
     }
+    case "SET_TEXTURE": {
+      const { name, ...rest } = action.payload;
+      return {
+        ...state,
+        textureValues: { ...state.textureValues, [name]: rest },
+      };
+    }
     case "UPADTE_COUNTER": {
       return {
         ...state,

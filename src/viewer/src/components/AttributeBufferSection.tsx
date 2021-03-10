@@ -3,46 +3,53 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { ViewerAction } from "../store/actions";
 import { ViewerState } from "../store/state";
+import { translations } from "../translations";
 import { AttributeBufferType } from "../utils/webgl/attributeBuffer";
-import { OptionInput } from "./OptionInput";
+import { SectionField } from "./SectionField";
+import { SectionTitle } from "./SectionTitle";
 
-export function mapStateToProps(state: ViewerState) {
+const mapStateToProps = (state: ViewerState) => {
   return {
     values: state.attributeBufferValues,
   };
-}
+};
 
-export function mapDispatchToProps(dispatch: Dispatch<ViewerAction>) {
+const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>) => {
   return {
     setValue: (name: string, type: number, value: string) =>
       dispatch({ type: "SET_ATTRIBUTE_BUFFER", payload: { name, type, value } }),
   };
-}
+};
 
-export const AttributeBufferSection = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(
-  (props: {
-    elements: { name: string; type: AttributeBufferType }[];
-    values: { [key: string]: { type: number; value: any } };
-    setValue: (name: string, type: number, value: string) => void;
-  }) => {
-    const { elements, values, setValue } = props;
+export type AttributeBufferFieldInfo = { name: string; type: AttributeBufferType };
 
-    return (
-      <>
-        {elements.map(element => {
-          return (
-            <OptionInput text={element.name}>
-              <input
-                value={values[element.name]?.value}
-                onChange={e => setValue(element.name, 2, e.target.value)}
-              ></input>
-            </OptionInput>
-          );
-        })}
-      </>
-    );
-  }
+export const AttributeBufferSection = React.memo(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(
+    (props: {
+      attributeBufferFields: AttributeBufferFieldInfo[];
+      values: { [key: string]: { type: number; value: any } };
+      setValue: (name: string, type: number, value: string) => void;
+    }) => {
+      const { attributeBufferFields, values, setValue } = props;
+
+      return (
+        <div className="viewer-options-section">
+          <SectionTitle text={translations.attributeBuffers}></SectionTitle>
+          {attributeBufferFields.map(abi => {
+            return (
+              <SectionField text={abi.name}>
+                <input
+                  value={values[abi.name]?.value}
+                  onChange={e => setValue(abi.name, 2, e.target.value)}
+                ></input>
+              </SectionField>
+            );
+          })}
+        </div>
+      );
+    }
+  )
 );
