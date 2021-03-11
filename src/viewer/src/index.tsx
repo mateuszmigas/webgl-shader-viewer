@@ -1,20 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { setExtensionState } from "../../common/extensionState";
-import { ViewerOptions } from "./components/ViewerOptions";
-import { ViewerContent } from "./components/ViewerContent";
 import { createStore, Store } from "redux";
 import { Provider } from "react-redux";
 import { reducer } from "./store/reducer";
 import { ViewerAction } from "./store/actions";
 import { ViewerState } from "./store/state";
-
-export const App = () => (
-  <>
-    <ViewerOptions></ViewerOptions>
-    <ViewerContent></ViewerContent>
-  </>
-);
+import { Viewer } from "./components/Viewer";
 
 const store: Store<ViewerState, ViewerAction> = createStore(reducer);
 store.subscribe(() => {
@@ -24,16 +16,12 @@ store.subscribe(() => {
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <Viewer />
   </Provider>,
   document.getElementById("viewer")
 );
 
 // const createViewer = async () => {
-//   const viewerState = getState();
-//   const viewer = document.getElementById("viewer");
-//   const viewerOptions = createDiv("viewer-options");
-//   const shaderOptions = createDiv("viewer-shader-options");
 //   const shaderCompilationErrors = createDiv("viewer-content shader-errors");
 //   const [webGLCanvas, webGLController] = createWebGLCanvas("viewer-content");
 //   const meshBindings = createMeshBindings();
@@ -42,32 +30,6 @@ ReactDOM.render(
 //   const indexBufferBindingValue = new Observable<number[]>([]);
 //   const drawOptions: DrawOptions = { drawMode: "arrays" };
 
-//   viewer.appendChild(webGLCanvas);
-//   viewer.appendChild(shaderCompilationErrors);
-//   viewer.appendChild(viewerOptions);
-
-//   const addSectionWithElements = (
-//     elements: HTMLElement[],
-//     title: string,
-//     syncCallback?: () => void
-//   ) => {
-//     const titleElements: HTMLElement[] = [
-//       createSectionTitle(title, "").element,
-//     ];
-
-//     if (syncCallback) {
-//       titleElements.push(
-//         createButton("Sync", "viewer-refresh-button", syncCallback).element
-//       );
-//     }
-//     shaderOptions.appendChild(createDiv("viewer-shaders-title", titleElements));
-//     elements.forEach(e => shaderOptions.appendChild(e));
-//   };
-
-//   let selectedVertexFileWatcherUnsubscribe: () => void | undefined;
-//   let selectedFragmentFileWatcherUnsubscribe: () => void | undefined;
-//   let selectedVertexContent: string | null;
-//   let selectedFragmentContent: string | null;
 //   let animationFrameHandle: number = null;
 
 //   const onMeshChanged = (id: string) => {
@@ -98,34 +60,6 @@ ReactDOM.render(
 //       } else {
 //         showContent("canvas");
 //         const program = result as WebGLProgram;
-//         const {
-//           uniformComponents,
-//           textureComponents,
-//           attributeBufferComponents,
-//         } = createComponentsForProgram(context, program, {
-//           uniform: uniformBindings,
-//           mesh: meshBindings,
-//         });
-
-//         if (uniformComponents.length > 0) {
-//           addSectionWithElements(
-//             uniformComponents.map(uc => uc.component),
-//             "UNIFORMS"
-//           );
-//         }
-//         if (textureComponents.length > 0) {
-//           addSectionWithElements(
-//             textureComponents.map(tc => tc.component),
-//             "TEXTURES",
-//             () => {}
-//           );
-//         }
-//         if (attributeBufferComponents.length > 0) {
-//           addSectionWithElements(
-//             attributeBufferComponents.map(ab => ab.component),
-//             "ATTRIBUTE BUFFERS"
-//           );
-//         }
 
 //         const uniformInfos = uniformComponents.map(uc => uc.uniformInfo);
 //         const textureInfos = textureComponents.map(tc => tc.textureInfo);

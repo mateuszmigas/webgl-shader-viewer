@@ -1,16 +1,8 @@
-import {
-  defaultTextureUrl,
-  extensionTextures,
-  imageExtensions,
-} from "./../../constants";
-import {
-  createObservableElement,
-  createSelectionComponent,
-  createTextInput,
-} from "./common";
+import { defaultTextureUrl, extensionTextures, imageExtensions } from "../../constants";
+import { createObservableElement, createSelectionComponent, createTextInput } from "./common";
 import { withLabel } from "../../components/wrappers";
 import { CompositeKeyMap } from "../compositeKeyMap";
-import { TextureInfo } from "./texture";
+import { TextureInfo } from "./textureInfo";
 import { loadImage } from "../image";
 import { viewerEndpoint } from "../../../../common/communication/viewerEndpoint";
 import { Observable } from "../observable";
@@ -22,7 +14,6 @@ type CacheKey = {
 };
 
 type CacheValue = {
-  component: HTMLElement;
   textureInfo: TextureInfo;
   dispose: () => void;
 };
@@ -46,7 +37,7 @@ const rebuildCache = (newValues: { key: CacheKey; value: CacheValue }[]) => {
   });
 };
 
-export const createTextureComponents = (
+export const getTextureInfos = (
   context: WebGLRenderingContext,
   program: WebGLProgram,
   textures: { name: string }[]
@@ -63,47 +54,37 @@ export const createTextureComponents = (
       fromCache.textureInfo.setUnit(index);
       return { key, value: fromCache };
     } else {
-      const textureInfo = new TextureInfo(
-        context,
-        program,
-        texture.name,
-        index
-      );
+      const textureInfo = new TextureInfo(context, program, texture.name, index);
 
-      const updateUrl = (
-        value: string | { type: ImageType; value: string }
-      ) => {
-        if (typeof value === "string") {
-          loadImage(value).then(img => textureInfo.setSource(img));
-        } else {
-          if (value.type === "extension-image") {
-            viewerEndpoint.getExtensionFileUri(value.value).then(x => {
-              loadImage(x).then(img => textureInfo.setSource(img));
-            });
-          }
-        }
-      };
+      // const updateUrl = (value: string | { type: ImageType; value: string }) => {
+      //   if (typeof value === "string") {
+      //     loadImage(value).then(img => textureInfo.setSource(img));
+      //   } else {
+      //     if (value.type === "extension-image") {
+      //       viewerEndpoint.getExtensionFileUri(value.value).then(x => {
+      //         loadImage(x).then(img => textureInfo.setSource(img));
+      //       });
+      //     }
+      //   }
+      // };
 
       viewerEndpoint.getWorkspaceFilesOfTypes(imageExtensions).then(x => {
         console.log(x);
       });
 
-      const { element, dispose } = createSelectionComponent(
-        [
-          createCustomOption(),
-          ...extensionTextures.map(createLocalImageOption),
-        ],
-        updateUrl
-      );
+      // const { element, dispose } = createSelectionComponent(
+      //   [createCustomOption(), ...extensionTextures.map(createLocalImageOption)],
+      //   updateUrl
+      // );
 
       return {
         key,
         value: {
-          component: withLabel(element, texture.name),
+          //component: withLabel(element, texture.name),
           textureInfo,
           dispose: () => {
             textureInfo.deleteTexture();
-            dispose?.();
+            //dispose?.();
           },
         },
       };
@@ -114,25 +95,25 @@ export const createTextureComponents = (
   return components.map(c => c.value);
 };
 
-const createCustomOption = () => {
-  return {
-    id: "custom",
-    display: "Custom",
-    ...createObservableElement(
-      value => createTextInput(value, false),
-      defaultTextureUrl
-    ),
-  };
-};
+// const createCustomOption = () => {
+//   return {
+//     id: "custom",
+//     display: "Custom",
+//     ...createObservableElement(
+//       value => createTextInput(value, false),
+//       defaultTextureUrl
+//     ),
+//   };
+// };
 
-const createLocalImageOption = (fileName: string) => {
-  return {
-    id: fileName,
-    display: fileName,
-    value: new Observable<{ type: ImageType; value: string }>({
-      type: "extension-image",
-      value: fileName,
-    }),
-    element: document.createElement("div"),
-  };
-};
+// const createLocalImageOption = (fileName: string) => {
+//   return {
+//     id: fileName,
+//     display: fileName,
+//     value: new Observable<{ type: ImageType; value: string }>({
+//       type: "extension-image",
+//       value: fileName,
+//     }),
+//     element: document.createElement("div"),
+//   };
+// };

@@ -43,7 +43,11 @@ export const AttributeBufferSection = React.memo(
               <SectionField text={abi.name}>
                 <input
                   value={values[abi.name]?.value}
-                  onChange={e => setValue(abi.name, 2, e.target.value)}
+                  onChange={e => {
+                    //getfrom cache and update
+                    setValue(abi.name, 2, e.target.value);
+                  }}
+                  //onBlur
                 ></input>
               </SectionField>
             );

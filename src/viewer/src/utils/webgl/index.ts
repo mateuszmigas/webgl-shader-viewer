@@ -1,12 +1,12 @@
-import { TextureInfo } from "./texture";
+import { TextureInfo } from "./textureInfo";
 import { IndexBufferInfo } from "./indexBuffer";
 import { removeLast } from "../../../../common/array";
 import { hasProperty } from "../typeGuards";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
 import { UniformInfo, UniformType } from "./uniform";
 import { Observable } from "../observable";
-import { createAttributeBufferComponents } from "./attributeBufferComponent";
-import { createTextureComponents } from "./textureComponent";
+//import { createAttributeBufferComponents } from "./attributeBufferComponent";
+import { getTextureInfos } from "./textureInfoStore";
 import { UniformBinding, createUniformComponents } from "./uniformComponent";
 
 export type DrawOptions = {
@@ -22,10 +22,7 @@ export const compileShader = (
   renderingContext.shaderSource(shader, source);
   renderingContext.compileShader(shader);
 
-  const result = renderingContext.getShaderParameter(
-    shader,
-    renderingContext.COMPILE_STATUS
-  );
+  const result = renderingContext.getShaderParameter(shader, renderingContext.COMPILE_STATUS);
 
   if (result) {
     return shader;
@@ -43,17 +40,9 @@ export const compileShadersFromSource = (
   vertexShaderContent: string,
   fragmentShaderContent: string
 ): WebGLProgram | ShaderCompileErrors => {
-  const vertexShader = compileShader(
-    context,
-    context.VERTEX_SHADER,
-    vertexShaderContent
-  );
+  const vertexShader = compileShader(context, context.VERTEX_SHADER, vertexShaderContent);
 
-  const fragmentShader = compileShader(
-    context,
-    context.FRAGMENT_SHADER,
-    fragmentShaderContent
-  );
+  const fragmentShader = compileShader(context, context.FRAGMENT_SHADER, fragmentShaderContent);
 
   let vertexError: string = undefined;
   if (hasProperty(vertexShader, "error")) {
@@ -83,10 +72,7 @@ export const createProgram = (
   renderingContext.attachShader(program, fragmentShader);
   renderingContext.linkProgram(program);
 
-  const result = renderingContext.getProgramParameter(
-    program,
-    renderingContext.LINK_STATUS
-  );
+  const result = renderingContext.getProgramParameter(program, renderingContext.LINK_STATUS);
 
   if (result) {
     return program;
@@ -104,10 +90,7 @@ export const getProgramUniforms = (
   dataUniforms: { name: string; type: UniformType }[];
   textureUniforms: { name: string; unit: number }[];
 } => {
-  const numUniforms = context.getProgramParameter(
-    program,
-    context.ACTIVE_UNIFORMS
-  );
+  const numUniforms = context.getProgramParameter(program, context.ACTIVE_UNIFORMS);
   const dataUniforms: { name: string; type: UniformType }[] = [];
   const textureUniforms: { name: string; unit: number }[] = [];
 
@@ -130,10 +113,7 @@ export const getProgramAttributeBuffers = (
   context: WebGLRenderingContext,
   program: WebGLProgram
 ) => {
-  const numAttributeBuffers = context.getProgramParameter(
-    program,
-    context.ACTIVE_ATTRIBUTES
-  );
+  const numAttributeBuffers = context.getProgramParameter(program, context.ACTIVE_ATTRIBUTES);
 
   const result: { name: string; type: AttributeBufferType }[] = [];
 
@@ -160,7 +140,7 @@ export const renderProgram = (
   context.useProgram(program);
   context.viewport(0, 0, context.canvas.width, context.canvas.height);
   //context.clearColor(0, 0, 0, 0);
-  context.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
+  context.clearColor(1.0, 1.0, 0.0, 1.0); // Clear to black, fully opaque
   context.clearDepth(1.0); // Clear everything
   // gl.enable(gl.DEPTH_TEST);           // Enable depth testing
   context.enable(context.DEPTH_TEST);
@@ -177,9 +157,7 @@ export const renderProgram = (
   const offset = 0;
 
   if (drawOptions.drawMode === "arrays") {
-    const numElements = Math.min(
-      ...renderInfo.attributeBufferInfos.map(ab => ab.getCount())
-    );
+    const numElements = Math.min(...renderInfo.attributeBufferInfos.map(ab => ab.getCount()));
     context.drawArrays(primitiveType, offset, numElements);
   } else {
     renderInfo.indexBufferInfo.setIndexBuffer();
@@ -192,10 +170,7 @@ export const renderProgram = (
   }
 };
 
-export type ShaderCompileErrors = [
-  vertexShaderErrors: string,
-  fragmentShaderErrors: string
-];
+export type ShaderCompileErrors = [vertexShaderErrors: string, fragmentShaderErrors: string];
 export const formatShaderCompileErrors = (result: ShaderCompileErrors) => {
   const [vertexShaderErrors, fragmentShaderErrors] = result;
 
@@ -212,42 +187,38 @@ export const formatShaderCompileErrors = (result: ShaderCompileErrors) => {
   return errors.join("\r\n");
 };
 
-export const createComponentsForProgram = (
-  context: WebGLRenderingContext,
-  program: WebGLProgram,
-  bindings: {
-    uniform: Map<string, UniformBinding>;
-    mesh: Map<
-      string,
-      {
-        name: string;
-        type: AttributeBufferType;
-        value: Observable<any[]>;
-      }
-    >;
-  }
-) => {
-  const programUniforms = getProgramUniforms(context, program);
-  const programAttributeBuffers = getProgramAttributeBuffers(context, program);
+// export const createComponentsForProgram = (
+//   context: WebGLRenderingContext,
+//   program: WebGLProgram,
+//   bindings: {
+//     uniform: Map<string, UniformBinding>;
+//     mesh: Map<
+//       string,
+//       {
+//         name: string;
+//         type: AttributeBufferType;
+//         value: Observable<any[]>;
+//       }
+//     >;
+//   }
+// ) => {
+//   const programUniforms = getProgramUniforms(context, program);
+//   const programAttributeBuffers = getProgramAttributeBuffers(context, program);
 
-  const uniformComponents = createUniformComponents(
-    context,
-    program,
-    programUniforms.dataUniforms,
-    Array.from(bindings.uniform.values())
-  );
+//   const uniformComponents = createUniformComponents(
+//     context,
+//     program,
+//     programUniforms.dataUniforms,
+//     Array.from(bindings.uniform.values())
+//   );
 
-  const textureComponents = createTextureComponents(
-    context,
-    program,
-    programUniforms.textureUniforms
-  );
+//   const textureComponents = getTextureInfos(context, program, programUniforms.textureUniforms);
 
-  const attributeBufferComponents = createAttributeBufferComponents(
-    context,
-    program,
-    programAttributeBuffers,
-    Array.from(bindings.mesh.values())
-  );
-  return { uniformComponents, textureComponents, attributeBufferComponents };
-};
+//   const attributeBufferComponents = createAttributeBufferComponents(
+//     context,
+//     program,
+//     programAttributeBuffers,
+//     Array.from(bindings.mesh.values())
+//   );
+//   return { uniformComponents, textureComponents, attributeBufferComponents };
+// };

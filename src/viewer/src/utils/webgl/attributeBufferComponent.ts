@@ -5,11 +5,7 @@ import { CompositeKeyMap } from "../../utils/compositeKeyMap";
 import { createDiv, withLabel } from "../../components/wrappers";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
 import { Vector4Array } from "../../types";
-import {
-  createElementArray,
-  createElementNotSupported,
-  createSelectionComponent,
-} from "./common";
+import { createElementArray, createElementNotSupported, createSelectionComponent } from "./common";
 
 type CacheKey = {
   name: string;
@@ -17,7 +13,6 @@ type CacheKey = {
 };
 
 type CacheValue = {
-  component: HTMLElement;
   attributeBufferInfo: AttributeBufferInfo;
   dispose: () => void;
 };
@@ -58,12 +53,14 @@ export type AttributeBufferBinding = {
   value: Observable<any>;
 };
 
-export const createAttributeBufferComponents = (
+export const getByName = (name: string, type: AttributeBufferType) =>
+  componentCache.get({ name, type });
+
+export const getFromCacheOrCreate = (
   context: WebGLRenderingContext,
   program: WebGLProgram,
-  attributeBuffers: { name: string; type: AttributeBufferType }[],
-  attributeBufferBindings: AttributeBufferBinding[]
-) => {
+  attributeBuffers: { name: string; type: AttributeBufferType }[]
+): AttributeBufferInfo[] => {
   const components = attributeBuffers.map(attributeBuffer => {
     const key = {
       ...attributeBuffer,
@@ -82,39 +79,18 @@ export const createAttributeBufferComponents = (
         attributeBuffer.type
       );
 
-      const applicableBindings = attributeBufferBindings.filter(
-        b => b.type === attributeBufferInfo.getAttributeBufferType()
-      );
-
-      const updateBuffer = (value: number[][]) =>
-        attributeBufferInfo.setValue(value);
-
-      const { element, dispose } = applicableBindings.length
-        ? createSelectionComponent(
-            [
-              createCustomOption(attributeBufferInfo),
-              ...createBindingOptions(applicableBindings, attributeBufferInfo),
-            ],
-            updateBuffer
-          )
-        : createEditableComponent(attributeBufferInfo, updateBuffer);
-
       return {
         key,
         value: {
-          component: withLabel(element, attributeBuffer.name),
           attributeBufferInfo,
-          dispose: () => {
-            attributeBufferInfo.deleteBuffer();
-            dispose?.();
-          },
+          dispose: () => attributeBufferInfo.deleteBuffer(),
         },
       };
     }
   });
 
   rebuildCache(components);
-  return components.map(c => c.value);
+  return components.map(c => c.value.attributeBufferInfo);
 };
 
 const createCustomOption = (attributeBufferInfo: AttributeBufferInfo) => {
@@ -149,9 +125,7 @@ const createEditableComponent = (
   attributeBufferInfo: AttributeBufferInfo,
   onChange?: (value: any) => void
 ) => {
-  const initialValue = getDefaultValue(
-    attributeBufferInfo.getAttributeBufferType()
-  );
+  const initialValue = getDefaultValue(attributeBufferInfo.getAttributeBufferType());
   const customValue = new Observable<any>(initialValue);
 
   if (onChange) {

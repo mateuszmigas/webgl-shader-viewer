@@ -10,6 +10,11 @@ import { Dropdown } from "./Dropdown";
 import { SectionField } from "./SectionField";
 import { SectionTitle } from "./SectionTitle";
 
+const options = [
+  { id: customOptionId, display: translations.custom },
+  ...extensionTextures.map(et => ({ id: et, display: et })),
+];
+
 const mapStateToProps = (state: ViewerState) => {
   return {
     values: state.textureValues,
@@ -24,11 +29,6 @@ const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>) => {
 };
 
 export type TextureFieldInfo = { name: string; unit: number };
-
-const options = [
-  { id: customOptionId, display: translations.custom },
-  ...extensionTextures.map(et => ({ id: et, display: et })),
-];
 
 export const TextureSection = React.memo(
   connect(
@@ -45,17 +45,15 @@ export const TextureSection = React.memo(
       return (
         <div className="viewer-options-section">
           <SectionTitle text={translations.textures}></SectionTitle>
-          {textureFields.map(ti => {
-            return (
-              <SectionField text={ti.name}>
-                <TextureInput
-                  selectedOptionId={values[ti.name]?.optionId}
-                  selectedOptionValue={values[ti.name]?.optionValue}
-                  onChange={(optionId, optionValue) => setValue(ti.name, optionId, optionValue)}
-                ></TextureInput>
-              </SectionField>
-            );
-          })}
+          {textureFields.map(tf => (
+            <SectionField text={tf.name}>
+              <TextureInput
+                selectedOptionId={values[tf.name]?.optionId}
+                selectedOptionValue={values[tf.name]?.optionValue}
+                onChange={(optionId, optionValue) => setValue(tf.name, optionId, optionValue)}
+              ></TextureInput>
+            </SectionField>
+          ))}
         </div>
       );
     }
