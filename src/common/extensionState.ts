@@ -3,6 +3,7 @@ import { vscodeApi } from "./communication/vscodeApi";
 export type ExtensionState = {
   vertexFilePath: string | null;
   fragmentFilePath: string | null;
+  uniformValues: { [key: string]: { type: number; value: any } };
   attributeBufferValues: { [key: string]: { type: number; value: any } };
   textureValues: { [key: string]: { optionId: string; optionValue: string } };
   //drawMode: string;
@@ -12,6 +13,7 @@ export type ExtensionState = {
 const defaultState: ExtensionState = {
   vertexFilePath: null,
   fragmentFilePath: null,
+  uniformValues: {},
   attributeBufferValues: {},
   textureValues: {},
   //drawMode: "elements",

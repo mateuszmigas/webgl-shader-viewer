@@ -21,6 +21,13 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
         fragmentFilePath: action.payload.path,
       };
     }
+    case "SET_UNIFORM": {
+      const { name, ...rest } = action.payload;
+      return {
+        ...state,
+        uniformValues: { ...state.uniformValues, [name]: rest },
+      };
+    }
     case "SET_ATTRIBUTE_BUFFER": {
       const { name, ...rest } = action.payload;
       return {

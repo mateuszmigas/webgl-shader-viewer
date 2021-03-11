@@ -19,6 +19,7 @@ import { MultiNumberInput } from "./common/MultiNumberInput";
 import { SectionTitle } from "./SectionTitle";
 import { ShadersSelectorSection } from "./ShadersSelectorSection";
 import { TextureFieldInfo, TextureSection } from "./TexturesSection";
+import { UniformSection } from "./UniformsSection";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
@@ -148,6 +149,7 @@ export const Viewer = connect(mapStateToProps)(
           ></MultiNumberInput>
           <ShadersSelectorSection></ShadersSelectorSection>
           <DrawOptionsSection></DrawOptionsSection>
+          <UniformSection uniformFields={uniformFieldsInfo}></UniformSection>
           <AttributeBufferSection
             attributeBufferFields={attributeBufferFieldsInfo}
           ></AttributeBufferSection>

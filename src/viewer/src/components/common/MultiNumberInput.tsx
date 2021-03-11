@@ -1,9 +1,5 @@
 import React from "react";
-import { Matrix3Array } from "../../types";
-export const repeat = (count: number) =>
-  Array(count)
-    .fill({})
-    .map((_, i) => i);
+import { range } from "../../../../common/array";
 
 export const MultiNumberInput = React.memo(
   (props: {
@@ -13,13 +9,13 @@ export const MultiNumberInput = React.memo(
     onChange: (newValue: number[]) => void;
     readonly?: boolean;
   }) => {
-    const { rows, columns, value, onChange, readonly = false } = props;
+    const { rows, columns, value = [], onChange, readonly = false } = props;
 
     return (
       <div className="edit-input-grid">
-        {repeat(rows).map(row => (
+        {range(0, rows).map(row => (
           <div className="edit-input-row">
-            {repeat(columns).map(column => {
+            {range(0, columns).map(column => {
               const index = row * columns + column;
               return (
                 <input

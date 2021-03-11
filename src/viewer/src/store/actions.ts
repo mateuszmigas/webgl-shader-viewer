@@ -8,6 +8,10 @@ export type ViewerAction =
       payload: { path: string | null };
     }
   | {
+      type: "SET_UNIFORM";
+      payload: { name: string; type: number; value: string };
+    }
+  | {
       type: "SET_ATTRIBUTE_BUFFER";
       payload: { name: string; type: number; value: string };
     }
