@@ -1,3 +1,5 @@
+import { repeat } from "./array";
+import { Matrix4Array } from "./../viewer/src/types";
 import { vscodeApi } from "./communication/vscodeApi";
 
 export type ExtensionState = {
@@ -6,6 +8,7 @@ export type ExtensionState = {
   uniformValues: { [key: string]: { type: number; value: any } };
   attributeBufferValues: { [key: string]: { type: number; value: any } };
   textureValues: { [key: string]: { optionId: string; optionValue: string } };
+  cameraPosition: Matrix4Array;
   //drawMode: string;
   //meshId: string;
 };
@@ -16,6 +19,7 @@ const defaultState: ExtensionState = {
   uniformValues: {},
   attributeBufferValues: {},
   textureValues: {},
+  cameraPosition: repeat(16, 0) as Matrix4Array,
   //drawMode: "elements",
   //meshId: "cube",
 };

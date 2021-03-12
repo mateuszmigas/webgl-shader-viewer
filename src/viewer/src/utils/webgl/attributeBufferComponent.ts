@@ -1,11 +1,6 @@
 import { Observable } from "./../observable";
-import { uuidv4 } from "../../../../common/uuid";
-import { createElementsDropdown } from "../../components/Dropdown2";
 import { CompositeKeyMap } from "../../utils/compositeKeyMap";
-import { createDiv, withLabel } from "../../components/wrappers";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
-import { Vector4Array } from "../../types";
-import { createElementArray, createElementNotSupported, createSelectionComponent } from "./common";
 
 type CacheKey = {
   name: string;
@@ -93,72 +88,72 @@ export const getFromCacheOrCreate = (
   return components.map(c => c.value.attributeBufferInfo);
 };
 
-const createCustomOption = (attributeBufferInfo: AttributeBufferInfo) => {
-  return {
-    id: "custom",
-    display: "Custom",
-    ...createEditableComponent(attributeBufferInfo),
-  };
-};
+// const createCustomOption = (attributeBufferInfo: AttributeBufferInfo) => {
+//   return {
+//     id: "custom",
+//     display: "Custom",
+//     ...createEditableComponent(attributeBufferInfo),
+//   };
+// };
 
-const createBindingOptions = (
-  attributeBufferBindings: AttributeBufferBinding[],
-  attributeBufferInfo: AttributeBufferInfo
-) => {
-  return attributeBufferBindings.map(binding => {
-    const element = createElementForType(
-      attributeBufferInfo.getAttributeBufferType(),
-      false,
-      binding.value
-    );
+// const createBindingOptions = (
+//   attributeBufferBindings: AttributeBufferBinding[],
+//   attributeBufferInfo: AttributeBufferInfo
+// ) => {
+//   return attributeBufferBindings.map(binding => {
+//     const element = createElementForType(
+//       attributeBufferInfo.getAttributeBufferType(),
+//       false,
+//       binding.value
+//     );
 
-    return {
-      id: uuidv4(),
-      element,
-      display: binding.name,
-      value: binding.value,
-    };
-  });
-};
+//     return {
+//       id: uuidv4(),
+//       element,
+//       display: binding.name,
+//       value: binding.value,
+//     };
+//   });
+// };
 
-const createEditableComponent = (
-  attributeBufferInfo: AttributeBufferInfo,
-  onChange?: (value: any) => void
-) => {
-  const initialValue = getDefaultValue(attributeBufferInfo.getAttributeBufferType());
-  const customValue = new Observable<any>(initialValue);
+// const createEditableComponent = (
+//   attributeBufferInfo: AttributeBufferInfo,
+//   onChange?: (value: any) => void
+// ) => {
+//   const initialValue = getDefaultValue(attributeBufferInfo.getAttributeBufferType());
+//   const customValue = new Observable<any>(initialValue);
 
-  if (onChange) {
-    customValue.attach((value: any) => onChange(value));
-    onChange(initialValue);
-  }
+//   if (onChange) {
+//     customValue.attach((value: any) => onChange(value));
+//     onChange(initialValue);
+//   }
 
-  const element = createElementForType(
-    attributeBufferInfo.getAttributeBufferType(),
-    true,
-    customValue
-  );
+//   const element = createElementForType(
+//     attributeBufferInfo.getAttributeBufferType(),
+//     true,
+//     customValue
+//   );
 
-  return {
-    element,
-    value: customValue,
-    dispose: () => customValue.detachAll(),
-  };
-};
+//   return {
+//     element,
+//     value: customValue,
+//     dispose: () => customValue.detachAll(),
+//   };
+// };
 
-const createElementForType = (
-  attributeBufferType: AttributeBufferType,
-  editable: boolean,
-  currentValue: Observable<any>
-) => {
-  switch (attributeBufferType) {
-    case AttributeBufferType.FLOAT_VEC2:
-      return createElementArray(2, currentValue, editable);
-    case AttributeBufferType.FLOAT_VEC3:
-      return createElementArray(3, currentValue, editable);
-    case AttributeBufferType.FLOAT_VEC4:
-      return createElementArray(4, currentValue, editable);
-    default:
-      return createElementNotSupported();
-  }
-};
+// const createElementForType = (
+//   attributeBufferType: AttributeBufferType,
+//   editable: boolean,
+//   currentValue: Observable<any>
+// ) => {
+//   switch (attributeBufferType) {
+//     case AttributeBufferType.FLOAT_VEC2:
+//       return createElementArray(2, currentValue, editable);
+//     case AttributeBufferType.FLOAT_VEC3:
+//       return createElementArray(3, currentValue, editable);
+//     case AttributeBufferType.FLOAT_VEC4:
+//       return createElementArray(4, currentValue, editable);
+//     default:
+//       return createElementNotSupported();
+//   }
+// };

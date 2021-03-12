@@ -48,14 +48,25 @@ input::-webkit-inner-spin-button {
 
 .viewer-content {
   grid-area: content;
+  display: grid;
   /* visibility: collapse; */
-  background-color: red;
+  /* background-color: red;
   width: 100%;
-  height: 100%;
+  height: 100%; */
 }
 
 .viewer-canvas {
+  grid-column: 1;
+  grid-row: 1;
   position: absolute;
+}
+
+.shader-compile-errors-area {
+  grid-column: 1;
+  grid-row: 1;
+  z-index: 1;
+  color: red;
+  background: black;
 }
 
 .section-title {

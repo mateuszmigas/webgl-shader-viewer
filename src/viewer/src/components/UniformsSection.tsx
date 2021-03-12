@@ -5,12 +5,16 @@ import { ViewerAction } from "../store/actions";
 import { ViewerState } from "../store/state";
 import { translations } from "../translations";
 import { UniformType } from "../utils/webgl/uniform";
-import { Matrix4x4NumberInput } from "./common/Matrix4x4NumberInput";
-import { Vector2NumberInput } from "./common/Vector2NumberInput";
-import { Vector3NumberInput } from "./common/Vector3NumberInput";
-import { Vector4NumberInput } from "./common/Vector4NumberInput";
+import {
+  Matrix4x4NumberInput,
+  Vector2NumberInput,
+  Vector3NumberInput,
+  Vector4NumberInput,
+} from "./common";
 import { SectionField } from "./SectionField";
 import { SectionTitle } from "./SectionTitle";
+
+//const optionsByType =
 
 const mapStateToProps = (state: ViewerState) => {
   return {

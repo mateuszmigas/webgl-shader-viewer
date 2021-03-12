@@ -1,3 +1,5 @@
+import { Matrix4Array } from "./../types";
+
 export type ViewerAction =
   | {
       type: "SET_VERTEX_FILE_PATH";
@@ -18,6 +20,14 @@ export type ViewerAction =
   | {
       type: "SET_TEXTURE";
       payload: { name: string; optionId: string; optionValue: string };
+    }
+  | {
+      type: "SET_MESH";
+      payload: { id: string };
+    }
+  | {
+      type: "SET_CAMERA_POSITION";
+      payload: { position: Matrix4Array };
     }
   | {
       type: "UPADTE_COUNTER";

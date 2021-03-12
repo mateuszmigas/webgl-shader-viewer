@@ -42,6 +42,11 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
         textureValues: { ...state.textureValues, [name]: rest },
       };
     }
+    case "SET_CAMERA_POSITION": {
+      return {
+        ...state,
+      };
+    }
     case "UPADTE_COUNTER": {
       return {
         ...state,

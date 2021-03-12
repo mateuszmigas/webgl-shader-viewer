@@ -1,15 +1,5 @@
 import React from "react";
 
-//   const showContent = (content: "canvas" | "errors" | "none") => {
-//     webGLCanvas.style.visibility =
-//       content === "canvas" ? "visible" : "collapse";
-//     shaderCompilationErrors.style.visibility =
-//       content === "errors" ? "visible" : "collapse";
-
-//     //setElementVisibility(webGLCanvas, content === "canvas");
-//     //setElementVisibility(shaderCompilationErrors, content === "errors");
-//   };
-
 // export const createUniformBindings = () =>
 //   new Map<string, UniformBinding>([
 //     [
@@ -21,9 +11,6 @@ import React from "react";
 //       },
 //     ],
 //   ]);
-
-// const setElementVisibility = (element: HTMLElement, visible: boolean) =>
-//   (element.style.display = visible ? "inherit" : "none");
 
 //   let cameraPosition: CameraPosition = { longitude: 1, latitude: 1, radius: 2 };
 //   const cameraPositionManipulator = new CameraPositionManipulator(
@@ -51,7 +38,3 @@ import React from "react";
 //       uniformBindings.get("localToProjected").value.setValue(res);
 //     }
 //   );
-
-export const ViewerContent = () => {
-  return <div className="viewer-content">canvas here</div>;
-};

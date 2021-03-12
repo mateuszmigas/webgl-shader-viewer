@@ -4,16 +4,8 @@ import { createVector } from "../../components/inputVector";
 import { createElementsDropdown } from "../../components/Dropdown2";
 import { UniformInfo, UniformType } from "./uniform";
 import { CompositeKeyMap } from "../compositeKeyMap";
-import { createDiv, withLabel } from "../../components/wrappers";
 import { uuidv4 } from "../../../../common/uuid";
 import { Observable } from "../observable";
-import {
-  createElementMatrix,
-  createElementNotSupported,
-  createElementVector,
-  createObservableElement,
-  createSelectionComponent,
-} from "./common";
 
 type CacheKey = {
   name: string;
@@ -21,14 +13,11 @@ type CacheKey = {
 };
 
 type CacheValue = {
-  component: HTMLElement;
   uniformInfo: UniformInfo;
 };
 
 const keySelector = (key: CacheKey): string => `${key.name};${key.type}`;
-const uniformComponentCache = new CompositeKeyMap<CacheKey, CacheValue>(
-  keySelector
-);
+const uniformComponentCache = new CompositeKeyMap<CacheKey, CacheValue>(keySelector);
 
 const rebuildCache = (newValues: { key: CacheKey; value: CacheValue }[]) => {
   const newValuesStrKeys = newValues.map(v => keySelector(v.key));
@@ -41,8 +30,7 @@ const rebuildCache = (newValues: { key: CacheKey; value: CacheValue }[]) => {
   });
 
   newValues.forEach(nw => {
-    if (!uniformComponentCache.has(nw.key))
-      uniformComponentCache.set(nw.key, nw.value);
+    if (!uniformComponentCache.has(nw.key)) uniformComponentCache.set(nw.key, nw.value);
   });
 };
 
@@ -84,12 +72,7 @@ export const createUniformComponents = (
       fromCache.uniformInfo.attachToProgram(program);
       return { key, value: fromCache };
     } else {
-      const uniformInfo = new UniformInfo(
-        context,
-        program,
-        uniform.name,
-        uniform.type
-      );
+      const uniformInfo = new UniformInfo(context, program, uniform.name, uniform.type);
 
       const applicableBindings = uniformBindings.filter(
         b => b.type === uniformInfo.getUniformType()
@@ -97,29 +80,11 @@ export const createUniformComponents = (
 
       const updateUniform = (value: any) => uniformInfo.setValue(value);
 
-      const { element, dispose } = applicableBindings.length
-        ? createSelectionComponent(
-            [
-              createCustomOption(uniformInfo),
-              ...createBindingOptions(applicableBindings, uniformInfo),
-            ],
-            updateUniform
-          )
-        : createObservableElement(
-            value =>
-              createElementForType(uniformInfo.getUniformType(), true, value),
-            getDefaultValue(uniformInfo.getUniformType()),
-            updateUniform
-          );
-
       return {
         key,
         value: {
-          component: withLabel(element, uniform.name),
           uniformInfo,
-          dispose: () => {
-            dispose?.();
-          },
+          dispose: () => {},
         },
       };
     }
@@ -129,52 +94,45 @@ export const createUniformComponents = (
   return components.map(uc => uc.value);
 };
 
-const createCustomOption = (uniformInfo: UniformInfo) => {
-  return {
-    id: "custom",
-    display: "Custom",
-    ...createObservableElement(
-      value => createElementForType(uniformInfo.getUniformType(), true, value),
-      getDefaultValue(uniformInfo.getUniformType())
-    ),
-  };
-};
+// const createCustomOption = (uniformInfo: UniformInfo) => {
+//   return {
+//     id: "custom",
+//     display: "Custom",
+//     ...createObservableElement(
+//       value => createElementForType(uniformInfo.getUniformType(), true, value),
+//       getDefaultValue(uniformInfo.getUniformType())
+//     ),
+//   };
+// };
 
-const createBindingOptions = (
-  uniformBindings: UniformBinding[],
-  uniformInfo: UniformInfo
-) => {
-  return uniformBindings.map(binding => {
-    const element = createElementForType(
-      uniformInfo.getUniformType(),
-      false,
-      binding.value
-    );
+// const createBindingOptions = (uniformBindings: UniformBinding[], uniformInfo: UniformInfo) => {
+//   return uniformBindings.map(binding => {
+//     const element = createElementForType(uniformInfo.getUniformType(), false, binding.value);
 
-    return {
-      id: uuidv4(),
-      element,
-      display: binding.name,
-      value: binding.value,
-    };
-  });
-};
+//     return {
+//       id: uuidv4(),
+//       element,
+//       display: binding.name,
+//       value: binding.value,
+//     };
+//   });
+// };
 
-const createElementForType = (
-  uniformType: UniformType,
-  readonly: boolean,
-  value: Observable<any>
-) => {
-  switch (uniformType) {
-    case UniformType.FLOAT_VEC2:
-      return createElementVector(2, value, readonly);
-    case UniformType.FLOAT_VEC3:
-      return createElementVector(3, value, readonly);
-    case UniformType.FLOAT_VEC4:
-      return createElementVector(4, value, readonly);
-    case UniformType.FLOAT_MAT4:
-      return createElementMatrix(4, value, readonly);
-    default:
-      return createElementNotSupported();
-  }
-};
+// const createElementForType = (
+//   uniformType: UniformType,
+//   readonly: boolean,
+//   value: Observable<any>
+// ) => {
+//   switch (uniformType) {
+//     case UniformType.FLOAT_VEC2:
+//       return createElementVector(2, value, readonly);
+//     case UniformType.FLOAT_VEC3:
+//       return createElementVector(3, value, readonly);
+//     case UniformType.FLOAT_VEC4:
+//       return createElementVector(4, value, readonly);
+//     case UniformType.FLOAT_MAT4:
+//       return createElementMatrix(4, value, readonly);
+//     default:
+//       return createElementNotSupported();
+//   }
+// };

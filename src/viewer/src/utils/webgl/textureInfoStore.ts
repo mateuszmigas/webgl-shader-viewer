@@ -1,6 +1,4 @@
 import { defaultTextureUrl, extensionTextures, imageExtensions } from "../../constants";
-import { createObservableElement, createSelectionComponent, createTextInput } from "./common";
-import { withLabel } from "../../components/wrappers";
 import { CompositeKeyMap } from "../compositeKeyMap";
 import { TextureInfo } from "./textureInfo";
 import { loadImage } from "../image";

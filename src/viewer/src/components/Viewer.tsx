@@ -5,21 +5,25 @@ import { ViewerState } from "../store/state";
 import { observeElementBoundingRect } from "../utils/html";
 import {
   compileShadersFromSource,
+  formatShaderCompileErrors,
   getProgramAttributeBuffers,
   getProgramUniforms,
   renderProgram,
 } from "../utils/webgl";
-import { AttributeBufferType } from "../utils/webgl/attributeBuffer";
 import { getFromCacheOrCreate } from "../utils/webgl/attributeBufferComponent";
 import { IndexBufferInfo } from "../utils/webgl/indexBuffer";
 import { UniformType } from "../utils/webgl/uniform";
 import { AttributeBufferFieldInfo, AttributeBufferSection } from "./AttributeBufferSection";
 import { DrawOptionsSection } from "./DrawOptionsSection";
-import { MultiNumberInput } from "./common/MultiNumberInput";
-import { SectionTitle } from "./SectionTitle";
 import { ShadersSelectorSection } from "./ShadersSelectorSection";
 import { TextureFieldInfo, TextureSection } from "./TexturesSection";
 import { UniformSection } from "./UniformsSection";
+import { ShadersCompileResultArea } from "./ShadersCompileResultArea";
+import { CameraPositionManipulator } from "../utils/cameraManipulator";
+import { usePerspectiveCamera } from "./hooks/usePerspectiveCamera";
+import { Dispatch } from "redux";
+import { ViewerAction } from "../store/actions";
+import { Matrix4Array } from "../types";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
@@ -28,10 +32,25 @@ const mapStateToProps = (state: ViewerState) => {
   };
 };
 
-export const Viewer = connect(mapStateToProps)(
-  (props: { selectedVertexFileId: string; selectedFragmentFileId: string }) => {
-    const { selectedVertexFileId, selectedFragmentFileId } = props;
+const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>) => {
+  return {
+    updateCameraPosition: (position: Matrix4Array) =>
+      dispatch({ type: "SET_CAMERA_POSITION", payload: { position } }),
+  };
+};
 
+export const Viewer = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(
+  (props: {
+    selectedVertexFileId: string;
+    selectedFragmentFileId: string;
+    updateCameraPosition: (position: Matrix4Array) => void;
+  }) => {
+    const { selectedVertexFileId, selectedFragmentFileId, updateCameraPosition } = props;
+
+    const [shaderCompileErrors, setShaderCompileErrors] = React.useState("");
     const [selectedVertexFileText, setSelectedVertexFileText] = React.useState("");
     const [selectedFragmentFileText, setSelectedFragmentFileText] = React.useState("");
     const [attributeBufferFieldsInfo, setAttributeBufferFieldsInfo] = React.useState<
@@ -41,6 +60,7 @@ export const Viewer = connect(mapStateToProps)(
       { name: string; type: UniformType }[]
     >([]);
     const [textureFieldsInfo, setTextureFieldsInfo] = React.useState<TextureFieldInfo[]>([]);
+    const [viewerSize, setViewerSize] = React.useState({ width: 0, height: 0 });
     const contentRef = React.useRef<HTMLDivElement>(null);
     const canvasRef = React.useRef<HTMLCanvasElement>(null);
     const contextRef = React.useRef<WebGLRenderingContext>(null);
@@ -57,20 +77,27 @@ export const Viewer = connect(mapStateToProps)(
 
       indexBufferInfoRef.current = new IndexBufferInfo(contextRef.current);
 
-      let width = 0;
-      let height = 0;
-
       observeElementBoundingRect(contentRef.current, rect => {
         canvasRef.current.width = rect.width;
         canvasRef.current.height = rect.height;
-        width = rect.width;
-        height = rect.height;
+        setViewerSize({ ...rect });
       });
 
       viewerEndpoint.getDocumentText(selectedVertexFileId).then(setSelectedVertexFileText);
       viewerEndpoint.getDocumentText(selectedFragmentFileId).then(setSelectedFragmentFileText);
       viewerEndpoint.showWebViewDevTools();
     }, []);
+
+    //const context = useWebGLContext(canvasRef.current)
+
+    // useShaderCompiler(selectedVertexFileText, setSelectedFragmentFileText, compilationResult => {
+    //   if (compilationResult) {
+
+    //   }
+    //   else {
+
+    //   }
+    // })
 
     React.useEffect(() => {
       if (!selectedVertexFileText || !selectedFragmentFileText) return;
@@ -82,8 +109,9 @@ export const Viewer = connect(mapStateToProps)(
       );
 
       if (Array.isArray(result)) {
-        console.log("errors", result);
+        setShaderCompileErrors(formatShaderCompileErrors(result));
       } else {
+        setShaderCompileErrors("");
         const program = result;
         const programUniforms = getProgramUniforms(contextRef.current, program);
         const programAttributeBuffers = getProgramAttributeBuffers(contextRef.current, program);
@@ -119,34 +147,13 @@ export const Viewer = connect(mapStateToProps)(
       }
     }, [selectedVertexFileText, selectedFragmentFileText]);
 
-    React.useEffect(() => {
-      const unsubscribe = viewerEndpoint.subscribeToDocumentSave(
-        selectedVertexFileId,
-        setSelectedVertexFileText
-      );
-      return () => unsubscribe();
-    }, [selectedVertexFileId]);
-
-    React.useEffect(() => {
-      const unsubscribe = viewerEndpoint.subscribeToDocumentSave(
-        selectedFragmentFileId,
-        setSelectedFragmentFileText
-      );
-      return () => unsubscribe();
-    }, [selectedFragmentFileId]);
-
-    const [v, sv] = React.useState([1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6]);
+    usePerspectiveCamera(contentRef.current, viewerSize, updateCameraPosition);
+    useDocumentWatcher(selectedVertexFileId, setSelectedVertexFileText);
+    useDocumentWatcher(selectedFragmentFileId, setSelectedFragmentFileText);
 
     return (
       <div className="viewer-grid">
         <div className="viewer-options">
-          <MultiNumberInput
-            rows={3}
-            columns={4}
-            value={v}
-            onChange={sv}
-            readonly
-          ></MultiNumberInput>
           <ShadersSelectorSection></ShadersSelectorSection>
           <DrawOptionsSection></DrawOptionsSection>
           <UniformSection uniformFields={uniformFieldsInfo}></UniformSection>
@@ -156,9 +163,19 @@ export const Viewer = connect(mapStateToProps)(
           <TextureSection textureFields={textureFieldsInfo}></TextureSection>
         </div>
         <div ref={contentRef} className="viewer-content">
+          {shaderCompileErrors && (
+            <ShadersCompileResultArea errors={shaderCompileErrors}></ShadersCompileResultArea>
+          )}
           <canvas className="viewer-canvas" ref={canvasRef}></canvas>
         </div>
       </div>
     );
   }
 );
+
+export const useDocumentWatcher = (filePath: string, onChange: (fileText: string) => void) => {
+  React.useEffect(() => {
+    const unsubscribe = viewerEndpoint.subscribeToDocumentSave(filePath, onChange);
+    return () => unsubscribe();
+  }, [filePath]);
+};
