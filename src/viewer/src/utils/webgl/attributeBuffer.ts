@@ -29,9 +29,10 @@ export class AttributeBufferInfo {
     this.count = newValue.length;
     this.context.bindBuffer(this.context.ARRAY_BUFFER, this.buffer);
     const flatten = [].concat(...newValue);
+    console.log("setting", newValue, flatten);
     this.context.bufferData(
       this.context.ARRAY_BUFFER,
-      new Float32Array(flatten),
+      new Float32Array(flatten), //0, 0, 0, 1, 0, 0.5, 0, 1, 0.7, 0, 0, 1]),
       this.context.STATIC_DRAW
     );
   }
@@ -45,14 +46,7 @@ export class AttributeBufferInfo {
       const normalize = false; // don't normalize the data
       const stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
       const offset = 0; // start at the beginning of the buffer
-      this.context.vertexAttribPointer(
-        this.location,
-        size,
-        type,
-        normalize,
-        stride,
-        offset
-      );
+      this.context.vertexAttribPointer(this.location, size, type, normalize, stride, offset);
     }
   }
 

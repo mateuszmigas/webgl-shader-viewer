@@ -1,7 +1,5 @@
 //import { createMatrix3 } from "./../../components/inputMatrix";
 import { assertNever } from "./../typeGuards";
-import { createVector } from "../../components/inputVector";
-import { createElementsDropdown } from "../../components/Dropdown2";
 import { UniformInfo, UniformType } from "./uniform";
 import { CompositeKeyMap } from "../compositeKeyMap";
 import { uuidv4 } from "../../../../common/uuid";

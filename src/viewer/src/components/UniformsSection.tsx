@@ -14,8 +14,6 @@ import {
 import { SectionField } from "./SectionField";
 import { SectionTitle } from "./SectionTitle";
 
-//const optionsByType =
-
 const mapStateToProps = (state: ViewerState) => {
   return {
     values: state.uniformValues,

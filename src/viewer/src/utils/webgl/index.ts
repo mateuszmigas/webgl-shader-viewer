@@ -140,7 +140,7 @@ export const renderProgram = (
   context.useProgram(program);
   context.viewport(0, 0, context.canvas.width, context.canvas.height);
   //context.clearColor(0, 0, 0, 0);
-  context.clearColor(1.0, 1.0, 0.0, 1.0); // Clear to black, fully opaque
+  context.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
   context.clearDepth(1.0); // Clear everything
   // gl.enable(gl.DEPTH_TEST);           // Enable depth testing
   context.enable(context.DEPTH_TEST);

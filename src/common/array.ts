@@ -10,9 +10,16 @@ export const removeLast = (text: string, count: number) => {
   return text.substring(0, text.length - count);
 };
 
-export const range = (start: number, end: number) =>
-  Array(end - start)
-    .fill({})
-    .map((_, i) => start + i);
+export const range = (range: number | [number, number]) => {
+  if (Array.isArray(range))
+    return Array(range[1] - range[0])
+      .fill({})
+      .map((_, i) => range[0] + i);
+  else {
+    return Array(range)
+      .fill({})
+      .map((_, i) => i);
+  }
+};
 
 export const repeat = <T>(count: number, value: T): T[] => Array(count).fill(value);

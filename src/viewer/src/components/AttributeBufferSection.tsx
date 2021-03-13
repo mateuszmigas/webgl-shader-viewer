@@ -5,6 +5,7 @@ import { ViewerAction } from "../store/actions";
 import { ViewerState } from "../store/state";
 import { translations } from "../translations";
 import { AttributeBufferType } from "../utils/webgl/attributeBuffer";
+import { getByName } from "../utils/webgl/attributeBufferComponent";
 import { SectionField } from "./SectionField";
 import { SectionTitle } from "./SectionTitle";
 
@@ -45,7 +46,14 @@ export const AttributeBufferSection = React.memo(
                   value={values[abi.name]?.value}
                   onChange={e => {
                     //getfrom cache and update
-                    setValue(abi.name, 2, e.target.value);
+                    setValue(abi.name, abi.type, e.target.value);
+                    const weblg = getByName(abi.name, abi.type);
+
+                    if (weblg) {
+                      weblg.attributeBufferInfo.setValue(JSON.parse(e.target.value));
+                    } else {
+                      console.log("ab not found");
+                    }
                   }}
                   //onBlur
                 ></input>

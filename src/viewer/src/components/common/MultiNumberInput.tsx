@@ -13,9 +13,9 @@ export const MultiNumberInput = React.memo(
 
     return (
       <div className="edit-input-grid">
-        {range(0, rows).map(row => (
+        {range(rows).map(row => (
           <div className="edit-input-row">
-            {range(0, columns).map(column => {
+            {range(columns).map(column => {
               const index = row * columns + column;
               return (
                 <input
