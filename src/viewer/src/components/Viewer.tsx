@@ -13,17 +13,20 @@ import {
 import { getFromCacheOrCreate } from "../utils/webgl/attributeBufferComponent";
 import { IndexBufferInfo } from "../utils/webgl/indexBuffer";
 import { UniformType } from "../utils/webgl/uniform";
-import { AttributeBufferFieldInfo, AttributeBufferSection } from "./AttributeBufferSection";
 import { DrawOptionsSection } from "./DrawOptionsSection";
 import { ShadersSelectorSection } from "./ShadersSelectorSection";
-import { TextureFieldInfo, TextureSection } from "./TexturesSection";
-import { UniformSection } from "./UniformsSection";
+import { TextureFieldInfo, TextureSection } from "./textures/TexturesSection";
+import { UniformSection } from "./uniforms/UniformsSection";
 import { ShadersCompileResultArea } from "./ShadersCompileResultArea";
-import { CameraPositionManipulator } from "../utils/cameraManipulator";
 import { usePerspectiveCamera } from "./hooks/usePerspectiveCamera";
 import { Dispatch } from "redux";
 import { ViewerAction } from "../store/actions";
 import { Matrix4Array } from "../types";
+import { useDocumentWatcher } from "./hooks/useDocumentWatcher";
+import {
+  AttributeBufferFieldInfo,
+  AttributeBuffersSection,
+} from "./attributeBuffers/AttributeBuffersSection";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
@@ -83,21 +86,8 @@ export const Viewer = connect(
         setViewerSize({ ...rect });
       });
 
-      viewerEndpoint.getDocumentText(selectedVertexFileId).then(setSelectedVertexFileText);
-      viewerEndpoint.getDocumentText(selectedFragmentFileId).then(setSelectedFragmentFileText);
       viewerEndpoint.showWebViewDevTools();
     }, []);
-
-    //const context = useWebGLContext(canvasRef.current)
-
-    // useShaderCompiler(selectedVertexFileText, setSelectedFragmentFileText, compilationResult => {
-    //   if (compilationResult) {
-
-    //   }
-    //   else {
-
-    //   }
-    // })
 
     React.useEffect(() => {
       if (!selectedVertexFileText || !selectedFragmentFileText) return;
@@ -156,11 +146,17 @@ export const Viewer = connect(
         <div className="viewer-options">
           <ShadersSelectorSection></ShadersSelectorSection>
           <DrawOptionsSection></DrawOptionsSection>
-          <UniformSection uniformFields={uniformFieldsInfo}></UniformSection>
-          <AttributeBufferSection
-            attributeBufferFields={attributeBufferFieldsInfo}
-          ></AttributeBufferSection>
-          <TextureSection textureFields={textureFieldsInfo}></TextureSection>
+          {uniformFieldsInfo.length > 0 && (
+            <UniformSection uniformFields={uniformFieldsInfo}></UniformSection>
+          )}
+          {attributeBufferFieldsInfo.length > 0 && (
+            <AttributeBuffersSection
+              attributeBufferFields={attributeBufferFieldsInfo}
+            ></AttributeBuffersSection>
+          )}
+          {textureFieldsInfo.length > 0 && (
+            <TextureSection textureFields={textureFieldsInfo}></TextureSection>
+          )}
         </div>
         <div ref={contentRef} className="viewer-content">
           {shaderCompileErrors && (
@@ -172,10 +168,3 @@ export const Viewer = connect(
     );
   }
 );
-
-export const useDocumentWatcher = (filePath: string, onChange: (fileText: string) => void) => {
-  React.useEffect(() => {
-    const unsubscribe = viewerEndpoint.subscribeToDocumentSave(filePath, onChange);
-    return () => unsubscribe();
-  }, [filePath]);
-};

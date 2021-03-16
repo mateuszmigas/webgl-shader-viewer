@@ -11,15 +11,15 @@ export type ViewerAction =
     }
   | {
       type: "SET_UNIFORM";
-      payload: { name: string; type: number; value: string };
+      payload: { name: string; type: number; optionId?: string; value?: any };
     }
   | {
       type: "SET_ATTRIBUTE_BUFFER";
-      payload: { name: string; type: number; value: string };
+      payload: { name: string; type: number; optionId?: string; value?: any };
     }
   | {
       type: "SET_TEXTURE";
-      payload: { name: string; optionId: string; optionValue: string };
+      payload: { name: string; type: number; optionId?: string; value?: any };
     }
   | {
       type: "SET_MESH";

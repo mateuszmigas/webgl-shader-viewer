@@ -23,23 +23,35 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
     }
     case "SET_UNIFORM": {
       const { name, ...rest } = action.payload;
+
       return {
         ...state,
-        uniformValues: { ...state.uniformValues, [name]: rest },
+        uniformValues: {
+          ...state.uniformValues,
+          [name]: { ...state.uniformValues[name], ...rest },
+        },
       };
     }
     case "SET_ATTRIBUTE_BUFFER": {
       const { name, ...rest } = action.payload;
+
       return {
         ...state,
-        attributeBufferValues: { ...state.attributeBufferValues, [name]: rest },
+        attributeBufferValues: {
+          ...state.attributeBufferValues,
+          [name]: { ...state.attributeBufferValues[name], ...rest },
+        },
       };
     }
     case "SET_TEXTURE": {
       const { name, ...rest } = action.payload;
+
       return {
         ...state,
-        textureValues: { ...state.textureValues, [name]: rest },
+        textureValues: {
+          ...state.textureValues,
+          [name]: { ...state.textureValues[name], ...rest },
+        },
       };
     }
     case "SET_CAMERA_POSITION": {

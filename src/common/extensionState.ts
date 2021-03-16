@@ -5,9 +5,15 @@ import { vscodeApi } from "./communication/vscodeApi";
 export type ExtensionState = {
   vertexFilePath: string | null;
   fragmentFilePath: string | null;
-  uniformValues: { [key: string]: { type: number; value: any } };
-  attributeBufferValues: { [key: string]: { type: number; value: any } };
-  textureValues: { [key: string]: { optionId: string; optionValue: string } };
+  uniformValues: {
+    [key: string]: {
+      type: number;
+      optionId: string;
+      value: any;
+    };
+  };
+  attributeBufferValues: { [key: string]: { type: number; optionId: string; value: any } };
+  textureValues: { [key: string]: { optionId: string; value: any } };
   cameraPosition: Matrix4Array;
   //drawMode: string;
   //meshId: string;
@@ -26,7 +32,7 @@ const defaultState: ExtensionState = {
 
 export const getExtensionState = (): ExtensionState => ({
   ...defaultState,
-  ...vscodeApi.getState(),
+  //...vscodeApi.getState(),
 });
 export const setExtensionState = (newState: Partial<ExtensionState>) =>
-  vscodeApi.setState(newState);
+  vscodeApi.setState(undefined);

@@ -8,7 +8,15 @@ import { ViewerAction } from "./store/actions";
 import { ViewerState } from "./store/state";
 import { Viewer } from "./components/Viewer";
 
-const store: Store<ViewerState, ViewerAction> = createStore(reducer);
+const store: Store<ViewerState, ViewerAction> = createStore(
+  (state: ViewerState, action: ViewerAction) => {
+    console.log("state before", state);
+    console.log("action", action);
+    const newLocal = reducer(state, action);
+    console.log("state after", newLocal);
+    return newLocal;
+  }
+);
 store.subscribe(() => {
   const { counter, ...state } = store.getState();
   setExtensionState(state);
@@ -39,58 +47,6 @@ ReactDOM.render(
 //     meshBindings.get("colors").value.setValue(colors);
 //     meshBindings.get("textureCoordinates").value.setValue(textureCoordinates);
 //     indexBufferBindingValue.setValue(indices);
-//   };
-
-//   const onShaderContentChanged = () => {
-//     shaderOptions.innerHTML = "";
-//     const context = webGLController.context;
-
-//     if (selectedFragmentContent && selectedVertexContent) {
-//       const result = compileShadersFromSource(
-//         context,
-//         selectedVertexContent,
-//         selectedFragmentContent
-//       );
-
-//       if (Array.isArray(result)) {
-//         showContent("errors");
-//         shaderCompilationErrors.innerText = formatShaderCompileErrors(
-//           result as ShaderCompileErrors
-//         );
-//       } else {
-//         showContent("canvas");
-//         const program = result as WebGLProgram;
-
-//         const uniformInfos = uniformComponents.map(uc => uc.uniformInfo);
-//         const textureInfos = textureComponents.map(tc => tc.textureInfo);
-//         const attributeBufferInfos = attributeBufferComponents.map(
-//           abc => abc.attributeBufferInfo
-//         );
-
-//         if (animationFrameHandle !== null)
-//           cancelAnimationFrame(animationFrameHandle);
-
-//         const render = () => {
-//           renderProgram(
-//             context,
-//             program,
-//             {
-//               uniformInfos,
-//               textureInfos,
-//               attributeBufferInfos,
-//               indexBufferInfo,
-//             },
-//             drawOptions
-//           );
-
-//           animationFrameHandle = requestAnimationFrame(render);
-//         };
-
-//         render();
-//       }
-//     } else {
-//       showContent("none");
-//     }
 //   };
 
 //   viewerOptions.appendChild(
