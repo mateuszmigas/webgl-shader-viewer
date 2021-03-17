@@ -3,19 +3,14 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { ViewerAction } from "../../store/actions";
 import { ViewerState } from "../../store/state";
-import { translations } from "../../translations";
 import { AttributeBufferType } from "../../utils/webgl/attributeBuffer";
-import { getByName } from "../../utils/webgl/attributeBufferComponent";
-import {
-  Vector2NumberInput,
-  Vector3NumberInput,
-  Vector4NumberInput,
-  Matrix4x4NumberInput,
-} from "../common";
+import { ArrayNumberInput } from "../common/ArrayNumberInput";
 import { customOption } from "../common/constants";
 import { Dropdown } from "../Dropdown";
 import { bindingNames, getBindingOptions, getBindingValue } from "./attributeBufferBindings";
 import { getDefaultProps } from "./attributeBufferUtils";
+
+type FieldState = { optionId: string; value: string; isValid: boolean };
 
 type OwnProps = {
   name: string;
@@ -25,57 +20,45 @@ type OwnProps = {
 const renderAttributeBufferInput = (
   type: AttributeBufferType,
   props: {
-    value: any;
-    onChange: (newValue: any) => void;
-    readonly: boolean;
+    value: string;
+    onChange: (newValue: string, isValid: boolean) => void;
+    onBlur: (value: any[]) => void;
+    readonly?: boolean;
   }
 ) => {
   switch (type) {
     case AttributeBufferType.FLOAT_VEC2:
-      return <Vector2NumberInput {...props}></Vector2NumberInput>;
+      return <ArrayNumberInput {...props} elementSize={2}></ArrayNumberInput>;
     case AttributeBufferType.FLOAT_VEC3:
-      return <Vector3NumberInput {...props}></Vector3NumberInput>;
+      return <ArrayNumberInput {...props} elementSize={3}></ArrayNumberInput>;
     case AttributeBufferType.FLOAT_VEC4:
-      return <Vector4NumberInput {...props}></Vector4NumberInput>;
+      return <ArrayNumberInput {...props} elementSize={4}></ArrayNumberInput>;
     default:
       return <div>Uniform not supported</div>;
   }
 };
 
-{
-  /* <input
-                value={values[abf.name]?.value}
-                onChange={e => {
-                  //getfrom cache and update
-                  setValue(abf.name, abf.type, "", e.target.value);
-                  const weblg = getByName(abf.name, abf.type);
-
-                  if (weblg) {
-                    weblg.attributeBufferInfo.setValue(JSON.parse(e.target.value));
-                  } else {
-                    console.log("ab not found");
-                  }
-                }}
-                //onBlur
-              ></input> */
-}
-
 const mapStateToProps = (state: ViewerState, ownProps: OwnProps) => {
   const attibuteBufferValue = state.attributeBufferValues[ownProps.name];
-  return attibuteBufferValue?.type === ownProps.type
-    ? attibuteBufferValue
-    : getDefaultProps(ownProps.type);
+  return {
+    state:
+      attibuteBufferValue?.type === ownProps.type
+        ? attibuteBufferValue
+        : getDefaultProps(ownProps.type),
+  };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>, ownProps: OwnProps) => {
   return {
-    setOptionAndValue: (optionId: string, value: string) => {
+    setState: (state: FieldState) => {
       dispatch({
         type: "SET_ATTRIBUTE_BUFFER",
         payload: {
           ...ownProps,
-          optionId,
-          value: bindingNames.has(optionId) ? getBindingValue(optionId, ownProps.type) : value,
+          ...state,
+          value: bindingNames.has(state.optionId)
+            ? getBindingValue(state.optionId, ownProps.type)
+            : state.value,
         },
       });
     },
@@ -90,11 +73,11 @@ export const AttributeBufferField = React.memo(
     (props: {
       name: string;
       type: number;
-      optionId: string;
-      value: any;
-      setOptionAndValue: (optionId: string, value: string) => void;
+      state: FieldState;
+      setState: (state: FieldState) => void;
     }) => {
-      const { type, optionId, value, setOptionAndValue } = props;
+      const { type, state, setState } = props;
+      const { value, optionId } = state;
       const options = React.useMemo(() => [customOption, ...getBindingOptions(type)], [type]);
       const isCustom = optionId === customOption.id;
 
@@ -103,13 +86,18 @@ export const AttributeBufferField = React.memo(
           {options.length > 1 && (
             <Dropdown
               selectedItemId={optionId}
-              onChange={optionId => setOptionAndValue(optionId, value)}
+              onChange={optionId => setState({ ...state, optionId })}
               options={options}
             ></Dropdown>
           )}
           {renderAttributeBufferInput(type, {
             value,
-            onChange: isCustom ? newValue => setOptionAndValue(optionId, newValue) : undefined,
+            onChange: isCustom
+              ? (newValue, isValid) => setState({ ...state, value: newValue, isValid })
+              : undefined,
+            onBlur: () => {
+              console.log("blur");
+            },
             readonly: !isCustom,
           })}
         </div>

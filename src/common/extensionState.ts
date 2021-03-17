@@ -12,7 +12,9 @@ export type ExtensionState = {
       value: any;
     };
   };
-  attributeBufferValues: { [key: string]: { type: number; optionId: string; value: any } };
+  attributeBufferValues: {
+    [key: string]: { type: number; optionId: string; value: string; isValid: boolean };
+  };
   textureValues: { [key: string]: { optionId: string; value: any } };
   cameraPosition: Matrix4Array;
   //drawMode: string;
@@ -32,7 +34,7 @@ const defaultState: ExtensionState = {
 
 export const getExtensionState = (): ExtensionState => ({
   ...defaultState,
-  //...vscodeApi.getState(),
+  ...vscodeApi.getState(),
 });
 export const setExtensionState = (newState: Partial<ExtensionState>) =>
-  vscodeApi.setState(undefined);
+  vscodeApi.setState(newState);

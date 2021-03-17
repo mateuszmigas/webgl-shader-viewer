@@ -4,10 +4,6 @@ import { removeLast } from "../../../../common/array";
 import { hasProperty } from "../typeGuards";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
 import { UniformInfo, UniformType } from "./uniform";
-import { Observable } from "../observable";
-//import { createAttributeBufferComponents } from "./attributeBufferComponent";
-import { getTextureInfos } from "./textureInfoStore";
-import { UniformBinding, createUniformComponents } from "./uniformComponent";
 
 export type DrawOptions = {
   drawMode: "elements" | "arrays";

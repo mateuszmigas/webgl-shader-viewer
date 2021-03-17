@@ -10,7 +10,7 @@ import {
   getProgramUniforms,
   renderProgram,
 } from "../utils/webgl";
-import { getFromCacheOrCreate } from "../utils/webgl/attributeBufferComponent";
+import { getFromCacheOrCreate } from "../utils/webgl/attributeBufferStore";
 import { IndexBufferInfo } from "../utils/webgl/indexBuffer";
 import { UniformType } from "../utils/webgl/uniform";
 import { DrawOptionsSection } from "./DrawOptionsSection";

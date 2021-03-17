@@ -15,7 +15,13 @@ export type ViewerAction =
     }
   | {
       type: "SET_ATTRIBUTE_BUFFER";
-      payload: { name: string; type: number; optionId?: string; value?: any };
+      payload: {
+        name: string;
+        type: number;
+        optionId: string | undefined;
+        value: string;
+        isValid: boolean;
+      };
     }
   | {
       type: "SET_TEXTURE";
