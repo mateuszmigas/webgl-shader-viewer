@@ -9,6 +9,14 @@ const initialState: ViewerState = {
   counter: 0,
 };
 
+const x = { name: "fsfe", age: 123, secondname: "fsfsefsf" };
+const res = objectMap(x, (value, key) => {
+  console.log(value, key);
+  return value;
+});
+
+console.log(res);
+
 export const reducer = (state: ViewerState = initialState, action: ViewerAction): ViewerState => {
   switch (action.type) {
     case "SET_VERTEX_FILE_PATH": {

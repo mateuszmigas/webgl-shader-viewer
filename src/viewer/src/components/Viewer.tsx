@@ -29,6 +29,7 @@ import {
 } from "./attributeBuffers/AttributeBuffersSection";
 import { createUniformInfos } from "../utils/webgl/uniformStore";
 import { setWebGLFromState } from "../utils/webgl/storeWatcher";
+import { store } from "..";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
@@ -124,6 +125,7 @@ export const Viewer = connect(
         setWebGLFromState();
 
         const render = () => {
+          const { drawMode } = store.getState();
           renderProgram(
             contextRef.current,
             program,
@@ -133,7 +135,7 @@ export const Viewer = connect(
               attributeBufferInfos,
               indexBufferInfo: indexBufferInfoRef.current,
             },
-            { drawMode: "arrays" }
+            { drawMode }
           );
 
           animationFrameHandleRef.current = requestAnimationFrame(render);
