@@ -1,30 +1,43 @@
+import { meshes, MeshInfo } from "./../../meshes";
 import { AttributeBufferType } from "./../../utils/webgl/attributeBuffer";
 
+const getMeshBinding = (meshId: string, name: keyof MeshInfo) =>
+  JSON.stringify((meshes.get(meshId) as any)[name]);
+
 export const attributeBufferBindings = new Map<
-  AttributeBufferType,
-  { [key: string]: { display: string; value: any } }
+  string,
+  { display: string; type: AttributeBufferType; getValue: (id: string) => any }
 >([
   [
-    AttributeBufferType.FLOAT_VEC2,
+    "positions",
     {
-      bindingab: { display: "binding ab1", value: [1, 2, 3] },
+      type: AttributeBufferType.FLOAT_VEC4,
+      display: "Binding - Mesh positions",
+      getValue: id => getMeshBinding(id, "positions"),
+    },
+  ],
+  [
+    "textureCoordinates",
+    {
+      type: AttributeBufferType.FLOAT_VEC2,
+      display: "Binding - Mesh texture coords",
+      getValue: id => getMeshBinding(id, "textureCoordinates"),
+    },
+  ],
+  [
+    "colors",
+    {
+      type: AttributeBufferType.FLOAT_VEC4,
+      display: "Binding - Mesh colors",
+      getValue: id => getMeshBinding(id, "colors"),
     },
   ],
 ]);
 
-export const bindingNames = new Set<string>(
-  Array.from(attributeBufferBindings.values()).flatMap(Object.keys)
-);
-
-export const getBindingValue = (name: string, type: AttributeBufferType) =>
-  attributeBufferBindings.get(type)[name].value;
-
-export const getBindingOptions = (type: AttributeBufferType) => {
-  const bindings = attributeBufferBindings.get(type);
-  return bindings
-    ? Object.entries(bindings).map(([key, value]) => ({
-        id: key,
-        display: value.display,
-      }))
-    : [];
-};
+export const getBindingOptions = (type: AttributeBufferType) =>
+  Array.from(attributeBufferBindings.entries())
+    .filter(([_, value]) => value.type === type)
+    .map(([key, value]) => ({
+      id: key,
+      display: value.display,
+    }));

@@ -8,7 +8,7 @@ import { getAttributeBufferInfo } from "../../utils/webgl/attributeBufferStore";
 import { ArrayNumberInput } from "../common/ArrayNumberInput";
 import { customOption } from "../common/constants";
 import { Dropdown } from "../Dropdown";
-import { bindingNames, getBindingOptions, getBindingValue } from "./attributeBufferBindings";
+import { getBindingOptions } from "./attributeBufferBindings";
 import { getDefaultProps } from "./attributeBufferUtils";
 
 type FieldState = { optionId: string; value: string; isValid: boolean };
@@ -57,9 +57,6 @@ const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>, ownProps: OwnProps
         payload: {
           ...ownProps,
           ...state,
-          value: bindingNames.has(state.optionId)
-            ? getBindingValue(state.optionId, ownProps.type)
-            : state.value,
         },
       });
     },

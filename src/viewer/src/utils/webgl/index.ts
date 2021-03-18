@@ -1,16 +1,9 @@
-import { getTextureInfo } from "./textureInfoStore";
-import { store } from "./../../index";
 import { TextureInfo } from "./textureInfo";
 import { IndexBufferInfo } from "./indexBuffer";
 import { removeLast } from "../../../../common/array";
 import { hasProperty } from "../typeGuards";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
 import { UniformInfo, UniformType } from "./uniform";
-import { ViewerState } from "../../store/state";
-import { getAttributeBufferInfo } from "./attributeBufferStore";
-import { safeJSONParse } from "../parsing";
-import { getUniformInfo } from "./uniformStore";
-import { debounce } from "../function";
 
 export type DrawMode = "elements" | "arrays";
 export type DrawOptions = {

@@ -1,6 +1,8 @@
 import { getExtensionState } from "../../../common/extensionState";
 import { ViewerAction } from "./actions";
 import { ViewerState } from "./state";
+import { attributeBufferBindings } from "../components/attributeBuffers/attributeBufferBindings";
+import { objectMap } from "../utils/object";
 
 const initialState: ViewerState = {
   ...getExtensionState(),
@@ -23,6 +25,7 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
     }
     case "SET_UNIFORM": {
       const { name, ...rest } = action.payload;
+      //const bindingNames.has(optionId)
 
       return {
         ...state,
@@ -34,12 +37,15 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
     }
     case "SET_ATTRIBUTE_BUFFER": {
       const { name, ...rest } = action.payload;
-
       return {
         ...state,
         attributeBufferValues: {
           ...state.attributeBufferValues,
-          [name]: { ...state.attributeBufferValues[name], ...rest },
+          [name]: {
+            ...state.attributeBufferValues[name],
+            ...rest,
+            value: attributeBufferBindings.get(rest.optionId)?.getValue(state.meshId) ?? rest.value,
+          },
         },
       };
     }
@@ -62,6 +68,14 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
     case "SET_MESH": {
       return {
         ...state,
+        attributeBufferValues: objectMap(state.attributeBufferValues, propValue => {
+          return {
+            ...propValue,
+            value:
+              attributeBufferBindings.get(propValue.optionId)?.getValue(action.payload.id) ??
+              propValue.value,
+          };
+        }),
         meshId: action.payload.id,
       };
     }

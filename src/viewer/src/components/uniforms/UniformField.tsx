@@ -52,15 +52,13 @@ const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>, ownProps: OwnProps
     setOptionAndValue: (optionId: string, value: string) => {
       dispatch({
         type: "SET_UNIFORM",
-        payload: {
-          ...ownProps,
-          optionId,
-          value: bindingNames.has(optionId) ? getBindingValue(optionId, ownProps.type) : value,
-        },
+        payload: { ...ownProps, optionId, value },
       });
     },
   };
 };
+
+//: bindingNames.has(optionId) ? getBindingValue(optionId, ownProps.type) : value,
 
 export const UniformField = React.memo(
   connect(

@@ -8,19 +8,22 @@ import { getUniformInfo } from "./uniformStore";
 export const setWebGLFromState = () => {
   const state = store.getState();
 
-  Object.entries(state.attributeBufferValues).forEach(([key, value]) => {
-    getAttributeBufferInfo(key, value.type)?.attributeBufferInfo.setValue(
-      safeJSONParse(value.value) ?? []
-    );
-  });
+  state.attributeBufferValues &&
+    Object.entries(state.attributeBufferValues).forEach(([key, value]) => {
+      getAttributeBufferInfo(key, value.type)?.attributeBufferInfo.setValue(
+        safeJSONParse(value.value) ?? []
+      );
+    });
 
-  Object.entries(state.uniformValues).forEach(([key, value]) => {
-    getUniformInfo(key, value.type)?.uniformInfo.setValue(value.value);
-  });
+  state.uniformValues &&
+    Object.entries(state.uniformValues).forEach(([key, value]) => {
+      getUniformInfo(key, value.type)?.uniformInfo.setValue(value.value);
+    });
 
-  Object.entries(state.textureValues).forEach(([key, value]) => {
-    //getTextureInfo(key)?.textureInfo.setValue(value.value);
-  });
+  state.textureValues &&
+    Object.entries(state.textureValues).forEach(([key, value]) => {
+      //getTextureInfo(key)?.textureInfo.setValue(value.value);
+    });
 };
 
 let lastCommitedState: ViewerState = undefined;

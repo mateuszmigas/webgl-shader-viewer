@@ -1,5 +1,6 @@
 import React, { Dispatch } from "react";
 import { connect } from "react-redux";
+import { meshes } from "../meshes";
 import { ViewerAction } from "../store/actions";
 import { ViewerState } from "../store/state";
 import { translations } from "../translations";
@@ -12,6 +13,11 @@ const drawModeOptions: { id: DrawMode; display: string }[] = [
   { id: "arrays", display: "Arrays" },
   { id: "elements", display: "Elements" },
 ];
+
+const meshOptions = Array.from(meshes.entries()).map(([key, value]) => ({
+  id: key,
+  display: value.display,
+}));
 
 const mapStateToProps = (state: ViewerState) => {
   return {
@@ -51,7 +57,7 @@ export const DrawOptionsSection = React.memo(
             ></Dropdown>
           </SectionField>
           <SectionField text={"Mesh"}>
-            <Dropdown selectedItemId={meshId} onChange={setMeshId} options={[]}></Dropdown>
+            <Dropdown selectedItemId={meshId} onChange={setMeshId} options={meshOptions}></Dropdown>
           </SectionField>
         </div>
       );
