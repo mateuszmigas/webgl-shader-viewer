@@ -1,5 +1,5 @@
 import React from "react";
-import { viewerEndpoint } from "../../../../common/communication/viewerEndpoint";
+import { viewerEndpoint } from "../../../common/communication/viewerEndpoint";
 
 export const useDocumentWatcher = (filePath: string, onChange: (fileText: string) => void) => {
   React.useEffect(() => {

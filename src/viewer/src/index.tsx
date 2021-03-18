@@ -12,10 +12,10 @@ import { commitStateToWebGL } from "./utils/webgl/storeWatcher";
 
 export const store: Store<ViewerState, ViewerAction> = createStore(
   (state: ViewerState, action: ViewerAction) => {
-    console.log("state before", state);
-    console.log("action", action);
+    //console.log("state before", state);
+    //console.log("action", action);
     const newLocal = reducer(state, action);
-    console.log("state after", newLocal);
+    //console.log("state after", newLocal);
     return newLocal;
   }
 );

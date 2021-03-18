@@ -1,3 +1,4 @@
+import { CameraPosition } from "./../utils/cameraManipulator";
 import { DrawMode } from "./../utils/webgl/index";
 import { Matrix4Array } from "./../types";
 
@@ -38,5 +39,9 @@ export type ViewerAction =
     }
   | {
       type: "SET_CAMERA_POSITION";
-      payload: { position: Matrix4Array };
+      payload: { position: CameraPosition };
+    }
+  | {
+      type: "SET_VIWER_SIZE";
+      payload: { size: { width: number; height: number } };
     };

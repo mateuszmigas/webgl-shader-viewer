@@ -27,7 +27,7 @@ export const setWebGLFromState = () => {
 };
 
 let lastCommitedState: ViewerState = undefined;
-export const commitStateToWebGL = debounce((state: ViewerState) => {
+export const commitStateToWebGL = (state: ViewerState) => {
   if (lastCommitedState?.attributeBufferValues !== state.attributeBufferValues) {
     Object.entries(state.attributeBufferValues).forEach(([key, value]) => {
       if (lastCommitedState?.attributeBufferValues[key] !== value) {
@@ -55,4 +55,4 @@ export const commitStateToWebGL = debounce((state: ViewerState) => {
   }
 
   lastCommitedState = state;
-}, 100);
+};

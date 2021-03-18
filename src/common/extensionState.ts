@@ -1,6 +1,5 @@
+import { CameraPosition } from "./../viewer/src/utils/cameraManipulator";
 import { DrawMode } from "./../viewer/src/utils/webgl/index";
-import { repeat } from "./array";
-import { Matrix4Array } from "./../viewer/src/types";
 import { vscodeApi } from "./communication/vscodeApi";
 
 export type ExtensionState = {
@@ -17,7 +16,8 @@ export type ExtensionState = {
     [key: string]: { type: number; optionId: string; value: string; isValid: boolean };
   };
   textureValues: { [key: string]: { optionId: string; value: any } };
-  cameraPosition: Matrix4Array;
+  cameraPosition: CameraPosition;
+  viewerSize: { width: number; height: number };
   drawMode: DrawMode;
   meshId: string;
 };
@@ -28,7 +28,8 @@ const defaultState: ExtensionState = {
   uniformValues: {},
   attributeBufferValues: {},
   textureValues: {},
-  cameraPosition: repeat(16, 0) as Matrix4Array,
+  cameraPosition: { longitude: 1, latitude: 1, radius: 2 },
+  viewerSize: { width: 0, height: 0 },
   drawMode: "elements",
   meshId: "cube",
 };

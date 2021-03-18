@@ -1,3 +1,4 @@
+import { uniformBindings } from "./../components/uniforms/uniformBindings";
 import { getExtensionState } from "../../../common/extensionState";
 import { ViewerAction } from "./actions";
 import { ViewerState } from "./state";
@@ -8,14 +9,6 @@ const initialState: ViewerState = {
   ...getExtensionState(),
   counter: 0,
 };
-
-const x = { name: "fsfe", age: 123, secondname: "fsfsefsf" };
-const res = objectMap(x, (value, key) => {
-  console.log(value, key);
-  return value;
-});
-
-console.log(res);
 
 export const reducer = (state: ViewerState = initialState, action: ViewerAction): ViewerState => {
   switch (action.type) {
@@ -39,7 +32,14 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
         ...state,
         uniformValues: {
           ...state.uniformValues,
-          [name]: { ...state.uniformValues[name], ...rest },
+          [name]: {
+            ...state.uniformValues[name],
+            ...rest,
+            value:
+              uniformBindings
+                .get(rest.optionId)
+                ?.getValue(state.cameraPosition, state.viewerSize) ?? rest.value,
+          },
         },
       };
     }
@@ -68,9 +68,25 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
         },
       };
     }
+    case "SET_VIWER_SIZE": {
+      return {
+        ...state,
+        viewerSize: action.payload.size,
+      };
+    }
     case "SET_CAMERA_POSITION": {
       return {
         ...state,
+        uniformValues: objectMap(state.uniformValues, propValue => {
+          return {
+            ...propValue,
+            value:
+              uniformBindings
+                .get(propValue.optionId)
+                ?.getValue(action.payload.position, state.viewerSize) ?? propValue.value,
+          };
+        }),
+        cameraPosition: action.payload.position,
       };
     }
     case "SET_MESH": {

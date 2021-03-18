@@ -12,7 +12,7 @@ import {
 } from "../common";
 import { customOption } from "../common/constants";
 import { Dropdown } from "../Dropdown";
-import { bindingNames, getBindingOptions, getBindingValue } from "./uniformBindings";
+import { getBindingOptions } from "./uniformBindings";
 import { getDefaultProps } from "./uniformUtils";
 
 type OwnProps = {

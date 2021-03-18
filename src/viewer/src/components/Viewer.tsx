@@ -18,11 +18,10 @@ import { ShadersSelectorSection } from "./ShadersSelectorSection";
 import { TextureFieldInfo, TextureSection } from "./textures/TexturesSection";
 import { UniformSection } from "./uniforms/UniformsSection";
 import { ShadersCompileResultArea } from "./ShadersCompileResultArea";
-import { usePerspectiveCamera } from "./hooks/usePerspectiveCamera";
+import { usePerspectiveCamera } from "../hooks/usePerspectiveCamera";
 import { Dispatch } from "redux";
 import { ViewerAction } from "../store/actions";
-import { Matrix4Array } from "../types";
-import { useDocumentWatcher } from "./hooks/useDocumentWatcher";
+import { useDocumentWatcher } from "../hooks/useDocumentWatcher";
 import {
   AttributeBufferFieldInfo,
   AttributeBuffersSection,
@@ -30,18 +29,22 @@ import {
 import { createUniformInfos } from "../utils/webgl/uniformStore";
 import { setWebGLFromState } from "../utils/webgl/storeWatcher";
 import { store } from "..";
+import { CameraPosition } from "../utils/cameraManipulator";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
     selectedVertexFileId: state.vertexFilePath,
     selectedFragmentFileId: state.fragmentFilePath,
+    cameraPosition: state.cameraPosition,
   };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>) => {
   return {
-    updateCameraPosition: (position: Matrix4Array) =>
-      dispatch({ type: "SET_CAMERA_POSITION", payload: { position } }),
+    setCameraPosition: (newCameraPosition: CameraPosition) =>
+      dispatch({ type: "SET_CAMERA_POSITION", payload: { position: newCameraPosition } }),
+    setViewerSize: (size: { width: number; height: number }) =>
+      dispatch({ type: "SET_VIWER_SIZE", payload: { size } }),
   };
 };
 
@@ -52,9 +55,17 @@ export const Viewer = connect(
   (props: {
     selectedVertexFileId: string;
     selectedFragmentFileId: string;
-    updateCameraPosition: (position: Matrix4Array) => void;
+    cameraPosition: CameraPosition;
+    setCameraPosition: (newCameraPosition: CameraPosition) => void;
+    setViewerSize: (size: { width: number; height: number }) => void;
   }) => {
-    const { selectedVertexFileId, selectedFragmentFileId, updateCameraPosition } = props;
+    const {
+      selectedVertexFileId,
+      selectedFragmentFileId,
+      cameraPosition,
+      setCameraPosition,
+      setViewerSize,
+    } = props;
 
     const [shaderCompileErrors, setShaderCompileErrors] = React.useState("");
     const [selectedVertexFileText, setSelectedVertexFileText] = React.useState("");
@@ -66,7 +77,6 @@ export const Viewer = connect(
       { name: string; type: UniformType }[]
     >([]);
     const [textureFieldsInfo, setTextureFieldsInfo] = React.useState<TextureFieldInfo[]>([]);
-    const [viewerSize, setViewerSize] = React.useState({ width: 0, height: 0 });
     const contentRef = React.useRef<HTMLDivElement>(null);
     const canvasRef = React.useRef<HTMLCanvasElement>(null);
     const contextRef = React.useRef<WebGLRenderingContext>(null);
@@ -152,7 +162,7 @@ export const Viewer = connect(
       }
     }, [selectedVertexFileText, selectedFragmentFileText]);
 
-    usePerspectiveCamera(contentRef.current, viewerSize, updateCameraPosition);
+    usePerspectiveCamera(contentRef.current, cameraPosition, setCameraPosition);
     useDocumentWatcher(selectedVertexFileId, setSelectedVertexFileText);
     useDocumentWatcher(selectedFragmentFileId, setSelectedFragmentFileText);
 
