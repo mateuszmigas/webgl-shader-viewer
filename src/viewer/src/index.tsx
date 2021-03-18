@@ -1,12 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { setExtensionState } from "../../common/extensionState";
+import { ExtensionState, setExtensionState } from "../../common/extensionState";
 import { createStore, Store } from "redux";
 import { Provider } from "react-redux";
 import { reducer } from "./store/reducer";
 import { ViewerAction } from "./store/actions";
 import { ViewerState } from "./store/state";
 import { Viewer } from "./components/Viewer";
+import { debounce } from "./utils/function";
 
 const store: Store<ViewerState, ViewerAction> = createStore(
   (state: ViewerState, action: ViewerAction) => {
@@ -17,9 +18,20 @@ const store: Store<ViewerState, ViewerAction> = createStore(
     return newLocal;
   }
 );
+
+const onStateChanged = (previousState: ViewerState, currentState: ViewerState) => {};
+const storeExtensionState = debounce(
+  (extensionState: ExtensionState) => setExtensionState(extensionState),
+  500
+);
+
+let previousState: ViewerState = undefined;
 store.subscribe(() => {
-  const { counter, ...state } = store.getState();
-  setExtensionState(state);
+  const currentState = store.getState();
+  onStateChanged(previousState, currentState);
+  const { counter, ...extensionState } = currentState;
+  storeExtensionState(extensionState);
+  previousState = currentState;
 });
 
 ReactDOM.render(

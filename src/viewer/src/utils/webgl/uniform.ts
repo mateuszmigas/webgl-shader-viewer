@@ -1,9 +1,4 @@
-import {
-  Matrix4Array,
-  Vector2Array,
-  Vector3Array,
-  Vector4Array,
-} from "../../types";
+import { Matrix4Array, Vector2Array, Vector3Array, Vector4Array } from "../../types";
 import { assertNever } from "../typeGuards";
 
 export enum UniformType {
@@ -18,7 +13,7 @@ export enum UniformType {
 // , 35667 (INT_VEC2), 35668 (INT_VEC3), 35669 (INT_VEC4), 35670 (BOOL), 35671 (BOOL_VEC2), 35672 (BOOL_VEC3), 35673 (BOOL_VEC4), 35674 (FLOAT_MAT2), 35675 (FLOAT_MAT3),
 
 export class UniformInfo<T = any> {
-  private value: T | null;
+  private value: T | null = null;
   private setter: (value: T) => void;
 
   constructor(
@@ -69,8 +64,7 @@ const createUniformSetter = (
     case UniformType.FLOAT_VEC4:
       return (value: Vector4Array) => context.uniform4f(location, ...value);
     case UniformType.FLOAT_MAT4:
-      return (value: Matrix4Array) =>
-        context.uniformMatrix4fv(location, false, value);
+      return (value: Matrix4Array) => context.uniformMatrix4fv(location, false, value);
     default:
       assertNever(type);
   }

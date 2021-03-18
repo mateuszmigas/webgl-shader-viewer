@@ -4,6 +4,7 @@ import { Dispatch } from "redux";
 import { ViewerAction } from "../../store/actions";
 import { ViewerState } from "../../store/state";
 import { AttributeBufferType } from "../../utils/webgl/attributeBuffer";
+import { getAttributeBufferInfo } from "../../utils/webgl/attributeBufferStore";
 import { ArrayNumberInput } from "../common/ArrayNumberInput";
 import { customOption } from "../common/constants";
 import { Dropdown } from "../Dropdown";
@@ -22,7 +23,7 @@ const renderAttributeBufferInput = (
   props: {
     value: string;
     onChange: (newValue: string, isValid: boolean) => void;
-    onBlur: (value: any[]) => void;
+    onBlur: (value: number[][]) => void;
     readonly?: boolean;
   }
 ) => {
@@ -76,7 +77,7 @@ export const AttributeBufferField = React.memo(
       state: FieldState;
       setState: (state: FieldState) => void;
     }) => {
-      const { type, state, setState } = props;
+      const { name, type, state, setState } = props;
       const { value, optionId } = state;
       const options = React.useMemo(() => [customOption, ...getBindingOptions(type)], [type]);
       const isCustom = optionId === customOption.id;
@@ -95,9 +96,8 @@ export const AttributeBufferField = React.memo(
             onChange: isCustom
               ? (newValue, isValid) => setState({ ...state, value: newValue, isValid })
               : undefined,
-            onBlur: () => {
-              console.log("blur");
-            },
+            onBlur: newValue =>
+              getAttributeBufferInfo(name, type).attributeBufferInfo.setValue(newValue),
             readonly: !isCustom,
           })}
         </div>

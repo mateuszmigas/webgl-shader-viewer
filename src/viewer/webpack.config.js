@@ -2,7 +2,6 @@ const path = require('path');
 
 module.exports = {
   entry: path.resolve(__dirname, 'src/index.tsx'),
-  devtool: 'inline-source-map',
   mode: "production",
   module: {
     rules: [
@@ -20,9 +19,4 @@ module.exports = {
     filename: 'main.js',
     path: path.resolve(__dirname, '../../media/'),
   },
-  performance: {
-    // todo
-    maxEntrypointSize: 2024000,
-    maxAssetSize: 2024000
-  }
 };

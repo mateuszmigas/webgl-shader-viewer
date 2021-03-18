@@ -10,7 +10,7 @@ import {
   getProgramUniforms,
   renderProgram,
 } from "../utils/webgl";
-import { getFromCacheOrCreate } from "../utils/webgl/attributeBufferStore";
+import { createAttributeBufferInfos } from "../utils/webgl/attributeBufferStore";
 import { IndexBufferInfo } from "../utils/webgl/indexBuffer";
 import { UniformType } from "../utils/webgl/uniform";
 import { DrawOptionsSection } from "./DrawOptionsSection";
@@ -27,6 +27,7 @@ import {
   AttributeBufferFieldInfo,
   AttributeBuffersSection,
 } from "./attributeBuffers/AttributeBuffersSection";
+import { createUniformInfos } from "../utils/webgl/uniformStore";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
@@ -108,16 +109,25 @@ export const Viewer = connect(
         setUniformFieldsInfo(programUniforms.dataUniforms);
         setTextureFieldsInfo(programUniforms.textureUniforms);
         setAttributeBufferFieldsInfo(programAttributeBuffers);
-        const newLocal = getFromCacheOrCreate(contextRef.current, program, programAttributeBuffers);
+        const attributeBufferInfos = createAttributeBufferInfos(
+          contextRef.current,
+          program,
+          programAttributeBuffers
+        );
+        const uniformInfos = createUniformInfos(
+          contextRef.current,
+          program,
+          programUniforms.dataUniforms
+        );
 
         const render = () => {
           renderProgram(
             contextRef.current,
             program,
             {
-              uniformInfos: [],
+              uniformInfos: uniformInfos,
               textureInfos: [],
-              attributeBufferInfos: newLocal,
+              attributeBufferInfos,
               indexBufferInfo: indexBufferInfoRef.current,
             },
             { drawMode: "arrays" }

@@ -1,5 +1,4 @@
 import { Vector2Array, Vector4Array } from "./types";
-import { Observable } from "./utils/observable";
 import { AttributeBufferType } from "./utils/webgl/attributeBuffer";
 
 type MeshInfo = {
@@ -158,30 +157,30 @@ export const meshes = new Map<string, MeshInfo>([
   ],
 ]);
 
-export const createMeshBindings = () =>
-  new Map([
-    [
-      "positions",
-      {
-        name: "Binding - Mesh positions",
-        type: AttributeBufferType.FLOAT_VEC4,
-        value: new Observable([]),
-      },
-    ],
-    [
-      "textureCoordinates",
-      {
-        name: "Binding - Mesh texture coords",
-        type: AttributeBufferType.FLOAT_VEC2,
-        value: new Observable([]),
-      },
-    ],
-    [
-      "colors",
-      {
-        name: "Binding - Mesh colors",
-        type: AttributeBufferType.FLOAT_VEC4,
-        value: new Observable([]),
-      },
-    ],
-  ]);
+// export const createMeshBindings = () =>
+//   new Map([
+//     [
+//       "positions",
+//       {
+//         name: "Binding - Mesh positions",
+//         type: AttributeBufferType.FLOAT_VEC4,
+//         value: new Observable([]),
+//       },
+//     ],
+//     [
+//       "textureCoordinates",
+//       {
+//         name: "Binding - Mesh texture coords",
+//         type: AttributeBufferType.FLOAT_VEC2,
+//         value: new Observable([]),
+//       },
+//     ],
+//     [
+//       "colors",
+//       {
+//         name: "Binding - Mesh colors",
+//         type: AttributeBufferType.FLOAT_VEC4,
+//         value: new Observable([]),
+//       },
+//     ],
+//   ]);

@@ -24,9 +24,9 @@ const rebuildCache = (newElements: { key: CacheKey; value: CacheValue }[]) => {
   });
 };
 
-export const getByName = (name: string, type: UniformType) => cache.get({ name, type });
+export const getUniformInfo = (name: string, type: UniformType) => cache.get({ name, type });
 
-export const getFromCacheOrCreate = (
+export const createUniformInfos = (
   context: WebGLRenderingContext,
   program: WebGLProgram,
   uniforms: { name: string; type: UniformType }[]
@@ -48,12 +48,11 @@ export const getFromCacheOrCreate = (
         key,
         value: {
           uniformInfo,
-          dispose: () => {},
         },
       };
     }
   });
 
   rebuildCache(elements);
-  return elements.map(uc => uc.value);
+  return elements.map(uc => uc.value.uniformInfo);
 };
