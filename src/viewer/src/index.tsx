@@ -8,7 +8,7 @@ import { ViewerAction } from "./store/actions";
 import { ViewerState } from "./store/state";
 import { Viewer } from "./components/Viewer";
 import { debounce } from "./utils/function";
-import { commitStateToWebGL } from "./utils/webgl/storeWatcher";
+import { setAttributeBuffers, setTextures, setUniforms } from "./utils/webgl/storeWatcher";
 
 export const store: Store<ViewerState, ViewerAction> = createStore(
   (state: ViewerState, action: ViewerAction) => {
@@ -28,7 +28,9 @@ store.subscribe(() => {
   const currentState = store.getState();
   const { counter, ...extensionState } = currentState;
   storeExtensionState(extensionState);
-  commitStateToWebGL(currentState);
+  setAttributeBuffers(currentState.attributeBufferValues);
+  setUniforms(currentState.uniformValues);
+  setTextures(currentState.textureValues);
 });
 
 ReactDOM.render(

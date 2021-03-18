@@ -26,33 +26,49 @@ export const setWebGLFromState = () => {
     });
 };
 
-let lastCommitedState: ViewerState = undefined;
-export const commitStateToWebGL = (state: ViewerState) => {
-  if (lastCommitedState?.attributeBufferValues !== state.attributeBufferValues) {
-    Object.entries(state.attributeBufferValues).forEach(([key, value]) => {
-      if (lastCommitedState?.attributeBufferValues[key] !== value) {
-        getAttributeBufferInfo(key, value.type)?.attributeBufferInfo.setValue(
-          safeJSONParse(value.value) ?? []
-        );
-      }
-    });
-  }
+let lastCommitedAttributeBuffersState: ViewerState["attributeBufferValues"] = undefined;
+export const setAttributeBuffers = debounce(
+  (attributeBufferValues: ViewerState["attributeBufferValues"]) => {
+    if (
+      lastCommitedAttributeBuffersState !== attributeBufferValues &&
+      lastCommitedAttributeBuffersState &&
+      attributeBufferValues
+    ) {
+      Object.entries(attributeBufferValues).forEach(([key, value]) => {
+        if (lastCommitedAttributeBuffersState[key] !== value) {
+          getAttributeBufferInfo(key, value.type)?.attributeBufferInfo.setValue(
+            safeJSONParse(value.value) ?? []
+          );
+        }
+      });
+    }
 
-  if (lastCommitedState?.uniformValues !== state.uniformValues) {
-    Object.entries(state.uniformValues).forEach(([key, value]) => {
-      if (lastCommitedState?.uniformValues[key] !== value) {
+    lastCommitedAttributeBuffersState = attributeBufferValues;
+  },
+  100
+);
+
+let lastCommitedUniformsState: ViewerState["uniformValues"] = undefined;
+export const setUniforms = (uniformValues: ViewerState["uniformValues"]) => {
+  if (lastCommitedUniformsState !== uniformValues && lastCommitedUniformsState && uniformValues) {
+    Object.entries(uniformValues).forEach(([key, value]) => {
+      if (lastCommitedUniformsState[key] !== value) {
         getUniformInfo(key, value.type)?.uniformInfo.setValue(value.value);
       }
     });
   }
+  lastCommitedUniformsState = uniformValues;
+};
 
-  if (lastCommitedState?.textureValues !== state.textureValues) {
-    Object.entries(state.textureValues).forEach(([key, value]) => {
-      if (lastCommitedState?.textureValues[key] !== value) {
+let lastCommitedTexturesState: ViewerState["textureValues"] = undefined;
+export const setTextures = (textureValues: ViewerState["textureValues"]) => {
+  if (lastCommitedTexturesState !== textureValues && lastCommitedTexturesState && textureValues) {
+    Object.entries(textureValues).forEach(([key, value]) => {
+      if (lastCommitedTexturesState[key] !== value) {
         //getUniformInfo(key, value.type)?.uniformInfo.setValue(value.value);
       }
     });
   }
 
-  lastCommitedState = state;
+  lastCommitedTexturesState = textureValues;
 };
