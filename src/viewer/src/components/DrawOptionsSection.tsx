@@ -1,11 +1,60 @@
-import React from "react";
+import React, { Dispatch } from "react";
+import { connect } from "react-redux";
+import { ViewerAction } from "../store/actions";
+import { ViewerState } from "../store/state";
 import { translations } from "../translations";
+import { DrawMode, DrawOptions } from "../utils/webgl";
+import { Dropdown } from "./Dropdown";
+import { SectionField } from "./SectionField";
 import { SectionTitle } from "./SectionTitle";
 
-export const DrawOptionsSection = React.memo(() => {
-  return (
-    <div className="viewer-options-section">
-      <SectionTitle text={translations.drawOptions}></SectionTitle>
-    </div>
-  );
-});
+const drawModeOptions: { id: DrawMode; display: string }[] = [
+  { id: "arrays", display: "Arrays" },
+  { id: "elements", display: "Elements" },
+];
+
+const mapStateToProps = (state: ViewerState) => {
+  return {
+    drawMode: state.drawMode,
+    meshId: state.meshId,
+  };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>) => {
+  return {
+    setDrawMode: (newDrawMode: DrawMode) =>
+      dispatch({ type: "SET_DRAW_MODE", payload: { mode: newDrawMode } }),
+    setMeshId: (newMeshId: string) => dispatch({ type: "SET_MESH", payload: { id: newMeshId } }),
+  };
+};
+
+export const DrawOptionsSection = React.memo(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(
+    (props: {
+      drawMode: DrawMode;
+      meshId: string;
+      setDrawMode: (newDrawMode: DrawMode) => void;
+      setMeshId: (newMeshId: string) => void;
+    }) => {
+      const { drawMode, meshId, setDrawMode, setMeshId } = props;
+      return (
+        <div className="viewer-options-section">
+          <SectionTitle text={translations.drawOptions}></SectionTitle>
+          <SectionField text={"Draw mode"}>
+            <Dropdown
+              selectedItemId={drawMode}
+              onChange={setDrawMode}
+              options={drawModeOptions}
+            ></Dropdown>
+          </SectionField>
+          <SectionField text={"Mesh"}>
+            <Dropdown selectedItemId={meshId} onChange={setMeshId} options={[]}></Dropdown>
+          </SectionField>
+        </div>
+      );
+    }
+  )
+);

@@ -59,10 +59,16 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
         ...state,
       };
     }
-    case "UPADTE_COUNTER": {
+    case "SET_MESH": {
       return {
         ...state,
-        counter: action.payload.value,
+        meshId: action.payload.id,
+      };
+    }
+    case "SET_DRAW_MODE": {
+      return {
+        ...state,
+        drawMode: action.payload.mode,
       };
     }
     default: {

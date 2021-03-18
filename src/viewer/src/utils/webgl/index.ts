@@ -12,8 +12,9 @@ import { safeJSONParse } from "../parsing";
 import { getUniformInfo } from "./uniformStore";
 import { debounce } from "../function";
 
+export type DrawMode = "elements" | "arrays";
 export type DrawOptions = {
-  drawMode: "elements" | "arrays";
+  drawMode: DrawMode;
 };
 
 export const compileShader = (

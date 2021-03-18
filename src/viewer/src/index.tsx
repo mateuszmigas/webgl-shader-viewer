@@ -61,12 +61,6 @@ ReactDOM.render(
 //     indexBufferBindingValue.setValue(indices);
 //   };
 
-//   viewerOptions.appendChild(
-//     createDiv("viewer-shaders-title", [
-//       createSectionTitle("DRAW OPTIONS", "").element,
-//     ])
-//   );
-
 //   const [meshDropdownElement, meshDropdownController] = createDropdown(item => {
 //     if (!item) return;
 
@@ -88,22 +82,3 @@ ReactDOM.render(
 //     indexBufferInfo.setValue(newValue)
 //   );
 //   const indexBufferComponent = withLabel(indexBufferElement, "Indices");
-
-//   const [drawModeElement, drawModeController] = createDropdown(item => {
-//     if (!item) return;
-//     drawOptions.drawMode = item.id as "arrays" | "elements";
-//     setElementVisibility(
-//       indexBufferComponent,
-//       drawOptions.drawMode === "elements"
-//     );
-//     setState({ drawMode: item.id });
-//   });
-//   drawModeController.setItems([
-//     { id: "arrays", display: "Arrays" },
-//     { id: "elements", display: "Elements" },
-//   ]);
-//   drawModeController.setSelectedItemById(viewerState.drawMode);
-//   viewerOptions.appendChild(withLabel(drawModeElement, "Draw mode"));
-
-//   viewerOptions.appendChild(indexBufferComponent);
-// };

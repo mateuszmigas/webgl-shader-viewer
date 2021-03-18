@@ -1,3 +1,4 @@
+import { DrawMode } from "./../viewer/src/utils/webgl/index";
 import { repeat } from "./array";
 import { Matrix4Array } from "./../viewer/src/types";
 import { vscodeApi } from "./communication/vscodeApi";
@@ -17,8 +18,8 @@ export type ExtensionState = {
   };
   textureValues: { [key: string]: { optionId: string; value: any } };
   cameraPosition: Matrix4Array;
-  //drawMode: string;
-  //meshId: string;
+  drawMode: DrawMode;
+  meshId: string;
 };
 
 const defaultState: ExtensionState = {
@@ -28,8 +29,8 @@ const defaultState: ExtensionState = {
   attributeBufferValues: {},
   textureValues: {},
   cameraPosition: repeat(16, 0) as Matrix4Array,
-  //drawMode: "elements",
-  //meshId: "cube",
+  drawMode: "elements",
+  meshId: "cube",
 };
 
 export const getExtensionState = (): ExtensionState => ({

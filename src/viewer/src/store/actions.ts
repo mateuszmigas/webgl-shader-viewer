@@ -1,3 +1,4 @@
+import { DrawMode } from "./../utils/webgl/index";
 import { Matrix4Array } from "./../types";
 
 export type ViewerAction =
@@ -32,10 +33,10 @@ export type ViewerAction =
       payload: { id: string };
     }
   | {
-      type: "SET_CAMERA_POSITION";
-      payload: { position: Matrix4Array };
+      type: "SET_DRAW_MODE";
+      payload: { mode: DrawMode };
     }
   | {
-      type: "UPADTE_COUNTER";
-      payload: { value: number };
+      type: "SET_CAMERA_POSITION";
+      payload: { position: Matrix4Array };
     };
