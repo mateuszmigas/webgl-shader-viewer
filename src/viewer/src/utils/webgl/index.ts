@@ -1,9 +1,16 @@
+import { getTextureInfo } from "./textureInfoStore";
+import { store } from "./../../index";
 import { TextureInfo } from "./textureInfo";
 import { IndexBufferInfo } from "./indexBuffer";
 import { removeLast } from "../../../../common/array";
 import { hasProperty } from "../typeGuards";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
 import { UniformInfo, UniformType } from "./uniform";
+import { ViewerState } from "../../store/state";
+import { getAttributeBufferInfo } from "./attributeBufferStore";
+import { safeJSONParse } from "../parsing";
+import { getUniformInfo } from "./uniformStore";
+import { debounce } from "../function";
 
 export type DrawOptions = {
   drawMode: "elements" | "arrays";
@@ -182,39 +189,3 @@ export const formatShaderCompileErrors = (result: ShaderCompileErrors) => {
 
   return errors.join("\r\n");
 };
-
-// export const createComponentsForProgram = (
-//   context: WebGLRenderingContext,
-//   program: WebGLProgram,
-//   bindings: {
-//     uniform: Map<string, UniformBinding>;
-//     mesh: Map<
-//       string,
-//       {
-//         name: string;
-//         type: AttributeBufferType;
-//         value: Observable<any[]>;
-//       }
-//     >;
-//   }
-// ) => {
-//   const programUniforms = getProgramUniforms(context, program);
-//   const programAttributeBuffers = getProgramAttributeBuffers(context, program);
-
-//   const uniformComponents = createUniformComponents(
-//     context,
-//     program,
-//     programUniforms.dataUniforms,
-//     Array.from(bindings.uniform.values())
-//   );
-
-//   const textureComponents = getTextureInfos(context, program, programUniforms.textureUniforms);
-
-//   const attributeBufferComponents = createAttributeBufferComponents(
-//     context,
-//     program,
-//     programAttributeBuffers,
-//     Array.from(bindings.mesh.values())
-//   );
-//   return { uniformComponents, textureComponents, attributeBufferComponents };
-// };

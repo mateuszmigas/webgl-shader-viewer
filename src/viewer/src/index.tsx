@@ -8,8 +8,12 @@ import { ViewerAction } from "./store/actions";
 import { ViewerState } from "./store/state";
 import { Viewer } from "./components/Viewer";
 import { debounce } from "./utils/function";
+import { getAttributeBufferInfo } from "./utils/webgl/attributeBufferStore";
+import { safeJSONParse } from "./utils/parsing";
+import { getUniformInfo } from "./utils/webgl/uniformStore";
+import { commitStateToWebGL } from "./utils/webgl/storeWatcher";
 
-const store: Store<ViewerState, ViewerAction> = createStore(
+export const store: Store<ViewerState, ViewerAction> = createStore(
   (state: ViewerState, action: ViewerAction) => {
     //console.log("state before", state);
     //console.log("action", action);
@@ -19,19 +23,15 @@ const store: Store<ViewerState, ViewerAction> = createStore(
   }
 );
 
-const onStateChanged = (previousState: ViewerState, currentState: ViewerState) => {};
-const storeExtensionState = debounce(
-  (extensionState: ExtensionState) => setExtensionState(extensionState),
-  500
-);
+const storeExtensionState = debounce((extensionState: ExtensionState) => {
+  setExtensionState(extensionState);
+}, 500);
 
-let previousState: ViewerState = undefined;
 store.subscribe(() => {
   const currentState = store.getState();
-  onStateChanged(previousState, currentState);
   const { counter, ...extensionState } = currentState;
   storeExtensionState(extensionState);
-  previousState = currentState;
+  commitStateToWebGL(currentState);
 });
 
 ReactDOM.render(

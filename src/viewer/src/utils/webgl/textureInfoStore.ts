@@ -27,9 +27,9 @@ const rebuildCache = (newElements: { key: CacheKey; value: CacheValue }[]) => {
   });
 };
 
-export const getByName = (name: string) => cache.get({ name });
+export const getTextureInfo = (name: string) => cache.get({ name });
 
-export const getFromCacheOrCreate = (
+export const createTextureInfos = (
   context: WebGLRenderingContext,
   program: WebGLProgram,
   textures: { name: string }[]

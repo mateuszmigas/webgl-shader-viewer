@@ -28,6 +28,7 @@ import {
   AttributeBuffersSection,
 } from "./attributeBuffers/AttributeBuffersSection";
 import { createUniformInfos } from "../utils/webgl/uniformStore";
+import { setWebGLFromState } from "../utils/webgl/storeWatcher";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
@@ -119,6 +120,8 @@ export const Viewer = connect(
           program,
           programUniforms.dataUniforms
         );
+
+        setWebGLFromState();
 
         const render = () => {
           renderProgram(
