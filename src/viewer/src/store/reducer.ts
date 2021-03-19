@@ -39,10 +39,6 @@ export const mainReducer = (
           [name]: {
             ...state.uniformValues[name],
             ...rest,
-            value:
-              uniformBindings
-                .get(rest.optionId)
-                ?.getValue(state.cameraPosition, state.viewerSize) ?? rest.value,
           },
         },
       };
@@ -81,15 +77,11 @@ export const mainReducer = (
     }
     case "SET_INDEX_BUFFER_OPTION": {
       const { optionId } = action.payload;
-      const binding = indexBufferBindings.get(optionId);
       return {
         ...state,
         indexBufferValue: {
           ...state.indexBufferValue,
           optionId,
-          ...(binding
-            ? { value: binding.getValue(state.meshId), error: "" }
-            : { error: validateIndexBuffer(state.indexBufferValue.value) }),
         },
       };
     }
@@ -100,7 +92,6 @@ export const mainReducer = (
         indexBufferValue: {
           ...state.indexBufferValue,
           value,
-          error: validateIndexBuffer(value),
         },
       };
     }
@@ -128,17 +119,8 @@ export const mainReducer = (
       };
     }
     case "SET_MESH": {
-      const indexBufferValue = state.indexBufferValue;
-      const indexBufferBinding = indexBufferBindings.get(indexBufferValue.optionId);
-
       return {
         ...state,
-        indexBufferValue: {
-          ...indexBufferValue,
-          ...(indexBufferBinding
-            ? { value: indexBufferBinding.getValue(action.payload.id), error: "" }
-            : {}),
-        },
         meshId: action.payload.id,
       };
     }
@@ -168,6 +150,23 @@ export const applyAttributeBuffersReducer = (state: ViewerState): ViewerState =>
             }),
       };
     }),
+  };
+};
+
+export const applyIndexBufferReducer = (state: ViewerState): ViewerState => {
+  const indexBufferValue = state.indexBufferValue;
+  const binding = indexBufferBindings.get(indexBufferValue.optionId);
+
+  return {
+    ...state,
+    indexBufferValue: {
+      ...state.indexBufferValue,
+      ...(binding
+        ? { value: binding.getValue(state.meshId), error: "" }
+        : {
+            error: validateIndexBuffer(state.indexBufferValue.value),
+          }),
+    },
   };
 };
 
