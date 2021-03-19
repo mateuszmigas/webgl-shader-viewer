@@ -10,51 +10,33 @@ import { Dropdown } from "../Dropdown";
 import { getBindingOptions } from "./attributeBufferBindings";
 import { getDefaultProps } from "./attributeBufferUtils";
 
-type FieldState = { optionId: string; value: string; isValid: boolean };
-
 type OwnProps = {
   name: string;
   type: AttributeBufferType;
 };
 
-const renderAttributeBufferInput = (
-  type: AttributeBufferType,
-  props: {
-    value: string;
-    onChange: (newValue: string, isValid: boolean) => void;
-    readonly?: boolean;
-  }
-) => {
-  switch (type) {
-    case AttributeBufferType.FLOAT_VEC2:
-      return <ArrayNumberInput {...props} elementSize={2}></ArrayNumberInput>;
-    case AttributeBufferType.FLOAT_VEC3:
-      return <ArrayNumberInput {...props} elementSize={3}></ArrayNumberInput>;
-    case AttributeBufferType.FLOAT_VEC4:
-      return <ArrayNumberInput {...props} elementSize={4}></ArrayNumberInput>;
-    default:
-      return <div>Uniform not supported</div>;
-  }
-};
-
 const mapStateToProps = (state: ViewerState, ownProps: OwnProps) => {
   const attibuteBufferValue = state.attributeBufferValues[ownProps.name];
-  return {
-    state:
-      attibuteBufferValue?.type === ownProps.type
-        ? attibuteBufferValue
-        : getDefaultProps(ownProps.type),
-  };
+  return attibuteBufferValue?.type === ownProps.type ? attibuteBufferValue : getDefaultProps();
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>, ownProps: OwnProps) => {
   return {
-    setState: (state: FieldState) => {
+    setOption: (optionId: string) => {
       return dispatch({
-        type: "SET_ATTRIBUTE_BUFFER",
+        type: "SET_ATTRIBUTE_BUFFER_OPTION",
         payload: {
           ...ownProps,
-          ...state,
+          optionId,
+        },
+      });
+    },
+    setValue: (value: string) => {
+      return dispatch({
+        type: "SET_ATTRIBUTE_BUFFER_VALUE",
+        payload: {
+          ...ownProps,
+          value,
         },
       });
     },
@@ -69,28 +51,29 @@ export const AttributeBufferField = React.memo(
     (props: {
       name: string;
       type: number;
-      state: FieldState;
-      setState: (state: FieldState) => void;
+      optionId: string;
+      value: string;
+      error: string;
+      setOption: (optionId: string) => void;
+      setValue: (value: string) => void;
     }) => {
-      const { type, state, setState } = props;
-      const { value, optionId } = state;
+      console.log("props", props);
+
+      const { type, value, optionId, error, setOption, setValue } = props;
       const options = [customOption, ...getBindingOptions(type)];
       const isCustom = optionId === customOption.id;
 
       return (
         <div>
           {options.length > 1 && (
-            <Dropdown
-              selectedItemId={optionId}
-              onChange={optionId => setState({ ...state, optionId })}
-              options={options}
-            ></Dropdown>
+            <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
           )}
-          {renderAttributeBufferInput(type, {
-            value,
-            onChange: (value, isValid) => setState({ ...state, value, isValid }),
-            readonly: !isCustom,
-          })}
+          <ArrayNumberInput
+            value={value}
+            onChange={setValue}
+            error={error}
+            readonly={!isCustom}
+          ></ArrayNumberInput>
         </div>
       );
     }

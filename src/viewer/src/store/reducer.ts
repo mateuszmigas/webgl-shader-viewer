@@ -1,3 +1,4 @@
+import { validateIndexBuffer } from "./../validation/indexBufferValidator";
 import { indexBufferBindings } from "./../components/indexBuffer/indexBufferBindings";
 import { uniformBindings } from "../components/uniform/uniformBindings";
 import { getExtensionState } from "../../../common/extensionState";
@@ -5,6 +6,7 @@ import { ViewerAction } from "./actions";
 import { ViewerState } from "./state";
 import { attributeBufferBindings } from "../components/attributeBuffer/attributeBufferBindings";
 import { objectMap } from "../utils/object";
+import { validateAttributeBuffer } from "../validation/attributeBufferValidator";
 
 const initialState: ViewerState = {
   ...getExtensionState(),
@@ -42,25 +44,66 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
         },
       };
     }
-    case "SET_ATTRIBUTE_BUFFER": {
-      const { name, ...rest } = action.payload;
+    case "SET_ATTRIBUTE_BUFFER_OPTION": {
+      console.log("setting opt", action.payload);
+      const { name, optionId, ...rest } = action.payload;
+      const current = state.attributeBufferValues[name];
+      const binding = attributeBufferBindings.get(optionId);
+      return {
+        ...state,
+        attributeBufferValues: {
+          ...state.attributeBufferValues,
+          [name]: {
+            ...current,
+            ...rest,
+            optionId,
+            ...(binding
+              ? { value: binding.getValue(state.meshId), error: "" }
+              : { error: validateAttributeBuffer(current.value, current.type) }),
+          },
+        },
+      };
+    }
+    case "SET_ATTRIBUTE_BUFFER_VALUE": {
+      const { name, value, ...rest } = action.payload;
+      const current = state.attributeBufferValues[name];
 
       return {
         ...state,
         attributeBufferValues: {
           ...state.attributeBufferValues,
           [name]: {
-            ...state.attributeBufferValues[name],
+            ...current,
             ...rest,
-            value: attributeBufferBindings.get(rest.optionId)?.getValue(state.meshId) ?? rest.value,
+            value,
+            error: validateAttributeBuffer(value, current.type),
           },
         },
       };
     }
-    case "SET_INDEX_BUFFER": {
+    case "SET_INDEX_BUFFER_OPTION": {
+      const { optionId } = action.payload;
+      const binding = indexBufferBindings.get(optionId);
       return {
         ...state,
-        indexBufferValue: { ...action.payload },
+        indexBufferValue: {
+          ...state.indexBufferValue,
+          optionId,
+          ...(binding
+            ? { value: binding.getValue(state.meshId), error: "" }
+            : { error: validateIndexBuffer(state.indexBufferValue.value) }),
+        },
+      };
+    }
+    case "SET_INDEX_BUFFER_VALUE": {
+      const { value } = action.payload;
+      return {
+        ...state,
+        indexBufferValue: {
+          ...state.indexBufferValue,
+          value,
+          error: validateIndexBuffer(value),
+        },
       };
     }
     case "SET_TEXTURE": {
@@ -85,6 +128,7 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
         ...state,
         uniformValues: objectMap(state.uniformValues, propValue => {
           return {
+            //todo
             ...propValue,
             value:
               uniformBindings
@@ -97,21 +141,22 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
     }
     case "SET_MESH": {
       const indexBufferValue = state.indexBufferValue;
+      const indexBufferBinding = indexBufferBindings.get(indexBufferValue.optionId);
+
       return {
         ...state,
         attributeBufferValues: objectMap(state.attributeBufferValues, propValue => {
+          const binding = attributeBufferBindings.get(propValue.optionId);
           return {
             ...propValue,
-            value:
-              attributeBufferBindings.get(propValue.optionId)?.getValue(action.payload.id) ??
-              propValue.value,
+            ...(binding ? { value: binding.getValue(action.payload.id), error: "" } : {}),
           };
         }),
         indexBufferValue: {
           ...indexBufferValue,
-          value:
-            indexBufferBindings.get(indexBufferValue.optionId)?.getValue(action.payload.id) ??
-            indexBufferValue.value,
+          ...(indexBufferBinding
+            ? { value: indexBufferBinding.getValue(action.payload.id), error: "" }
+            : {}),
         },
         meshId: action.payload.id,
       };

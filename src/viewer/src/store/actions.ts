@@ -15,21 +15,31 @@ export type ViewerAction =
       payload: { name: string; type: number; optionId?: string; value?: any };
     }
   | {
-      type: "SET_ATTRIBUTE_BUFFER";
+      type: "SET_ATTRIBUTE_BUFFER_VALUE";
+      payload: {
+        name: string;
+        type: number;
+        value: string;
+      };
+    }
+  | {
+      type: "SET_ATTRIBUTE_BUFFER_OPTION";
       payload: {
         name: string;
         type: number;
         optionId: string;
-        value: string;
-        isValid: boolean;
       };
     }
   | {
-      type: "SET_INDEX_BUFFER";
+      type: "SET_INDEX_BUFFER_VALUE";
+      payload: {
+        value: string;
+      };
+    }
+  | {
+      type: "SET_INDEX_BUFFER_OPTION";
       payload: {
         optionId: string;
-        value: string;
-        isValid: boolean;
       };
     }
   | {

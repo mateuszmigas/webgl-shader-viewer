@@ -6,8 +6,8 @@ import { getAttributeBufferInfo } from "./attributeBufferStore";
 import { getIndexBufferInfo } from "./indexBufferStore";
 import { getUniformInfo } from "./uniformStore";
 
-const getBufferValueOrDefault = (storeValue: { value: string; isValid: boolean }) =>
-  storeValue.isValid ? safeJSONParse(storeValue.value) ?? [] : [];
+const getBufferValueOrDefault = (storeValue: { value: string; error: string }) =>
+  !storeValue.error ? safeJSONParse(storeValue.value) ?? [] : [];
 
 export const setWebGLFromState = () => {
   const state = store.getState();
@@ -62,7 +62,7 @@ export const setIndexBuffer = debounce((indexBufferValue: ViewerState["indexBuff
     lastCommitedIndexBufferState &&
     indexBufferValue
   ) {
-    getIndexBufferInfo().setValue(getBufferValueOrDefault(indexBufferValue));
+    getIndexBufferInfo()?.setValue(getBufferValueOrDefault(indexBufferValue));
   }
 
   lastCommitedIndexBufferState = indexBufferValue;

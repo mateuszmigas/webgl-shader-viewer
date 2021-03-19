@@ -1,8 +1,7 @@
-import { AttributeBufferType } from "../../utils/webgl/attributeBuffer";
 import { customOption } from "../common/constants";
 
-export const getDefaultProps = (type: AttributeBufferType) => ({
+export const getDefaultProps = () => ({
   optionId: customOption.id,
   value: "[]",
-  isValid: true,
+  error: "",
 });

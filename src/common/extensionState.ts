@@ -16,9 +16,9 @@ export type ExtensionState = {
   >;
   attributeBufferValues: Record<
     string,
-    { type: number; optionId: string; value: string; isValid: boolean }
+    { type: number; optionId: string; value: string; error: string }
   >;
-  indexBufferValue: { optionId: string; value: string; isValid: boolean };
+  indexBufferValue: { optionId: string; value: string; error: string };
   textureValues: Record<string, { optionId: string; value: any }>;
   cameraPosition: CameraPosition;
   viewerSize: { width: number; height: number };
@@ -31,7 +31,7 @@ const defaultState: ExtensionState = {
   fragmentFilePath: null,
   uniformValues: {},
   attributeBufferValues: {},
-  indexBufferValue: { optionId: customOption.id, value: "[]", isValid: true },
+  indexBufferValue: { optionId: customOption.id, value: "[]", error: "" },
   textureValues: {},
   cameraPosition: { longitude: 1, latitude: 1, radius: 2 },
   viewerSize: { width: 0, height: 0 },

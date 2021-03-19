@@ -8,19 +8,32 @@ import { Dropdown } from "../Dropdown";
 import { SectionField } from "../SectionField";
 import { getBindingOptions } from "./indexBufferBindings";
 
-type FieldState = { optionId: string; value: string; isValid: boolean };
 const options = [customOption, ...getBindingOptions()];
 
 const mapStateToProps = (state: ViewerState) => {
   return {
-    state: state.indexBufferValue,
+    ...state.indexBufferValue,
   };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>) => {
   return {
-    setState: (newState: FieldState) =>
-      dispatch({ type: "SET_INDEX_BUFFER", payload: { ...newState } }),
+    setOption: (optionId: string) => {
+      return dispatch({
+        type: "SET_INDEX_BUFFER_OPTION",
+        payload: {
+          optionId,
+        },
+      });
+    },
+    setValue: (value: string) => {
+      return dispatch({
+        type: "SET_INDEX_BUFFER_VALUE",
+        payload: {
+          value,
+        },
+      });
+    },
   };
 };
 
@@ -28,24 +41,28 @@ export const IndexBufferField = React.memo(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  )((props: { state: FieldState; setState: (state: FieldState) => void }) => {
-    const { state, setState } = props;
-    const isCustom = state.optionId === customOption.id;
+  )(
+    (props: {
+      optionId: string;
+      value: string;
+      error: string;
+      setOption: (optionId: string) => void;
+      setValue: (value: string) => void;
+    }) => {
+      const { optionId, value, error, setOption, setValue } = props;
+      const isCustom = optionId === customOption.id;
 
-    return (
-      <SectionField text={"Indices"}>
-        <Dropdown
-          selectedItemId={state.optionId}
-          onChange={selectedItemId => setState({ ...state, optionId: selectedItemId })}
-          options={options}
-        ></Dropdown>
-        <ArrayNumberInput
-          value={state.value}
-          onChange={(value, isValid) => setState({ ...state, value, isValid })}
-          elementSize={1}
-          readonly={!isCustom}
-        ></ArrayNumberInput>
-      </SectionField>
-    );
-  })
+      return (
+        <SectionField text={"Indices"}>
+          <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
+          <ArrayNumberInput
+            value={value}
+            onChange={setValue}
+            error={error}
+            readonly={!isCustom}
+          ></ArrayNumberInput>
+        </SectionField>
+      );
+    }
+  )
 );
