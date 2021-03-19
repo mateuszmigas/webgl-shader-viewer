@@ -28,20 +28,21 @@ const validate = (value: string, elementSize: number) => {
 };
 
 export const ArrayNumberInput = React.memo((props: ArrayNumberInputProps) => {
-  const { value, elementSize, readonly } = props;
+  const { value, elementSize, onChange, readonly } = props;
   const errorRef = React.useRef(validate(value, elementSize));
-  const onChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const error = validate(e.target.value, elementSize);
-      errorRef.current = error;
-      props.onChange(e.target.value, !error);
-    },
-    [elementSize]
-  );
 
   return (
     <div>
-      <input className="edit-input" disabled={readonly} value={value} onChange={onChange}></input>
+      <input
+        className="edit-input"
+        disabled={readonly}
+        value={value}
+        onChange={e => {
+          const error = validate(e.target.value, elementSize);
+          errorRef.current = error;
+          onChange(e.target.value, !error);
+        }}
+      ></input>
       {errorRef.current && <div>{errorRef.current}</div>}
     </div>
   );

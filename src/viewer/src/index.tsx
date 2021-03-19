@@ -20,7 +20,7 @@ export const store: Store<ViewerState, ViewerAction> = createStore(
     //console.log("state before", state);
     //console.log("action", action);
     const newLocal = reducer(state, action);
-    //console.log("state after", newLocal.attributeBufferValues);
+    console.log("state after", newLocal);
     return newLocal;
   }
 );

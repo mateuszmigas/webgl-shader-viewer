@@ -39,14 +39,17 @@ const renderAttributeBufferInput = (
 
 const mapStateToProps = (state: ViewerState, ownProps: OwnProps) => {
   const attibuteBufferValue = state.attributeBufferValues[ownProps.name];
-  return attibuteBufferValue?.type === ownProps.type
-    ? { ...attibuteBufferValue }
-    : { ...getDefaultProps(ownProps.type) };
+  return {
+    state:
+      attibuteBufferValue?.type === ownProps.type
+        ? attibuteBufferValue
+        : getDefaultProps(ownProps.type),
+  };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>, ownProps: OwnProps) => {
   return {
-    setState2: (state: FieldState) => {
+    setState: (state: FieldState) => {
       return dispatch({
         type: "SET_ATTRIBUTE_BUFFER",
         payload: {
@@ -58,78 +61,38 @@ const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>, ownProps: OwnProps
   };
 };
 
-type NewType = {
-  name: string;
-  type: number;
-  optionId: string;
-  value: string;
-  isValid: boolean;
-  setState: (state: FieldState) => void;
-};
+export const AttributeBufferField = React.memo(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(
+    (props: {
+      name: string;
+      type: number;
+      state: FieldState;
+      setState: (state: FieldState) => void;
+    }) => {
+      const { type, state, setState } = props;
+      const { value, optionId } = state;
+      const options = [customOption, ...getBindingOptions(type)];
+      const isCustom = optionId === customOption.id;
 
-export class Inner extends React.PureComponent<NewType> {
-  constructor(props: NewType) {
-    super(props);
-  }
-
-  render() {
-    const props = this.props;
-    console.log("render", props);
-
-    const { type, setState: setState2 } = props;
-    const { value, optionId: dupad, isValid } = props;
-
-    const onChange = (value: string, isValid: boolean) => {
-      console.log("settings state in input field", props, this.props);
-
-      props.setState({ optionId: props.optionId, value, isValid });
-    };
-
-    const options = [customOption, ...getBindingOptions(type)];
-
-    return (
-      <div>
-        {options.length > 1 && (
-          <Dropdown
-            selectedItemId={dupad}
-            onChange={optionId2 => {
-              console.log("setting from combo");
-
-              setState2({ value, isValid, optionId: optionId2 });
-            }}
-            options={options}
-          ></Dropdown>
-        )}
-        {renderAttributeBufferInput(type, {
-          value,
-          onChange: onChange,
-          readonly: dupad !== customOption.id,
-        })}
-      </div>
-    );
-  }
-}
-
-export const AttributeBufferField = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(
-  (props: {
-    name: string;
-    type: number;
-    optionId: string;
-    value: string;
-    isValid: boolean;
-    setState2: (state: FieldState) => void;
-  }) => {
-    return (
-      <Inner
-        {...props}
-        setState={ns => {
-          props.setState2({ ...ns, optionId: ns.optionId });
-          console.log("setting to state", ns.optionId);
-        }}
-      ></Inner>
-    );
-  }
+      return (
+        <div>
+          {options.length > 1 && (
+            <Dropdown
+              selectedItemId={optionId}
+              onChange={optionId => setState({ ...state, optionId })}
+              options={options}
+            ></Dropdown>
+          )}
+          {renderAttributeBufferInput(type, {
+            value,
+            onChange: (value, isValid) => setState({ ...state, value, isValid }),
+            readonly: !isCustom,
+          })}
+        </div>
+      );
+    }
+  )
 );

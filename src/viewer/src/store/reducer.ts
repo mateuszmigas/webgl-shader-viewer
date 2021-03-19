@@ -45,20 +45,17 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
     case "SET_ATTRIBUTE_BUFFER": {
       const { name, ...rest } = action.payload;
 
-      const updated = {
+      return {
         ...state,
         attributeBufferValues: {
           ...state.attributeBufferValues,
           [name]: {
             ...state.attributeBufferValues[name],
             ...rest,
-            //value: attributeBufferBindings.get(rest.optionId)?.getValue(state.meshId) ?? rest.value,
+            value: attributeBufferBindings.get(rest.optionId)?.getValue(state.meshId) ?? rest.value,
           },
         },
       };
-      //console.log("updated", updated);
-
-      return updated;
     }
     case "SET_INDEX_BUFFER": {
       return {
@@ -83,42 +80,42 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
         viewerSize: action.payload.size,
       };
     }
-    // case "SET_CAMERA_POSITION": {
-    //   return {
-    //     ...state,
-    //     uniformValues: objectMap(state.uniformValues, propValue => {
-    //       return {
-    //         ...propValue,
-    //         value:
-    //           uniformBindings
-    //             .get(propValue.optionId)
-    //             ?.getValue(action.payload.position, state.viewerSize) ?? propValue.value,
-    //       };
-    //     }),
-    //     cameraPosition: action.payload.position,
-    //   };
-    // }
-    // case "SET_MESH": {
-    //   const indexBufferValue = state.indexBufferValue;
-    //   return {
-    //     ...state,
-    //     // attributeBufferValues: objectMap(state.attributeBufferValues, propValue => {
-    //     //   return {
-    //     //     ...propValue,
-    //     //     value:
-    //     //       attributeBufferBindings.get(propValue.optionId)?.getValue(action.payload.id) ??
-    //     //       propValue.value,
-    //     //   };
-    //     // }),
-    //     indexBufferValue: {
-    //       ...indexBufferValue,
-    //       value:
-    //         indexBufferBindings.get(indexBufferValue.optionId)?.getValue(action.payload.id) ??
-    //         indexBufferValue.value,
-    //     },
-    //     meshId: action.payload.id,
-    //   };
-    // }
+    case "SET_CAMERA_POSITION": {
+      return {
+        ...state,
+        uniformValues: objectMap(state.uniformValues, propValue => {
+          return {
+            ...propValue,
+            value:
+              uniformBindings
+                .get(propValue.optionId)
+                ?.getValue(action.payload.position, state.viewerSize) ?? propValue.value,
+          };
+        }),
+        cameraPosition: action.payload.position,
+      };
+    }
+    case "SET_MESH": {
+      const indexBufferValue = state.indexBufferValue;
+      return {
+        ...state,
+        attributeBufferValues: objectMap(state.attributeBufferValues, propValue => {
+          return {
+            ...propValue,
+            value:
+              attributeBufferBindings.get(propValue.optionId)?.getValue(action.payload.id) ??
+              propValue.value,
+          };
+        }),
+        indexBufferValue: {
+          ...indexBufferValue,
+          value:
+            indexBufferBindings.get(indexBufferValue.optionId)?.getValue(action.payload.id) ??
+            indexBufferValue.value,
+        },
+        meshId: action.payload.id,
+      };
+    }
     case "SET_DRAW_MODE": {
       return {
         ...state,
