@@ -7,8 +7,6 @@ const getCameraMatrix = (
   cameraPosition: CameraPosition,
   size: { width: number; height: number }
 ): Matrix4Array => {
-  //console.log("size", cameraPosition, size);
-
   const fieldOfView = (45 * Math.PI) / 180; // in radians
   const { width, height } = size;
   const aspect = width / height;

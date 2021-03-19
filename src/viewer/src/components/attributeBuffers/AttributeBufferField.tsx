@@ -23,7 +23,6 @@ const renderAttributeBufferInput = (
   props: {
     value: string;
     onChange: (newValue: string, isValid: boolean) => void;
-    onBlur: (value: number[][]) => void;
     readonly?: boolean;
   }
 ) => {
@@ -90,11 +89,7 @@ export const AttributeBufferField = React.memo(
           )}
           {renderAttributeBufferInput(type, {
             value,
-            onChange: isCustom
-              ? (newValue, isValid) => setState({ ...state, value: newValue, isValid })
-              : undefined,
-            onBlur: newValue =>
-              getAttributeBufferInfo(name, type).attributeBufferInfo.setValue(newValue),
+            onChange: (newValue, isValid) => setState({ ...state, value: newValue, isValid }),
             readonly: !isCustom,
           })}
         </div>

@@ -31,7 +31,7 @@ export class AttributeBufferInfo {
     const flatten = [].concat(...newValue);
     this.context.bufferData(
       this.context.ARRAY_BUFFER,
-      new Float32Array(flatten), //0, 0, 0, 1, 0, 0.5, 0, 1, 0.7, 0, 0, 1]),
+      new Float32Array(flatten),
       this.context.STATIC_DRAW
     );
   }

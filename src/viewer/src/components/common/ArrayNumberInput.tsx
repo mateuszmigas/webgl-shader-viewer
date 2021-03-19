@@ -3,7 +3,6 @@ import React from "react";
 type ArrayNumberInputProps = {
   value: string;
   onChange: (newValue: string, isValid: boolean) => void;
-  onBlur: (value: number[][]) => void;
   elementSize: number;
   readonly?: boolean;
 };
@@ -38,19 +37,9 @@ export const ArrayNumberInput = React.memo((props: ArrayNumberInputProps) => {
     [elementSize]
   );
 
-  const onBlur = React.useCallback(() => {
-    !errorRef.current && props.onBlur(JSON.parse(value));
-  }, [value]);
-
   return (
     <div>
-      <input
-        className="edit-input"
-        disabled={readonly}
-        value={value}
-        onChange={onChange}
-        onBlur={onBlur}
-      ></input>
+      <input className="edit-input" disabled={readonly} value={value} onChange={onChange}></input>
       {errorRef.current && <div>{errorRef.current}</div>}
     </div>
   );

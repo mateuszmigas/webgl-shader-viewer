@@ -3,9 +3,7 @@ import { Vector3 } from "../types";
 type EventType = keyof HTMLElementEventMap;
 type EventHandler<T extends Event> = (event: T) => void;
 
-export const cameraPositionToVector3 = (
-  cameraPosition: CameraPosition
-): Vector3 => {
+export const cameraPositionToVector3 = (cameraPosition: CameraPosition): Vector3 => {
   const y = cameraPosition.radius * Math.sin(cameraPosition.latitude);
   const r = cameraPosition.radius * Math.cos(cameraPosition.latitude);
   const z = r * Math.cos(cameraPosition.longitude);
@@ -29,10 +27,7 @@ type Action =
   | { type: "zoomOutAt" };
 
 const clampLatitude = (latitude: number) => {
-  return Math.min(
-    Math.max(latitude, -Math.PI / 2.0 + 0.1),
-    Math.PI / 2.0 - 0.1
-  );
+  return Math.min(Math.max(latitude, -Math.PI / 2.0 + 0.1), Math.PI / 2.0 - 0.1);
 };
 
 const clampLongitude = (longitude: number) => {
@@ -89,16 +84,11 @@ export class CameraPositionManipulator {
   }
 
   dispose() {
-    this.eventListeners.forEach((value, key) =>
-      this.element.removeEventListener(key, value)
-    );
+    this.eventListeners.forEach((value, key) => this.element.removeEventListener(key, value));
   }
 
-  private registerEvent<T extends Event>(
-    type: EventType,
-    handler: EventHandler<T>
-  ) {
-    this.element.addEventListener(type, handler);
+  private registerEvent<T extends Event>(type: EventType, handler: EventHandler<T>) {
+    this.element.addEventListener(type, handler as EventHandler<Event>);
     this.eventListeners.set(type, handler as EventHandler<Event>);
   }
 

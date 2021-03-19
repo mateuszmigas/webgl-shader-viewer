@@ -39,19 +39,3 @@ ReactDOM.render(
   </Provider>,
   document.getElementById("viewer")
 );
-
-// const createViewer = async () => {
-//   const indexBufferInfo = new IndexBufferInfo(webGLController.context);
-//   const indexBufferBindingValue = new Observable<number[]>([]);
-
-//   const onMeshChanged = (id: string) => {
-
-//     indexBufferBindingValue.setValue(indices);
-//   };
-
-//   const {
-//     element: indexBufferElement,
-//   } = createIndexBufferComponent(indexBufferBindingValue, newValue =>
-//     indexBufferInfo.setValue(newValue)
-//   );
-//   const indexBufferComponent = withLabel(indexBufferElement, "Indices");

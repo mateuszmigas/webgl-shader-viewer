@@ -5,13 +5,16 @@ import { safeJSONParse } from "../parsing";
 import { getAttributeBufferInfo } from "./attributeBufferStore";
 import { getUniformInfo } from "./uniformStore";
 
+const getAttributeBufferValue = (storeValue: { value: string; isValid: boolean }) =>
+  storeValue.isValid ? safeJSONParse(storeValue.value) ?? [] : [];
+
 export const setWebGLFromState = () => {
   const state = store.getState();
 
   state.attributeBufferValues &&
     Object.entries(state.attributeBufferValues).forEach(([key, value]) => {
       getAttributeBufferInfo(key, value.type)?.attributeBufferInfo.setValue(
-        safeJSONParse(value.value) ?? []
+        getAttributeBufferValue(value)
       );
     });
 
@@ -37,7 +40,7 @@ export const setAttributeBuffers = debounce(
       Object.entries(attributeBufferValues).forEach(([key, value]) => {
         if (lastCommitedAttributeBuffersState[key] !== value) {
           getAttributeBufferInfo(key, value.type)?.attributeBufferInfo.setValue(
-            safeJSONParse(value.value) ?? []
+            getAttributeBufferValue(value)
           );
         }
       });
