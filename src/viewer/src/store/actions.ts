@@ -1,6 +1,5 @@
 import { CameraPosition } from "./../utils/cameraManipulator";
 import { DrawMode } from "./../utils/webgl/index";
-import { Matrix4Array } from "./../types";
 
 export type ViewerAction =
   | {
@@ -20,14 +19,22 @@ export type ViewerAction =
       payload: {
         name: string;
         type: number;
-        optionId: string | undefined;
+        optionId: string;
+        value: string;
+        isValid: boolean;
+      };
+    }
+  | {
+      type: "SET_INDEX_BUFFER";
+      payload: {
+        optionId: string;
         value: string;
         isValid: boolean;
       };
     }
   | {
       type: "SET_TEXTURE";
-      payload: { name: string; type: number; optionId?: string; value?: any };
+      payload: { name: string; type: number; optionId: string; value: any };
     }
   | {
       type: "SET_MESH";

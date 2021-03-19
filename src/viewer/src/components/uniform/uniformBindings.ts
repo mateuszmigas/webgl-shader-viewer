@@ -1,4 +1,4 @@
-import { CameraPosition, cameraPositionToVector3 } from "./../../utils/cameraManipulator";
+import { CameraPosition, cameraPositionToVector3 } from "../../utils/cameraManipulator";
 import { UniformType } from "../../utils/webgl/uniform";
 import { Matrix4Array } from "../../types";
 import { mat4 } from "../../utils/math";

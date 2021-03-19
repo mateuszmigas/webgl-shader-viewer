@@ -24,7 +24,7 @@ export const AttributeBuffersSection = React.memo(
         <SectionTitle text={translations.attributeBuffers}></SectionTitle>
         {attributeBufferFields.map(abf => (
           <SectionField key={abf.name} text={abf.name}>
-            <AttributeBufferField {...abf}></AttributeBufferField>
+            <AttributeBufferField key={abf.name} {...abf}></AttributeBufferField>
           </SectionField>
         ))}
       </div>

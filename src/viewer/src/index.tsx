@@ -8,14 +8,19 @@ import { ViewerAction } from "./store/actions";
 import { ViewerState } from "./store/state";
 import { Viewer } from "./components/Viewer";
 import { debounce } from "./utils/function";
-import { setAttributeBuffers, setTextures, setUniforms } from "./utils/webgl/storeWatcher";
+import {
+  setAttributeBuffers,
+  setIndexBuffer,
+  setTextures,
+  setUniforms,
+} from "./utils/webgl/storeWatcher";
 
 export const store: Store<ViewerState, ViewerAction> = createStore(
   (state: ViewerState, action: ViewerAction) => {
     //console.log("state before", state);
     //console.log("action", action);
     const newLocal = reducer(state, action);
-    //console.log("state after", newLocal);
+    //console.log("state after", newLocal.attributeBufferValues);
     return newLocal;
   }
 );
@@ -29,6 +34,7 @@ store.subscribe(() => {
   const { counter, ...extensionState } = currentState;
   storeExtensionState(extensionState);
   setAttributeBuffers(currentState.attributeBufferValues);
+  setIndexBuffer(currentState.indexBufferValue);
   setUniforms(currentState.uniformValues);
   setTextures(currentState.textureValues);
 });

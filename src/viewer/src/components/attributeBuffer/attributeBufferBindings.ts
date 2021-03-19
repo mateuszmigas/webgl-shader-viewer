@@ -1,5 +1,5 @@
-import { meshes, MeshInfo } from "./../../meshes";
-import { AttributeBufferType } from "./../../utils/webgl/attributeBuffer";
+import { meshes, MeshInfo } from "../../meshes";
+import { AttributeBufferType } from "../../utils/webgl/attributeBuffer";
 
 const getMeshBinding = (meshId: string, name: keyof MeshInfo) =>
   JSON.stringify((meshes.get(meshId) as any)[name]);

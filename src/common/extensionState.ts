@@ -1,3 +1,4 @@
+import { customOption } from "./../viewer/src/components/common/constants";
 import { CameraPosition } from "./../viewer/src/utils/cameraManipulator";
 import { DrawMode } from "./../viewer/src/utils/webgl/index";
 import { vscodeApi } from "./communication/vscodeApi";
@@ -5,17 +6,20 @@ import { vscodeApi } from "./communication/vscodeApi";
 export type ExtensionState = {
   vertexFilePath: string | null;
   fragmentFilePath: string | null;
-  uniformValues: {
-    [key: string]: {
+  uniformValues: Record<
+    string,
+    {
       type: number;
       optionId: string;
       value: any;
-    };
-  };
-  attributeBufferValues: {
-    [key: string]: { type: number; optionId: string; value: string; isValid: boolean };
-  };
-  textureValues: { [key: string]: { optionId: string; value: any } };
+    }
+  >;
+  attributeBufferValues: Record<
+    string,
+    { type: number; optionId: string; value: string; isValid: boolean }
+  >;
+  indexBufferValue: { optionId: string; value: string; isValid: boolean };
+  textureValues: Record<string, { optionId: string; value: any }>;
   cameraPosition: CameraPosition;
   viewerSize: { width: number; height: number };
   drawMode: DrawMode;
@@ -27,6 +31,7 @@ const defaultState: ExtensionState = {
   fragmentFilePath: null,
   uniformValues: {},
   attributeBufferValues: {},
+  indexBufferValue: { optionId: customOption.id, value: "[]", isValid: true },
   textureValues: {},
   cameraPosition: { longitude: 1, latitude: 1, radius: 2 },
   viewerSize: { width: 0, height: 0 },

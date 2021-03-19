@@ -10,13 +10,12 @@ import {
   getProgramUniforms,
   renderProgram,
 } from "../utils/webgl";
-import { createAttributeBufferInfos } from "../utils/webgl/attributeBufferStore";
-import { IndexBufferInfo } from "../utils/webgl/indexBuffer";
+import { getOrCreateAttributeBufferInfos } from "../utils/webgl/attributeBufferStore";
 import { UniformType } from "../utils/webgl/uniform";
 import { DrawOptionsSection } from "./DrawOptionsSection";
 import { ShadersSelectorSection } from "./ShadersSelectorSection";
-import { TextureFieldInfo, TextureSection } from "./textures/TexturesSection";
-import { UniformSection } from "./uniforms/UniformsSection";
+import { TextureFieldInfo, TextureSection } from "./texture/TexturesSection";
+import { UniformSection } from "./uniform/UniformsSection";
 import { ShadersCompileResultArea } from "./ShadersCompileResultArea";
 import { usePerspectiveCamera } from "../hooks/usePerspectiveCamera";
 import { Dispatch } from "redux";
@@ -25,11 +24,12 @@ import { useDocumentWatcher } from "../hooks/useDocumentWatcher";
 import {
   AttributeBufferFieldInfo,
   AttributeBuffersSection,
-} from "./attributeBuffers/AttributeBuffersSection";
+} from "./attributeBuffer/AttributeBuffersSection";
 import { createUniformInfos } from "../utils/webgl/uniformStore";
-import { setWebGLFromState } from "../utils/webgl/storeWatcher";
 import { store } from "..";
 import { CameraPosition } from "../utils/cameraManipulator";
+import { getOrCreateIndexBufferInfo } from "../utils/webgl/indexBufferStore";
+import { setWebGLFromState } from "../utils/webgl/storeWatcher";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
@@ -80,7 +80,6 @@ export const Viewer = connect(
     const contentRef = React.useRef<HTMLDivElement>(null);
     const canvasRef = React.useRef<HTMLCanvasElement>(null);
     const contextRef = React.useRef<WebGLRenderingContext>(null);
-    const indexBufferInfoRef = React.useRef<IndexBufferInfo>(null);
     const animationFrameHandleRef = React.useRef<number | null>(null);
 
     //startup
@@ -90,8 +89,6 @@ export const Viewer = connect(
       if (!contextRef.current) {
         throw new Error("Unable to create webgl context");
       }
-
-      indexBufferInfoRef.current = new IndexBufferInfo(contextRef.current);
 
       observeElementBoundingRect(contentRef.current, rect => {
         canvasRef.current.width = rect.width;
@@ -121,7 +118,7 @@ export const Viewer = connect(
         setUniformFieldsInfo(programUniforms.dataUniforms);
         setTextureFieldsInfo(programUniforms.textureUniforms);
         setAttributeBufferFieldsInfo(programAttributeBuffers);
-        const attributeBufferInfos = createAttributeBufferInfos(
+        const attributeBufferInfos = getOrCreateAttributeBufferInfos(
           contextRef.current,
           program,
           programAttributeBuffers
@@ -131,6 +128,7 @@ export const Viewer = connect(
           program,
           programUniforms.dataUniforms
         );
+        const indexBufferInfo = getOrCreateIndexBufferInfo(contextRef.current);
 
         setWebGLFromState();
 
@@ -140,10 +138,10 @@ export const Viewer = connect(
             contextRef.current,
             program,
             {
-              uniformInfos: uniformInfos,
+              uniformInfos,
               textureInfos: [],
               attributeBufferInfos,
-              indexBufferInfo: indexBufferInfoRef.current,
+              indexBufferInfo,
             },
             { drawMode }
           );
@@ -154,8 +152,6 @@ export const Viewer = connect(
         render();
 
         return () => {
-          console.log("deleting prog");
-
           cancelAnimationFrame(animationFrameHandleRef.current);
           contextRef.current.deleteProgram(result);
         };

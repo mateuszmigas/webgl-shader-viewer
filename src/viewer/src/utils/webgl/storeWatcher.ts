@@ -3,9 +3,10 @@ import { ViewerState } from "../../store/state";
 import { debounce } from "../function";
 import { safeJSONParse } from "../parsing";
 import { getAttributeBufferInfo } from "./attributeBufferStore";
+import { getIndexBufferInfo } from "./indexBufferStore";
 import { getUniformInfo } from "./uniformStore";
 
-const getAttributeBufferValue = (storeValue: { value: string; isValid: boolean }) =>
+const getBufferValueOrDefault = (storeValue: { value: string; isValid: boolean }) =>
   storeValue.isValid ? safeJSONParse(storeValue.value) ?? [] : [];
 
 export const setWebGLFromState = () => {
@@ -14,9 +15,12 @@ export const setWebGLFromState = () => {
   state.attributeBufferValues &&
     Object.entries(state.attributeBufferValues).forEach(([key, value]) => {
       getAttributeBufferInfo(key, value.type)?.attributeBufferInfo.setValue(
-        getAttributeBufferValue(value)
+        getBufferValueOrDefault(value)
       );
     });
+
+  state.indexBufferValue &&
+    getIndexBufferInfo().setValue(getBufferValueOrDefault(state.indexBufferValue));
 
   state.uniformValues &&
     Object.entries(state.uniformValues).forEach(([key, value]) => {
@@ -40,7 +44,7 @@ export const setAttributeBuffers = debounce(
       Object.entries(attributeBufferValues).forEach(([key, value]) => {
         if (lastCommitedAttributeBuffersState[key] !== value) {
           getAttributeBufferInfo(key, value.type)?.attributeBufferInfo.setValue(
-            getAttributeBufferValue(value)
+            getBufferValueOrDefault(value)
           );
         }
       });
@@ -50,6 +54,19 @@ export const setAttributeBuffers = debounce(
   },
   100
 );
+
+let lastCommitedIndexBufferState: ViewerState["indexBufferValue"] = undefined;
+export const setIndexBuffer = debounce((indexBufferValue: ViewerState["indexBufferValue"]) => {
+  if (
+    lastCommitedIndexBufferState !== indexBufferValue &&
+    lastCommitedIndexBufferState &&
+    indexBufferValue
+  ) {
+    getIndexBufferInfo().setValue(getBufferValueOrDefault(indexBufferValue));
+  }
+
+  lastCommitedIndexBufferState = indexBufferValue;
+}, 100);
 
 let lastCommitedUniformsState: ViewerState["uniformValues"] = undefined;
 export const setUniforms = (uniformValues: ViewerState["uniformValues"]) => {

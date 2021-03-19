@@ -1,4 +1,4 @@
-import { AttributeBufferType } from "./../../utils/webgl/attributeBuffer";
+import { AttributeBufferType } from "../../utils/webgl/attributeBuffer";
 import { customOption } from "../common/constants";
 
 export const getDefaultProps = (type: AttributeBufferType) => ({

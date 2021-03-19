@@ -31,7 +31,7 @@ const rebuildCache = (newElements: { key: CacheKey; value: CacheValue }[]) => {
 export const getAttributeBufferInfo = (name: string, type: AttributeBufferType) =>
   cache.get({ name, type });
 
-export const createAttributeBufferInfos = (
+export const getOrCreateAttributeBufferInfos = (
   context: WebGLRenderingContext,
   program: WebGLProgram,
   attributeBuffers: { name: string; type: AttributeBufferType }[]

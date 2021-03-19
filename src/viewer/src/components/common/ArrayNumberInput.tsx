@@ -7,32 +7,34 @@ type ArrayNumberInputProps = {
   readonly?: boolean;
 };
 
+const validate = (value: string, elementSize: number) => {
+  try {
+    const parsedResult = JSON.parse(value);
+    if (!Array.isArray(parsedResult)) {
+      return "this is not an array type";
+    } else {
+      const isEveryElementCorrectSize = parsedResult.every(item =>
+        Array.isArray(item) ? item.length === elementSize : elementSize === 1
+      );
+      if (!isEveryElementCorrectSize) {
+        return "not every element id the arra is same size";
+      }
+    }
+  } catch {
+    return "this is not a valid format";
+  }
+
+  return "";
+};
+
 export const ArrayNumberInput = React.memo((props: ArrayNumberInputProps) => {
   const { value, elementSize, readonly } = props;
-  const errorRef = React.useRef("");
-
+  const errorRef = React.useRef(validate(value, elementSize));
   const onChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      let newError = "";
-
-      try {
-        const parsedResult = JSON.parse(e.target.value);
-        if (!Array.isArray(parsedResult)) {
-          newError = "this is not an array type";
-        } else {
-          const isEveryElementCorrectSize = parsedResult.every(e =>
-            Array.isArray(e) ? e.length === elementSize : false
-          );
-          if (!isEveryElementCorrectSize) {
-            newError = "not every element id the arra is same size";
-          }
-        }
-      } catch {
-        newError = "this is not a valid format";
-      }
-
-      errorRef.current = newError;
-      props.onChange(e.target.value, !newError);
+      const error = validate(e.target.value, elementSize);
+      errorRef.current = error;
+      props.onChange(e.target.value, !error);
     },
     [elementSize]
   );
