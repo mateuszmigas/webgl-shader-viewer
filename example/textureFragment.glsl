@@ -1,7 +1,7 @@
-precision mediump float;
-uniform vec2 dupa2;
-uniform vec3 dupa3;
+varying highp vec2 vTextureCoord;
+uniform sampler2D uSampler;
 
 void main(void){
-    gl_FragColor=vec4(dupa3.x,dupa2.y,1,1);// return redish-purple
+    gl_FragColor=vec4(1,0,0,1);// texture2D(uSampler,vTextureCoord);
+    //gl_FragColor=texture2D(uSampler,vTextureCoord);
 }
