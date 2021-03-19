@@ -1,9 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { ExtensionState, setExtensionState } from "../../common/extensionState";
-import { createStore, Store } from "redux";
+import { compose, createStore, Store } from "redux";
 import { Provider } from "react-redux";
-import { reducer } from "./store/reducer";
+import { applyAttributeBuffersReducer, applyUniformsReducer, mainReducer } from "./store/reducer";
 import { ViewerAction } from "./store/actions";
 import { ViewerState } from "./store/state";
 import { Viewer } from "./components/Viewer";
@@ -15,12 +15,16 @@ import {
   setUniforms,
 } from "./utils/webgl/storeWatcher";
 
+const reducer = compose(applyAttributeBuffersReducer, applyUniformsReducer, mainReducer);
+
 export const store: Store<ViewerState, ViewerAction> = createStore(
   (state: ViewerState, action: ViewerAction) => {
     //console.log("state before", state);
     //console.log("action", action);
     const newLocal = reducer(state, action);
-    console.log("state after", newLocal);
+    //applyUniformsReducer
+
+    //console.log("state after", newLocal);
     return newLocal;
   }
 );
@@ -32,7 +36,7 @@ const storeExtensionState = debounce((extensionState: ExtensionState) => {
 store.subscribe(() => {
   const currentState = store.getState();
   const { counter, ...extensionState } = currentState;
-  storeExtensionState(extensionState);
+  storeExtensionState(extensionState as any);
   setAttributeBuffers(currentState.attributeBufferValues);
   setIndexBuffer(currentState.indexBufferValue);
   setUniforms(currentState.uniformValues);

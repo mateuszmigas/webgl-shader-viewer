@@ -84,6 +84,8 @@ export const Viewer = connect(
 
     //startup
     React.useEffect(() => {
+      console.log("running hook");
+
       contextRef.current = canvasRef.current.getContext("webgl");
 
       if (!contextRef.current) {
@@ -97,7 +99,7 @@ export const Viewer = connect(
       });
 
       viewerEndpoint.showWebViewDevTools();
-    }, []);
+    }, [setViewerSize]);
 
     React.useEffect(() => {
       if (!selectedVertexFileText || !selectedFragmentFileText) return;

@@ -13,7 +13,10 @@ const initialState: ViewerState = {
   counter: 0,
 };
 
-export const reducer = (state: ViewerState = initialState, action: ViewerAction): ViewerState => {
+export const mainReducer = (
+  state: ViewerState = initialState,
+  action: ViewerAction
+): ViewerState => {
   switch (action.type) {
     case "SET_VERTEX_FILE_PATH": {
       return {
@@ -48,7 +51,6 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
       console.log("setting opt", action.payload);
       const { name, optionId, ...rest } = action.payload;
       const current = state.attributeBufferValues[name];
-      const binding = attributeBufferBindings.get(optionId);
       return {
         ...state,
         attributeBufferValues: {
@@ -57,9 +59,6 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
             ...current,
             ...rest,
             optionId,
-            ...(binding
-              ? { value: binding.getValue(state.meshId), error: "" }
-              : { error: validateAttributeBuffer(current.value, current.type) }),
           },
         },
       };
@@ -76,7 +75,6 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
             ...current,
             ...rest,
             value,
-            error: validateAttributeBuffer(value, current.type),
           },
         },
       };
@@ -126,16 +124,6 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
     case "SET_CAMERA_POSITION": {
       return {
         ...state,
-        uniformValues: objectMap(state.uniformValues, propValue => {
-          return {
-            //todo
-            ...propValue,
-            value:
-              uniformBindings
-                .get(propValue.optionId)
-                ?.getValue(action.payload.position, state.viewerSize) ?? propValue.value,
-          };
-        }),
         cameraPosition: action.payload.position,
       };
     }
@@ -145,13 +133,6 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
 
       return {
         ...state,
-        attributeBufferValues: objectMap(state.attributeBufferValues, propValue => {
-          const binding = attributeBufferBindings.get(propValue.optionId);
-          return {
-            ...propValue,
-            ...(binding ? { value: binding.getValue(action.payload.id), error: "" } : {}),
-          };
-        }),
         indexBufferValue: {
           ...indexBufferValue,
           ...(indexBufferBinding
@@ -171,4 +152,33 @@ export const reducer = (state: ViewerState = initialState, action: ViewerAction)
       return state;
     }
   }
+};
+
+export const applyAttributeBuffersReducer = (state: ViewerState): ViewerState => {
+  return {
+    ...state,
+    attributeBufferValues: objectMap(state.attributeBufferValues, propValue => {
+      const binding = attributeBufferBindings.get(propValue.optionId);
+      return {
+        ...propValue,
+        ...(binding
+          ? { value: binding.getValue(state.meshId), error: "" }
+          : {
+              error: validateAttributeBuffer(propValue.value, propValue.type),
+            }),
+      };
+    }),
+  };
+};
+
+export const applyUniformsReducer = (state: ViewerState): ViewerState => {
+  return {
+    ...state,
+    uniformValues: objectMap(state.uniformValues, propValue => ({
+      ...propValue,
+      value:
+        uniformBindings.get(propValue.optionId)?.getValue(state.cameraPosition, state.viewerSize) ??
+        propValue.value,
+    })),
+  };
 };

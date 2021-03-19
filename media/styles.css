@@ -28,7 +28,6 @@ input::-webkit-inner-spin-button {
   overflow: auto;
   display: flex;
   flex-direction: column;
-  background-color: blue;
 }
 
 .viewer-options-section {
