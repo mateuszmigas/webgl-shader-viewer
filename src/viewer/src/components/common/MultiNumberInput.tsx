@@ -1,5 +1,5 @@
 import React from "react";
-import { range } from "../../../../common/array";
+import { range } from "../../../../common/utils/array";
 
 export const MultiNumberInput = React.memo(
   (props: {

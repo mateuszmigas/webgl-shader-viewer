@@ -1,5 +1,4 @@
-import * as vscode from "vscode";
-import { remove } from "../array";
+import { remove } from "../utils/array";
 import { uuidv4 } from "../uuid";
 import { MessageResponse } from "./messages";
 import { vscodeApi } from "./vscodeApi";
@@ -24,21 +23,16 @@ class ViewerEndpoint {
       payload: { extensions },
     });
 
-    return new Promise<{ fileName: string; filePath: string; uri: string }[]>(
-      resolve => {
-        const listener = (message: MessageResponse) => {
-          if (
-            message.type === "getWorkspaceFilesOfTypes" &&
-            message.id === messageId
-          ) {
-            resolve(message.payload.files);
-            this.removeListener(listener);
-          }
-        };
+    return new Promise<{ fileName: string; filePath: string; uri: string }[]>(resolve => {
+      const listener = (message: MessageResponse) => {
+        if (message.type === "getWorkspaceFilesOfTypes" && message.id === messageId) {
+          resolve(message.payload.files);
+          this.removeListener(listener);
+        }
+      };
 
-        this.eventListeners.push(listener);
-      }
-    );
+      this.eventListeners.push(listener);
+    });
   }
 
   getDocumentText(fileName: string) {
@@ -73,10 +67,7 @@ class ViewerEndpoint {
 
     return new Promise<string>(resolve => {
       const listener = (message: MessageResponse) => {
-        if (
-          message.type === "getExtensionFileUri" &&
-          message.id === messageId
-        ) {
+        if (message.type === "getExtensionFileUri" && message.id === messageId) {
           resolve(message.payload.uri);
           this.removeListener(listener);
         }
@@ -86,20 +77,14 @@ class ViewerEndpoint {
     });
   }
 
-  subscribeToDocumentSave(
-    filePath: string,
-    callback: (newContent: string) => void
-  ): () => void {
+  subscribeToDocumentSave(filePath: string, callback: (newContent: string) => void): () => void {
     vscodeApi.postMessage({
       type: "subscribeToDocumentTextChange",
       payload: { fileName: filePath },
     });
 
     const listener = (message: MessageResponse) => {
-      if (
-        message.type === "onDocumentTextChange" &&
-        message.payload.filePath === filePath
-      ) {
+      if (message.type === "onDocumentTextChange" && message.payload.filePath === filePath) {
         callback(message.payload.text);
       }
     };

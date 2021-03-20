@@ -1,5 +1,5 @@
 import React from "react";
-import { repeat } from "../../../../common/array";
+import { repeat } from "../../../../common/utils/array";
 import { MultiNumberInput } from "./MultiNumberInput";
 
 const defaultValue = repeat(16, 0);

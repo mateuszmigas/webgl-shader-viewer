@@ -15,17 +15,7 @@ import {
 } from "./utils/webgl/storeWatcher";
 import { reducer } from "./store/reducer";
 
-export const store: Store<ViewerState, ViewerAction> = createStore(
-  (state: ViewerState, action: ViewerAction) => {
-    //console.log("state before", state);
-    //console.log("action", action);
-    const newLocal = reducer(state, action);
-    //applyUniformsReducer
-
-    //console.log("state after", newLocal);
-    return newLocal;
-  }
-);
+export const store: Store<ViewerState, ViewerAction> = createStore(reducer);
 
 const storeExtensionState = debounce((extensionState: ExtensionState) => {
   setExtensionState(extensionState);
@@ -33,8 +23,7 @@ const storeExtensionState = debounce((extensionState: ExtensionState) => {
 
 store.subscribe(() => {
   const currentState = store.getState();
-  const { counter, ...extensionState } = currentState;
-  storeExtensionState(extensionState as any);
+  storeExtensionState(currentState);
   setAttributeBuffers(currentState.attributeBufferValues);
   setIndexBuffer(currentState.indexBufferValue);
   setUniforms(currentState.uniformValues);

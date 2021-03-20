@@ -61,20 +61,7 @@ export class TextureInfo {
     }
   }
 
-  prepareForRender() {
-    if (this.texture !== null) {
-      this.context.activeTexture(this.context.TEXTURE0 + this.unit);
-      this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
-      this.context.uniform1i(this.location, this.unit);
-    }
-  }
-
-  deleteTexture() {
-    this.context.deleteTexture(this.texture);
-    this.texture = null;
-  }
-
-  private setPlaceholderTexture() {
+  setPlaceholderTexture() {
     const level = 0;
     const internalFormat = this.context.RGBA;
     const width = 1;
@@ -94,5 +81,18 @@ export class TextureInfo {
       srcType,
       pixel
     );
+  }
+
+  prepareForRender() {
+    if (this.texture !== null) {
+      this.context.activeTexture(this.context.TEXTURE0 + this.unit);
+      this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
+      this.context.uniform1i(this.location, this.unit);
+    }
+  }
+
+  deleteTexture() {
+    this.context.deleteTexture(this.texture);
+    this.texture = null;
   }
 }

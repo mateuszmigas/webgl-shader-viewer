@@ -43,5 +43,6 @@ export const getExtensionState = (): ExtensionState => ({
   ...defaultState,
   ...vscodeApi.getState(),
 });
+
 export const setExtensionState = (newState: Partial<ExtensionState>) =>
   vscodeApi.setState(newState);

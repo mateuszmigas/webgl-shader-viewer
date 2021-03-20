@@ -6,10 +6,6 @@ export const remove = <T>(array: T[], item: T) => {
   }
 };
 
-export const removeLast = (text: string, count: number) => {
-  return text.substring(0, text.length - count);
-};
-
 export const range = (range: number | [number, number]) => {
   if (Array.isArray(range))
     return Array(range[1] - range[0])

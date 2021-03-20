@@ -1,4 +1,4 @@
-import { repeat } from "../../../../common/array";
+import { repeat } from "../../../../common/utils/array";
 import { assertNever } from "../../utils/typeGuards";
 import { UniformType } from "../../utils/webgl/uniform";
 import { customOption } from "../common/constants";

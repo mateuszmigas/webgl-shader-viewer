@@ -9,17 +9,18 @@ export const getDefaultProps = () => ({
   value: "",
 });
 
-export const loadTextureForState = (name: string, optionId: string, value: string) => {
+export const loadTextureForState = async (name: string, optionId: string, value: string) => {
   const textureInfo = getTextureInfo(name)?.textureInfo;
 
   if (!textureInfo) return;
 
   const binding = textureBindings.get(optionId);
-  if (binding) {
-    viewerEndpoint.getExtensionFileUri(binding.fileName).then(fileUri => {
-      loadImage(fileUri).then(img => textureInfo.setSource(img));
-    });
-  } else {
-    loadImage(value).then(img => textureInfo.setSource(img));
+
+  try {
+    const uri = binding ? await viewerEndpoint.getExtensionFileUri(binding.fileName) : value;
+    const img = await loadImage(uri);
+    textureInfo.setSource(img);
+  } catch {
+    textureInfo.setPlaceholderTexture();
   }
 };
