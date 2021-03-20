@@ -26,7 +26,7 @@ const rebuildCache = (newElements: { key: CacheKey; value: CacheValue }[]) => {
 
 export const getUniformInfo = (name: string, type: UniformType) => cache.get({ name, type });
 
-export const createUniformInfos = (
+export const getOrCreateUniformInfos = (
   context: WebGLRenderingContext,
   program: WebGLProgram,
   uniforms: { name: string; type: UniformType }[]

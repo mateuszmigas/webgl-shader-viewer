@@ -7,16 +7,14 @@ import { ViewerState } from "./state";
 import { attributeBufferBindings } from "../components/attributeBuffer/attributeBufferBindings";
 import { objectMap } from "../utils/object";
 import { validateAttributeBuffer } from "../validation/attributeBufferValidator";
+import { compose } from "redux";
 
 const initialState: ViewerState = {
   ...getExtensionState(),
   counter: 0,
 };
 
-export const mainReducer = (
-  state: ViewerState = initialState,
-  action: ViewerAction
-): ViewerState => {
+const mainReducer = (state: ViewerState = initialState, action: ViewerAction): ViewerState => {
   switch (action.type) {
     case "SET_VERTEX_FILE_PATH": {
       return {
@@ -117,7 +115,7 @@ export const mainReducer = (
           ...state.textureValues,
           [name]: {
             ...current,
-            value,
+            value: value,
           },
         },
       };
@@ -152,7 +150,7 @@ export const mainReducer = (
   }
 };
 
-export const applyAttributeBuffersReducer = (state: ViewerState): ViewerState => {
+const applyAttributeBufferBindingsReducer = (state: ViewerState): ViewerState => {
   return {
     ...state,
     attributeBufferValues: objectMap(state.attributeBufferValues, propValue => {
@@ -169,7 +167,7 @@ export const applyAttributeBuffersReducer = (state: ViewerState): ViewerState =>
   };
 };
 
-export const applyIndexBufferReducer = (state: ViewerState): ViewerState => {
+const applyIndexBufferBindingsReducer = (state: ViewerState): ViewerState => {
   const indexBufferValue = state.indexBufferValue;
   const binding = indexBufferBindings.get(indexBufferValue.optionId);
 
@@ -186,7 +184,7 @@ export const applyIndexBufferReducer = (state: ViewerState): ViewerState => {
   };
 };
 
-export const applyUniformsReducer = (state: ViewerState): ViewerState => {
+const applyUniformBindingsReducer = (state: ViewerState): ViewerState => {
   return {
     ...state,
     uniformValues: objectMap(state.uniformValues, propValue => ({
@@ -197,3 +195,10 @@ export const applyUniformsReducer = (state: ViewerState): ViewerState => {
     })),
   };
 };
+
+export const reducer = compose(
+  applyIndexBufferBindingsReducer,
+  applyAttributeBufferBindingsReducer,
+  applyUniformBindingsReducer,
+  mainReducer
+);

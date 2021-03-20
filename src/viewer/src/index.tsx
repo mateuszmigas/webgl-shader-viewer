@@ -1,14 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { ExtensionState, setExtensionState } from "../../common/extensionState";
-import { compose, createStore, Store } from "redux";
+import { createStore, Store } from "redux";
 import { Provider } from "react-redux";
-import {
-  applyAttributeBuffersReducer,
-  applyIndexBufferReducer,
-  applyUniformsReducer,
-  mainReducer,
-} from "./store/reducer";
 import { ViewerAction } from "./store/actions";
 import { ViewerState } from "./store/state";
 import { Viewer } from "./components/Viewer";
@@ -19,13 +13,7 @@ import {
   setTextures,
   setUniforms,
 } from "./utils/webgl/storeWatcher";
-
-const reducer = compose(
-  applyIndexBufferReducer,
-  applyAttributeBuffersReducer,
-  applyUniformsReducer,
-  mainReducer
-);
+import { reducer } from "./store/reducer";
 
 export const store: Store<ViewerState, ViewerAction> = createStore(
   (state: ViewerState, action: ViewerAction) => {

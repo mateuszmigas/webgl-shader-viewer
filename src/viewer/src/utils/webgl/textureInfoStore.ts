@@ -61,26 +61,5 @@ export const getOrCreateTextureInfos = (
   });
 
   rebuildCache(elements);
-  return elements.map(c => c.value);
+  return elements.map(c => c.value.textureInfo);
 };
-
-// const updateUrl = (value: string | { type: ImageType; value: string }) => {
-//   if (typeof value === "string") {
-//     loadImage(value).then(img => textureInfo.setSource(img));
-//   } else {
-//     if (value.type === "extension-image") {
-//       viewerEndpoint.getExtensionFileUri(value.value).then(x => {
-//         loadImage(x).then(img => textureInfo.setSource(img));
-//       });
-//     }
-//   }
-// };
-
-// viewerEndpoint.getWorkspaceFilesOfTypes(imageExtensions).then(x => {
-//   console.log(x);
-// });
-
-// const { element, dispose } = createSelectionComponent(
-//   [createCustomOption(), ...extensionTextures.map(createLocalImageOption)],
-//   updateUrl
-// );

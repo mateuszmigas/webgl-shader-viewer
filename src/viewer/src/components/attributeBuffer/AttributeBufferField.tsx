@@ -57,8 +57,6 @@ export const AttributeBufferField = React.memo(
       setOption: (optionId: string) => void;
       setValue: (value: string) => void;
     }) => {
-      console.log("props", props);
-
       const { type, value, optionId, error, setOption, setValue } = props;
       const options = [customOption, ...getBindingOptions(type)];
       const isCustom = optionId === customOption.id;

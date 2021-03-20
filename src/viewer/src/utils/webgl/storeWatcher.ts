@@ -5,34 +5,33 @@ import { safeJSONParse } from "../parsing";
 import { getAttributeBufferInfo } from "./attributeBufferStore";
 import { getIndexBufferInfo } from "./indexBufferStore";
 import { getUniformInfo } from "./uniformStore";
+import { loadTextureForState } from "../../components/texture/texturesUtils";
 
 const getBufferValueOrDefault = (storeValue: { value: string; error: string }) =>
   !storeValue.error ? safeJSONParse(storeValue.value) ?? [] : [];
-
-const setTexture = (optionId: string, value: string) => {};
 
 export const setWebGLFromState = () => {
   const state = store.getState();
 
   state.attributeBufferValues &&
-    Object.entries(state.attributeBufferValues).forEach(([key, value]) => {
+    Object.entries(state.attributeBufferValues).forEach(([key, value]) =>
       getAttributeBufferInfo(key, value.type)?.attributeBufferInfo.setValue(
         getBufferValueOrDefault(value)
-      );
-    });
+      )
+    );
 
   state.indexBufferValue &&
     getIndexBufferInfo().setValue(getBufferValueOrDefault(state.indexBufferValue));
 
   state.uniformValues &&
-    Object.entries(state.uniformValues).forEach(([key, value]) => {
-      getUniformInfo(key, value.type)?.uniformInfo.setValue(value.value);
-    });
+    Object.entries(state.uniformValues).forEach(([key, value]) =>
+      getUniformInfo(key, value.type)?.uniformInfo.setValue(value.value)
+    );
 
   state.textureValues &&
-    Object.entries(state.textureValues).forEach(([key, value]) => {
-      //getTextureInfo(key)?.textureInfo.setValue(value.value);
-    });
+    Object.entries(state.textureValues).forEach(([key, value]) =>
+      loadTextureForState(key, value.optionId, value.value)
+    );
 };
 
 let lastCommitedAttributeBuffersState: ViewerState["attributeBufferValues"] = undefined;
@@ -83,15 +82,14 @@ export const setUniforms = (uniformValues: ViewerState["uniformValues"]) => {
 };
 
 let lastCommitedTexturesState: ViewerState["textureValues"] = undefined;
-export const setTextures = (textureValues: ViewerState["textureValues"]) => {
+export const setTextures = debounce((textureValues: ViewerState["textureValues"]) => {
   if (lastCommitedTexturesState !== textureValues && lastCommitedTexturesState && textureValues) {
     Object.entries(textureValues).forEach(([key, value]) => {
       if (lastCommitedTexturesState[key] !== value) {
-        //if (value.optionId)
-        //getUniformInfo(key, value.type)?.uniformInfo.setValue(value.value);
+        loadTextureForState(key, value.optionId, value.value);
       }
     });
   }
 
   lastCommitedTexturesState = textureValues;
-};
+}, 200);

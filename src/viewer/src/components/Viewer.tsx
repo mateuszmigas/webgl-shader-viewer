@@ -25,11 +25,12 @@ import {
   AttributeBufferFieldInfo,
   AttributeBuffersSection,
 } from "./attributeBuffer/AttributeBuffersSection";
-import { createUniformInfos } from "../utils/webgl/uniformStore";
+import { getOrCreateUniformInfos } from "../utils/webgl/uniformStore";
 import { store } from "..";
 import { CameraPosition } from "../utils/cameraManipulator";
 import { getOrCreateIndexBufferInfo } from "../utils/webgl/indexBufferStore";
 import { setWebGLFromState } from "../utils/webgl/storeWatcher";
+import { getOrCreateTextureInfos } from "../utils/webgl/textureInfoStore";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
@@ -84,8 +85,6 @@ export const Viewer = connect(
 
     //startup
     React.useEffect(() => {
-      console.log("running hook");
-
       contextRef.current = canvasRef.current.getContext("webgl");
 
       if (!contextRef.current) {
@@ -125,10 +124,15 @@ export const Viewer = connect(
           program,
           programAttributeBuffers
         );
-        const uniformInfos = createUniformInfos(
+        const uniformInfos = getOrCreateUniformInfos(
           contextRef.current,
           program,
           programUniforms.dataUniforms
+        );
+        const textureInfos = getOrCreateTextureInfos(
+          contextRef.current,
+          program,
+          programUniforms.textureUniforms
         );
         const indexBufferInfo = getOrCreateIndexBufferInfo(contextRef.current);
 
@@ -141,7 +145,7 @@ export const Viewer = connect(
             program,
             {
               uniformInfos,
-              textureInfos: [],
+              textureInfos,
               attributeBufferInfos,
               indexBufferInfo,
             },
