@@ -1,6 +1,6 @@
 export const isPowerOf2 = (value: number) => (value & (value - 1)) == 0;
 
-//gl-matrix functions
+//copy-paste of gl-matrix library functions
 export namespace mat4 {
   const EPSILON = 0.000001;
   export function create() {
@@ -11,13 +11,7 @@ export namespace mat4 {
     out[15] = 1;
     return out;
   }
-  export function perspective(
-    out: any,
-    fovy: any,
-    aspect: any,
-    near: any,
-    far: any
-  ) {
+  export function perspective(out: any, fovy: any, aspect: any, near: any, far: any) {
     let f = 1.0 / Math.tan(fovy / 2),
       nf;
     out[0] = f / aspect;

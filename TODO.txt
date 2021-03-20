@@ -1,3 +1,5 @@
 1. show optimized uniforms with warning (not active for webgl), requires extra regex parsing
 2. textures from workspace
 3. async loading at start
+4. texture loading error
+5. styling
