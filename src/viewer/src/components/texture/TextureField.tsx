@@ -3,8 +3,10 @@ import { connect } from "react-redux";
 import { ViewerAction } from "../../store/actions";
 import { ViewerState } from "../../store/state";
 import { customOption } from "../common/constants";
+import { TextInput } from "../common/TextInput";
 import { Dropdown } from "../Dropdown";
 import { getBindingOptions } from "./textureBindings";
+import { getDefaultProps } from "./texturesUtils";
 
 type OwnProps = {
   name: string;
@@ -12,12 +14,29 @@ type OwnProps = {
 
 const mapStateToProps = (state: ViewerState, ownProps: OwnProps) => {
   const textureValue = state.textureValues[ownProps.name];
-  return textureValue; // ?? : getDefaultProps(ownProps.type);
+  return textureValue ?? getDefaultProps();
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>, ownProps: OwnProps) => {
   return {
-    setOptionAndValue: (optionId: string, value: string) => {},
+    setOption: (optionId: string) => {
+      return dispatch({
+        type: "SET_TEXTURE_OPTION",
+        payload: {
+          ...ownProps,
+          optionId,
+        },
+      });
+    },
+    setValue: (value: string) => {
+      return dispatch({
+        type: "SET_TEXTURE_VALUE",
+        payload: {
+          ...ownProps,
+          value,
+        },
+      });
+    },
   };
 };
 
@@ -29,23 +48,23 @@ export const TextureField = React.memo(
     (props: {
       name: string;
       optionId: string;
-      value: any;
-      setOptionAndValue: (optionId: string, value: string) => void;
+      value: string;
+      setOption: (optionId: string) => void;
+      setValue: (value: string) => void;
     }) => {
-      const { optionId, value, setOptionAndValue } = props;
-      const options = React.useMemo(() => [customOption, ...getBindingOptions()], []);
+      const { optionId, value, setOption, setValue } = props;
+      const options = React.useMemo(
+        () => [{ id: customOption.id, display: "Custom URL" }, ...getBindingOptions()],
+        []
+      );
       const isCustom = optionId === customOption.id;
 
       return (
         <div>
           {options.length > 1 && (
-            <Dropdown
-              selectedItemId={optionId}
-              onChange={optionId => setOptionAndValue(optionId, value)}
-              options={options}
-            ></Dropdown>
+            <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
           )}
-          <div>dupa</div>
+          {isCustom && <TextInput value={value} onChange={setValue}></TextInput>}
         </div>
       );
     }

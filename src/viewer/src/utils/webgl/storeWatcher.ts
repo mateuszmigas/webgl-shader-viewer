@@ -9,6 +9,8 @@ import { getUniformInfo } from "./uniformStore";
 const getBufferValueOrDefault = (storeValue: { value: string; error: string }) =>
   !storeValue.error ? safeJSONParse(storeValue.value) ?? [] : [];
 
+const setTexture = (optionId: string, value: string) => {};
+
 export const setWebGLFromState = () => {
   const state = store.getState();
 
@@ -85,6 +87,7 @@ export const setTextures = (textureValues: ViewerState["textureValues"]) => {
   if (lastCommitedTexturesState !== textureValues && lastCommitedTexturesState && textureValues) {
     Object.entries(textureValues).forEach(([key, value]) => {
       if (lastCommitedTexturesState[key] !== value) {
+        //if (value.optionId)
         //getUniformInfo(key, value.type)?.uniformInfo.setValue(value.value);
       }
     });

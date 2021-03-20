@@ -1,15 +1,22 @@
-export const textureBindings: { [key: string]: { display: string; value: string } } = {
-  texture1: { display: "tes 1", value: "fsefsfs" },
-  texture2: { display: "tex 22", value: "aefaef" },
-};
+export const textureBindings = new Map<string, { display: string; value: string }>([
+  [
+    "texture1",
+    {
+      display: "Binding - Texture 1",
+      value: "url1",
+    },
+  ],
+  [
+    "texture2",
+    {
+      display: "Binding - Texture 2",
+      value: "url2",
+    },
+  ],
+]);
 
-export const bindingNames = new Set<string>(Object.keys(textureBindings));
-
-export const getBindingValue = (name: string) => textureBindings[name].value;
-
-export const getBindingOptions = () => {
-  return Object.entries(textureBindings).map(([key, value]) => ({
+export const getBindingOptions = () =>
+  Array.from(textureBindings.entries()).map(([key, value]) => ({
     id: key,
     display: value.display,
   }));
-};

@@ -1,13 +1,13 @@
 import React from "react";
 
-type ArrayNumberInputProps = {
+type TextInputProps = {
   value: string;
   onChange: (newValue: string) => void;
-  error: string;
+  error?: string;
   readonly?: boolean;
 };
 
-export const ArrayNumberInput = React.memo((props: ArrayNumberInputProps) => {
+export const TextInput = React.memo((props: TextInputProps) => {
   const { value, error, onChange, readonly } = props;
 
   return (

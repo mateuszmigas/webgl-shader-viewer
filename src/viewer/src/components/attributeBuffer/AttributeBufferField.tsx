@@ -4,7 +4,7 @@ import { Dispatch } from "redux";
 import { ViewerAction } from "../../store/actions";
 import { ViewerState } from "../../store/state";
 import { AttributeBufferType } from "../../utils/webgl/attributeBuffer";
-import { ArrayNumberInput } from "../common/ArrayNumberInput";
+import { TextInput } from "../common/TextInput";
 import { customOption } from "../common/constants";
 import { Dropdown } from "../Dropdown";
 import { getBindingOptions } from "./attributeBufferBindings";
@@ -68,12 +68,12 @@ export const AttributeBufferField = React.memo(
           {options.length > 1 && (
             <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
           )}
-          <ArrayNumberInput
+          <TextInput
             value={value}
             onChange={setValue}
             error={error}
             readonly={!isCustom}
-          ></ArrayNumberInput>
+          ></TextInput>
         </div>
       );
     }

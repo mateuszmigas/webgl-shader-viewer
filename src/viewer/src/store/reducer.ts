@@ -44,7 +44,6 @@ export const mainReducer = (
       };
     }
     case "SET_ATTRIBUTE_BUFFER_OPTION": {
-      console.log("setting opt", action.payload);
       const { name, optionId, ...rest } = action.payload;
       const current = state.attributeBufferValues[name];
       return {
@@ -95,14 +94,31 @@ export const mainReducer = (
         },
       };
     }
-    case "SET_TEXTURE": {
-      const { name, ...rest } = action.payload;
-
+    case "SET_TEXTURE_OPTION": {
+      const { name, optionId } = action.payload;
+      const current = state.textureValues[name];
       return {
         ...state,
         textureValues: {
           ...state.textureValues,
-          [name]: { ...state.textureValues[name], ...rest },
+          [name]: {
+            ...current,
+            optionId,
+          },
+        },
+      };
+    }
+    case "SET_TEXTURE_VALUE": {
+      const { name, value } = action.payload;
+      const current = state.textureValues[name];
+      return {
+        ...state,
+        textureValues: {
+          ...state.textureValues,
+          [name]: {
+            ...current,
+            value,
+          },
         },
       };
     }

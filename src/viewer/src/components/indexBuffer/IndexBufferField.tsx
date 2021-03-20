@@ -2,7 +2,7 @@ import React, { Dispatch } from "react";
 import { connect } from "react-redux";
 import { ViewerAction } from "../../store/actions";
 import { ViewerState } from "../../store/state";
-import { ArrayNumberInput } from "../common/ArrayNumberInput";
+import { TextInput } from "../common/TextInput";
 import { customOption } from "../common/constants";
 import { Dropdown } from "../Dropdown";
 import { SectionField } from "../SectionField";
@@ -55,12 +55,12 @@ export const IndexBufferField = React.memo(
       return (
         <SectionField text={"Indices"}>
           <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
-          <ArrayNumberInput
+          <TextInput
             value={value}
             onChange={setValue}
             error={error}
             readonly={!isCustom}
-          ></ArrayNumberInput>
+          ></TextInput>
         </SectionField>
       );
     }

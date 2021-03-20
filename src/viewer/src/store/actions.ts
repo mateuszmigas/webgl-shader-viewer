@@ -43,8 +43,12 @@ export type ViewerAction =
       };
     }
   | {
-      type: "SET_TEXTURE";
-      payload: { name: string; type: number; optionId: string; value: any };
+      type: "SET_TEXTURE_VALUE";
+      payload: { name: string; value: string };
+    }
+  | {
+      type: "SET_TEXTURE_OPTION";
+      payload: { name: string; optionId: string };
     }
   | {
       type: "SET_MESH";
