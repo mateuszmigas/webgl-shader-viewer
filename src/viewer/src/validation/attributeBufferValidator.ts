@@ -15,9 +15,5 @@ const getNumElements = (type: AttributeBufferType) => {
   }
 };
 
-export const validateAttributeBuffer = (value: string, type: AttributeBufferType) => {
-  const err = validateArrayElements(value, getNumElements(type));
-  console.log("validation", err);
-
-  return err;
-};
+export const validateAttributeBuffer = (value: string, type: AttributeBufferType) =>
+  validateArrayElements(value, getNumElements(type));

@@ -30,6 +30,7 @@ export class TextureInfo {
     const srcFormat = this.context.RGBA;
     const srcType = this.context.UNSIGNED_BYTE;
     this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
+    this.context.pixelStorei(this.context.UNPACK_FLIP_Y_WEBGL, true);
     this.context.texImage2D(
       this.context.TEXTURE_2D,
       level,
