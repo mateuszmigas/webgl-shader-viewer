@@ -1,16 +1,23 @@
 export const textureBindings = new Map<string, { display: string; fileName: string }>([
   [
-    "texture1",
+    "texture-sky",
     {
-      display: "Binding - Texture 1",
-      fileName: "texture1.jpg",
+      display: "Binding - Sky",
+      fileName: "texture-sky.jpg",
     },
   ],
   [
-    "texture2",
+    "texture-grass",
     {
-      display: "Binding - Texture 2",
-      fileName: "texture2.jpg",
+      display: "Binding - Grass",
+      fileName: "texture-grass.jpg",
+    },
+  ],
+  [
+    "texture-egypt",
+    {
+      display: "Binding - Egypt",
+      fileName: "texture-egypt.jpg",
     },
   ],
 ]);
