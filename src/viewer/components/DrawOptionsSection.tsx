@@ -1,8 +1,8 @@
 import React, { Dispatch } from "react";
 import { connect } from "react-redux";
 import { meshes } from "../meshes";
-import { ViewerAction } from "@localStore/actions";
-import { ViewerState } from "@localStore/state";
+import { ViewerAction } from "@viewerStore/actions";
+import { ViewerState } from "@viewerStore/state";
 import { translations } from "@common/translations";
 import { DrawMode } from "@utils/webgl";
 import { Dropdown } from "./Dropdown";

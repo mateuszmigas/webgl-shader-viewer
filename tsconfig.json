@@ -21,7 +21,7 @@
       "@common/*": ["common/*"],
       "@translations": ["translations"],
       "@extensionState": ["extensionState"],
-      "@localStore/*": ["viewer/store/*"],
+      "@viewerStore/*": ["viewer/store/*"],
       "@utils/*": ["utils/*"]
     }
   },

@@ -1,8 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-import { ViewerAction } from "@localStore/actions";
-import { ViewerState } from "@localStore/state";
+import { ViewerAction } from "@viewerStore/actions";
+import { ViewerState } from "@viewerStore/state";
 import { UniformType } from "@utils/webgl/uniform";
 import {
   Vector2NumberInput,

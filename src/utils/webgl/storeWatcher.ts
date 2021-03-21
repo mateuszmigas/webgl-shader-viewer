@@ -1,5 +1,5 @@
 import { store } from "../../viewer";
-import { ViewerState } from "../../viewer/store/state";
+import { ViewerState } from "@viewerStore/state";
 import { debounce } from "../function";
 import { safeJSONParse } from "../parsing";
 import { getAttributeBufferInfo } from "./attributeBufferStore";

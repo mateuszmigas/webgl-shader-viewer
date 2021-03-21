@@ -1,7 +1,7 @@
 import React, { Dispatch } from "react";
 import { connect } from "react-redux";
-import { ViewerAction } from "@localStore/actions";
-import { ViewerState } from "@localStore/state";
+import { ViewerAction } from "@viewerStore/actions";
+import { ViewerState } from "@viewerStore/state";
 import { TextInput } from "../common/TextInput";
 import { customOption } from "@common/constants";
 import { Dropdown } from "../Dropdown";

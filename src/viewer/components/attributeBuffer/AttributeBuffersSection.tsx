@@ -1,8 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import { ViewerState } from "../../store/state";
+import { ViewerState } from "@viewerStore/state";
 import { translations } from "@common/translations";
-import { AttributeBufferType } from "../../../utils/webgl/attributeBuffer";
+import { AttributeBufferType } from "@utils/webgl/attributeBuffer";
 import { SectionField } from "../SectionField";
 import { SectionTitle } from "../SectionTitle";
 import { AttributeBufferField } from "./AttributeBufferField";

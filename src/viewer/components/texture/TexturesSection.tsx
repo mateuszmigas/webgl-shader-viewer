@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { ViewerState } from "@localStore/state";
+import { ViewerState } from "@viewerStore/state";
 import { translations } from "@common/translations";
 import { SectionField } from "../SectionField";
 import { SectionTitle } from "../SectionTitle";

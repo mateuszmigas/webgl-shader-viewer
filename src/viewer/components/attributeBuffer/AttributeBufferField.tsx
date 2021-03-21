@@ -1,8 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-import { ViewerAction } from "@localStore/actions";
-import { ViewerState } from "@localStore/state";
+import { ViewerAction } from "@viewerStore/actions";
+import { ViewerState } from "@viewerStore/state";
 import { AttributeBufferType } from "@utils/webgl/attributeBuffer";
 import { TextInput } from "../common/TextInput";
 import { customOption } from "@common/constants";
