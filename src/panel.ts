@@ -1,5 +1,5 @@
+import { panelEndpoint } from "communication/panelEndpoint";
 import * as vscode from "vscode";
-import { panelEndpoint } from "./common/communication/panelEndpoint";
 
 export class Panel {
   private static instance: Panel | undefined;
@@ -34,16 +34,9 @@ export class Panel {
     Panel.instance = new Panel(panel, extensionUri);
   }
 
-  private constructor(
-    private panel: vscode.WebviewPanel,
-    private extensionUri: vscode.Uri
-  ) {
+  private constructor(private panel: vscode.WebviewPanel, private extensionUri: vscode.Uri) {
     this.panel.webview.html = this._getHtmlForWebview();
-    const listener = panelEndpoint(
-      this.panel.webview,
-      extensionUri,
-      this.disposables
-    );
+    const listener = panelEndpoint(this.panel.webview, extensionUri, this.disposables);
     this.panel.webview.onDidReceiveMessage(listener, null, this.disposables);
     this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
   }
@@ -95,8 +88,7 @@ export class Panel {
 
 function getNonce() {
   let text = "";
-  const possible =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (let i = 0; i < 32; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }

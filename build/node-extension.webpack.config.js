@@ -1,4 +1,6 @@
 const path = require('path');
+const TsConfigPathsPlugin = require("awesome-typescript-loader")
+  .TsConfigPathsPlugin;
 
 const extensionConfig = {
   target: 'node',
@@ -15,7 +17,8 @@ const extensionConfig = {
     vscode: 'commonjs vscode'
   },
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js'],
+    plugins: [new TsConfigPathsPlugin()],
   },
   module: {
     rules: [
@@ -33,7 +36,7 @@ const extensionConfig = {
 };
 
 const viewerConfig =  {
-  entry: './src/viewer/src/index.tsx',
+  entry: './src/viewer/index.tsx',
   devtool: "inline-source-map",
   mode: "production",
   module: {
@@ -47,6 +50,7 @@ const viewerConfig =  {
   },
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
+    plugins: [new TsConfigPathsPlugin()],
   },
   output: {
     filename: 'main.js',
