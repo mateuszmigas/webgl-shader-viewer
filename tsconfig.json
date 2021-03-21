@@ -1,16 +1,15 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es6",
+    "target": "es5",
     "outDir": "out",
     "lib": ["es6", "dom", "es2017", "es2019"],
     "sourceMap": true,
     "rootDir": "src",
-    "noImplicitAny": true,
     "strictNullChecks": false,
-    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "jsx": "react",
+    "allowSyntheticDefaultImports": true,
     "strict": true /* enable all strict type-checking options */
     /* Additional Checks */
     // "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
