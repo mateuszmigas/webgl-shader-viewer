@@ -57,7 +57,7 @@ export const DrawOptionsSection = React.memo(
           <SectionField text={"Draw mode"}>
             <Dropdown
               selectedItemId={drawMode}
-              onChange={setDrawMode}
+              onChange={setDrawMode as any}
               options={drawModeOptions}
             ></Dropdown>
           </SectionField>
