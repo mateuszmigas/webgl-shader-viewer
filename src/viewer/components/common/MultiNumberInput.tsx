@@ -12,15 +12,15 @@ export const MultiNumberInput = React.memo(
     const { rows, columns, value = [], onChange, readonly = false } = props;
 
     return (
-      <div className="edit-input-grid">
+      <div className="component-input-grid">
         {range(rows).map(row => (
-          <div key={row} className="edit-input-row">
+          <div key={row} className="component-input-row">
             {range(columns).map(column => {
               const index = row * columns + column;
               return (
                 <input
                   key={column}
-                  className="edit-input"
+                  className="component-input"
                   type="number"
                   disabled={readonly}
                   value={value[index]}

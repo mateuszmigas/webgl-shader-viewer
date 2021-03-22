@@ -4,7 +4,7 @@ import { ViewerAction } from "@viewerStore/actions";
 import { ViewerState } from "@viewerStore/state";
 import { customOption } from "@common/constants";
 import { TextInput } from "../common/TextInput";
-import { Dropdown } from "../Dropdown";
+import { Dropdown } from "../common/Dropdown";
 import { getBindingOptions } from "./textureBindings";
 import { getDefaultProps } from "./texturesUtils";
 

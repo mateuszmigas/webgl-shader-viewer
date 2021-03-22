@@ -11,7 +11,7 @@ import {
   Matrix4x4NumberInput,
 } from "../common";
 import { customOption } from "@common/constants";
-import { Dropdown } from "../Dropdown";
+import { Dropdown } from "../common/Dropdown";
 import { getBindingOptions } from "./uniformBindings";
 import { getDefaultProps } from "./uniformUtils";
 

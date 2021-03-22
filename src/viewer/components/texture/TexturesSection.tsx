@@ -2,8 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { ViewerState } from "@viewerStore/state";
 import { translations } from "@common/translations";
-import { SectionField } from "../SectionField";
-import { SectionTitle } from "../SectionTitle";
+import { SectionField, SectionTitle } from "../common";
 import { TextureField } from "./TextureField";
 
 const mapStateToProps = (state: ViewerState) => {

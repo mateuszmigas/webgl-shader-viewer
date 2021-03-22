@@ -5,10 +5,10 @@ import { ViewerAction } from "@viewerStore/actions";
 import { ViewerState } from "@viewerStore/state";
 import { translations } from "@common/translations";
 import { DrawMode } from "@utils/webgl";
-import { Dropdown } from "./Dropdown";
+import { Dropdown } from "./common/Dropdown";
 import { IndexBufferField } from "./indexBuffer/IndexBufferField";
-import { SectionField } from "./SectionField";
-import { SectionTitle } from "./SectionTitle";
+import { SectionField } from "./common/SectionField";
+import { SectionTitle } from "./common/SectionTitle";
 
 const drawModeOptions: { id: DrawMode; display: string }[] = [
   { id: "arrays", display: "Arrays" },

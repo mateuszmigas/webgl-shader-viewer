@@ -13,12 +13,12 @@ export const TextInput = React.memo((props: TextInputProps) => {
   return (
     <div>
       <input
-        className="edit-input"
+        className="component-input"
         disabled={readonly}
         value={value}
         onChange={e => onChange(e.target.value)}
       ></input>
-      {error && <div>{error}</div>}
+      {error && <div className="component-input-error">{error}</div>}
     </div>
   );
 });

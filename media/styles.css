@@ -25,7 +25,7 @@ input::-webkit-inner-spin-button {
 .viewer-options {
   grid-area: options;
   height: 100%;
-  overflow: auto;
+  overflow: scroll;
   display: flex;
   flex-direction: column;
 }
@@ -48,93 +48,76 @@ input::-webkit-inner-spin-button {
 .viewer-content {
   grid-area: content;
   display: grid;
-  /* visibility: collapse; */
-  /* background-color: red;
-  width: 100%;
-  height: 100%; */
 }
 
-.viewer-canvas {
+.viewer-content-canvas {
   grid-column: 1;
   grid-row: 1;
   position: absolute;
 }
 
-.shader-compile-errors-area {
+.viewer-content-errors {
   grid-column: 1;
   grid-row: 1;
   z-index: 1;
-  color: red;
-  background: black;
+  color: var(--vscode-errorForeground);
 }
 
-.section-title {
-  align-self: center;
-  user-select: none;
-  margin: 5px 5px 5px 1px;
+.component-button {
 }
 
-.viewer-options-grid {
-  display: grid;
-  grid-template-columns: 250px auto;
-}
-
-.shader-errors {
-  color: red;
-}
-
-.options-label {
-  font-size: 10px;
-  margin: 2px;
-}
-
-.edit-input-grid {
+.component-input-grid {
   display: grid;
   grid-gap: 5px;
   grid-auto-flow: row;
 }
 
-.hidden {
-  display: none !important;
-}
-
-.column-with-gap {
-  display: grid;
-  grid-gap: 5px;
-  grid-auto-flow: row;
-}
-
-.row-with-gap {
-  display: grid;
-  grid-gap: 5px;
-  grid-auto-flow: column;
-}
-
-.edit-input-row {
+.component-input-row {
   height: 20px;
   display: grid;
   grid-gap: 5px;
   grid-auto-flow: column;
 }
 
-.edit-input-color {
-  width: 20px;
-  height: 20px;
-  border: 0.5px solid white;
-}
-
-.unsupported-error {
-  height: 21px;
-  color: red;
-  font-size: 14px;
-}
-
-.edit-input {
+.component-input {
   min-width: 0px;
 }
 
-.edit-input:read-only {
+.component-input-error {
+  color: var(--vscode-errorForeground);
+}
+
+.component-input:read-only {
   background-color: gray;
+}
+
+button {
+  border: none;
+  padding: var(--input-padding-vertical) var(--input-padding-horizontal);
+  width: 100%;
+  text-align: center;
+  outline: 1px solid transparent;
+  outline-offset: 2px !important;
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
+}
+
+button:hover {
+  cursor: pointer;
+  background: var(--vscode-button-hoverBackground);
+}
+
+button:focus {
+  outline-color: var(--vscode-focusBorder);
+}
+
+button.secondary {
+  color: var(--vscode-button-secondaryForeground);
+  background: var(--vscode-button-secondaryBackground);
+}
+
+button.secondary:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
 }
 
 .dropdown-container {

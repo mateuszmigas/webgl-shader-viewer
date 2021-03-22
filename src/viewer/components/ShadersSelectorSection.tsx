@@ -6,9 +6,7 @@ import { shaderExtensions } from "@common/constants";
 import { ViewerAction } from "@viewerStore/actions";
 import { ViewerState } from "@viewerStore/state";
 import { translations } from "@common/translations";
-import { Dropdown, DropdownOption } from "./Dropdown";
-import { SectionField as SectionField } from "./SectionField";
-import { SectionTitle } from "./SectionTitle";
+import { Dropdown, DropdownOption, SectionField, SectionTitle } from "./common";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
@@ -62,7 +60,9 @@ export const ShadersSelectorSection = React.memo(
       return (
         <div className="viewer-options-section">
           <SectionTitle text={translations.shaders}>
-            <button onClick={syncShaderDocuments}>Sync</button>
+            <button className="component-button" onClick={syncShaderDocuments}>
+              Sync
+            </button>
           </SectionTitle>
           <SectionField text={translations.vertexShader}>
             <Dropdown

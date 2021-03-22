@@ -4,8 +4,8 @@ import { ViewerAction } from "@viewerStore/actions";
 import { ViewerState } from "@viewerStore/state";
 import { TextInput } from "../common/TextInput";
 import { customOption } from "@common/constants";
-import { Dropdown } from "../Dropdown";
-import { SectionField } from "../SectionField";
+import { Dropdown } from "../common/Dropdown";
+import { SectionField } from "../common/SectionField";
 import { getBindingOptions } from "./indexBufferBindings";
 
 const options = [customOption, ...getBindingOptions()];

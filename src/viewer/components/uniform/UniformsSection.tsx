@@ -3,8 +3,7 @@ import { connect } from "react-redux";
 import { ViewerState } from "@viewerStore/state";
 import { translations } from "@common/translations";
 import { UniformType } from "@utils/webgl/uniform";
-import { SectionField } from "../SectionField";
-import { SectionTitle } from "../SectionTitle";
+import { SectionField, SectionTitle } from "../common";
 import { UniformField } from "./UniformField";
 
 const mapStateToProps = (state: ViewerState) => {

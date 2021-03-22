@@ -6,7 +6,7 @@ import { ViewerState } from "@viewerStore/state";
 import { AttributeBufferType } from "@utils/webgl/attributeBuffer";
 import { TextInput } from "../common/TextInput";
 import { customOption } from "@common/constants";
-import { Dropdown } from "../Dropdown";
+import { Dropdown } from "../common/Dropdown";
 import { getBindingOptions } from "./attributeBufferBindings";
 import { getDefaultProps } from "./attributeBufferUtils";
 

@@ -16,7 +16,6 @@ import { DrawOptionsSection } from "./DrawOptionsSection";
 import { ShadersSelectorSection } from "./ShadersSelectorSection";
 import { TextureFieldInfo, TextureSection } from "./texture/TexturesSection";
 import { UniformSection } from "./uniform/UniformsSection";
-import { ShadersCompileResultArea } from "./ShadersCompileResultArea";
 import { usePerspectiveCamera } from "../hooks/usePerspectiveCamera";
 import { Dispatch } from "redux";
 import { ViewerAction } from "../store/actions";
@@ -187,9 +186,9 @@ export const Viewer = connect(
         </div>
         <div ref={contentRef} className="viewer-content">
           {shaderCompileErrors && (
-            <ShadersCompileResultArea errors={shaderCompileErrors}></ShadersCompileResultArea>
+            <div className="viewer-content-errors">{shaderCompileErrors}</div>
           )}
-          <canvas className="viewer-canvas" ref={canvasRef}></canvas>
+          <canvas className="viewer-content-canvas" ref={canvasRef}></canvas>
         </div>
       </div>
     );

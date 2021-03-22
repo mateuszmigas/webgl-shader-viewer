@@ -53,7 +53,7 @@ export const compileShadersFromSource = (
 
   if (vertexError || fragmentError) {
     //todo cleanup
-    return [vertexError, fragmentError] as ShaderCompileErrors;
+    return ["", vertexError, fragmentError] as ShaderCompileErrors;
   }
 
   return createProgram(context, vertexShader, fragmentShader);
@@ -63,7 +63,7 @@ export const createProgram = (
   renderingContext: WebGLRenderingContext,
   vertexShader: WebGLShader,
   fragmentShader: WebGLShader
-) => {
+): WebGLProgram | ShaderCompileErrors => {
   const program = renderingContext.createProgram();
   renderingContext.attachShader(program, vertexShader);
   renderingContext.attachShader(program, fragmentShader);
@@ -76,7 +76,7 @@ export const createProgram = (
   } else {
     const infoLog = renderingContext.getProgramInfoLog(program);
     renderingContext.deleteProgram(program);
-    throw new Error(`Creating program failed: ${infoLog}`);
+    return [infoLog, "", ""];
   }
 };
 
@@ -100,7 +100,9 @@ export const getProgramUniforms = (
         name: uniform.name,
         unit: textureUniforms.length,
       });
-    } else dataUniforms.push({ name: uniform.name, type: uniform.type });
+    } else {
+      dataUniforms.push({ name: uniform.name, type: uniform.type });
+    }
   }
 
   return { dataUniforms, textureUniforms };
@@ -167,11 +169,19 @@ export const renderProgram = (
   }
 };
 
-export type ShaderCompileErrors = [vertexShaderErrors: string, fragmentShaderErrors: string];
+export type ShaderCompileErrors = [
+  programErrors: string,
+  vertexShaderErrors: string,
+  fragmentShaderErrors: string
+];
 export const formatShaderCompileErrors = (result: ShaderCompileErrors) => {
-  const [vertexShaderErrors, fragmentShaderErrors] = result;
+  const [programErrors, vertexShaderErrors, fragmentShaderErrors] = result;
 
   const errors: string[] = [];
+
+  if (programErrors) {
+    errors.push("PROGRAM:", programErrors);
+  }
 
   if (vertexShaderErrors) {
     errors.push("VERTEX SHADER:", vertexShaderErrors);
