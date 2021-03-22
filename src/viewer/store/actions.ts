@@ -11,8 +11,12 @@ export type ViewerAction =
       payload: { path: string | null };
     }
   | {
-      type: "SET_UNIFORM";
-      payload: { name: string; type: number; optionId?: string; value?: any };
+      type: "SET_UNIFORM_VALUE";
+      payload: { name: string; type: number; value: any };
+    }
+  | {
+      type: "SET_UNIFORM_OPTION";
+      payload: { name: string; type: number; optionId: string };
     }
   | {
       type: "SET_ATTRIBUTE_BUFFER_VALUE";
@@ -49,6 +53,13 @@ export type ViewerAction =
   | {
       type: "SET_TEXTURE_OPTION";
       payload: { name: string; optionId: string };
+    }
+  | {
+      type: "SET_TEXTURE_LOADING_ERROR";
+      payload: {
+        name: string;
+        error: string;
+      };
     }
   | {
       type: "SET_MESH";

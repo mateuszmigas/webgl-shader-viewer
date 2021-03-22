@@ -29,8 +29,8 @@ import { getOrCreateUniformInfos } from "@utils/webgl/uniformStore";
 import { store } from "..";
 import { CameraPosition } from "@utils/cameraManipulator";
 import { getOrCreateIndexBufferInfo } from "@utils/webgl/indexBufferStore";
-import { setWebGLFromState } from "@utils/webgl/storeWatcher";
 import { getOrCreateTextureInfos } from "@utils/webgl/textureInfoStore";
+import { commitStateOnInit } from "@utils/webgl/stateMediator";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
@@ -136,7 +136,7 @@ export const Viewer = connect(
         );
         const indexBufferInfo = getOrCreateIndexBufferInfo(contextRef.current);
 
-        setWebGLFromState();
+        commitStateOnInit();
 
         const render = () => {
           const { drawMode } = store.getState();

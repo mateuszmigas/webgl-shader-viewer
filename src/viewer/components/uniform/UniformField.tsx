@@ -49,16 +49,26 @@ const mapStateToProps = (state: ViewerState, ownProps: OwnProps) => {
 
 const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>, ownProps: OwnProps) => {
   return {
-    setOptionAndValue: (optionId: string, value: string) => {
-      dispatch({
-        type: "SET_UNIFORM",
-        payload: { ...ownProps, optionId, value },
+    setOption: (optionId: string) => {
+      return dispatch({
+        type: "SET_UNIFORM_OPTION",
+        payload: {
+          ...ownProps,
+          optionId,
+        },
+      });
+    },
+    setValue: (value: string) => {
+      return dispatch({
+        type: "SET_UNIFORM_VALUE",
+        payload: {
+          ...ownProps,
+          value,
+        },
       });
     },
   };
 };
-
-//: bindingNames.has(optionId) ? getBindingValue(optionId, ownProps.type) : value,
 
 export const UniformField = React.memo(
   connect(
@@ -70,24 +80,21 @@ export const UniformField = React.memo(
       type: number;
       optionId: string;
       value: any;
-      setOptionAndValue: (optionId: string, value: string) => void;
+      setOption: (optionId: string) => void;
+      setValue: (value: any) => void;
     }) => {
-      const { type, optionId, value, setOptionAndValue } = props;
+      const { type, optionId, value, setOption, setValue } = props;
       const options = React.useMemo(() => [customOption, ...getBindingOptions(type)], [type]);
       const isCustom = optionId === customOption.id;
 
       return (
         <div>
           {options.length > 1 && (
-            <Dropdown
-              selectedItemId={optionId}
-              onChange={optionId => setOptionAndValue(optionId, value)}
-              options={options}
-            ></Dropdown>
+            <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
           )}
           {renderUniformInput(type, {
             value,
-            onChange: isCustom ? newValue => setOptionAndValue(optionId, newValue) : undefined,
+            onChange: isCustom ? setValue : undefined,
             readonly: !isCustom,
           })}
         </div>

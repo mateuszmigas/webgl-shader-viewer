@@ -7,4 +7,8 @@ export const translations = {
   uniforms: "Uniforms",
   attributeBuffers: "Attribute Buffers",
   custom: "Custom",
-};
+  errors: {
+    fetchingImage: "Unable to fetch image",
+    emptyUrl: "URL cannot be empty",
+  },
+} as const;

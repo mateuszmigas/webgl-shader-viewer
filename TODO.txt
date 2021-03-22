@@ -3,3 +3,5 @@
 3. async loading at start
 4. texture loading error
 5. styling
+
+//todo state slices

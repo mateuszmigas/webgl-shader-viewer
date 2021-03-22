@@ -7,13 +7,8 @@ import { ViewerAction } from "@viewerStore/actions";
 import { ViewerState } from "@viewerStore/state";
 import { Viewer } from "./components/Viewer";
 import { debounce } from "@utils/function";
-import {
-  setAttributeBuffers,
-  setIndexBuffer,
-  setTextures,
-  setUniforms,
-} from "../utils/webgl/storeWatcher";
 import { reducer } from "@viewerStore/reducer";
+import { commitStateOnChange } from "@utils/webgl/stateMediator";
 
 export const store: Store<ViewerState, ViewerAction> = createStore(reducer);
 
@@ -23,11 +18,8 @@ const storeExtensionState = debounce((extensionState: ExtensionState) => {
 
 store.subscribe(() => {
   const currentState = store.getState();
+  commitStateOnChange(currentState);
   storeExtensionState(currentState);
-  setAttributeBuffers(currentState.attributeBufferValues);
-  setIndexBuffer(currentState.indexBufferValue);
-  setUniforms(currentState.uniformValues);
-  setTextures(currentState.textureValues);
 });
 
 ReactDOM.render(

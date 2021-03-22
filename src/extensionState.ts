@@ -19,7 +19,7 @@ export type ExtensionState = {
     { type: number; optionId: string; value: string; error: string }
   >;
   indexBufferValue: { optionId: string; value: string; error: string };
-  textureValues: Record<string, { optionId: string; value: string }>;
+  textureValues: Record<string, { optionId: string; value: string; error: string }>;
   cameraPosition: CameraPosition;
   viewerSize: { width: number; height: number };
   drawMode: DrawMode;

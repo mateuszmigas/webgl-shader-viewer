@@ -1,18 +1,19 @@
-import { store } from "../../viewer";
 import { ViewerState } from "@viewerStore/state";
 import { debounce } from "../function";
 import { safeJSONParse } from "../parsing";
 import { getAttributeBufferInfo } from "./attributeBufferStore";
 import { getIndexBufferInfo } from "./indexBufferStore";
 import { getUniformInfo } from "./uniformStore";
-import { loadTextureForState } from "../../viewer/components/texture/texturesUtils";
+import { getTextureInfo } from "./textureInfoStore";
+import { textureBindings } from "viewer/components/texture/textureBindings";
+import { viewerEndpoint } from "@communication/viewerEndpoint";
+import { loadImage } from "@utils/image";
+import { translations } from "@common/translations";
+import { anyPropChanged } from "@utils/object";
+import { store } from "viewer";
 
-const getBufferValueOrDefault = (storeValue: { value: string; error: string }) =>
-  !storeValue.error ? safeJSONParse(storeValue.value) ?? [] : [];
-
-export const setWebGLFromState = () => {
+export const commitStateOnInit = () => {
   const state = store.getState();
-
   state.attributeBufferValues &&
     Object.entries(state.attributeBufferValues).forEach(([key, value]) =>
       getAttributeBufferInfo(key, value.type)?.attributeBufferInfo.setValue(
@@ -30,12 +31,51 @@ export const setWebGLFromState = () => {
 
   state.textureValues &&
     Object.entries(state.textureValues).forEach(([key, value]) =>
-      loadTextureForState(key, value.optionId, value.value)
+      setTexture(key, value.optionId, value.value)
     );
 };
 
+export const commitStateOnChange = (state: ViewerState) => {
+  setAttributeBuffers(state.attributeBufferValues);
+  setIndexBuffer(state.indexBufferValue);
+  setUniforms(state.uniformValues);
+  setTextures(state.textureValues);
+};
+
+const setTexture = async (name: string, optionId: string, value: string): Promise<string> => {
+  const textureInfo = getTextureInfo(name)?.textureInfo;
+
+  if (!textureInfo) {
+    return;
+  }
+
+  const binding = textureBindings.get(optionId);
+  const uri = binding ? await viewerEndpoint.getExtensionFileUri(binding.fileName) : value;
+  const onError = (error: string) => {
+    store.dispatch({
+      type: "SET_TEXTURE_LOADING_ERROR",
+      payload: { name, error },
+    });
+    textureInfo.setPlaceholderTexture();
+  };
+
+  if (!uri) {
+    onError(translations.errors.emptyUrl);
+  } else {
+    try {
+      const img = await loadImage(uri);
+      textureInfo.setSource(img);
+    } catch {
+      onError(translations.errors.fetchingImage);
+    }
+  }
+};
+
+const getBufferValueOrDefault = (storeValue: { value: string; error: string }) =>
+  !storeValue.error ? safeJSONParse(storeValue.value) ?? [] : [];
+
 let lastCommitedAttributeBuffersState: ViewerState["attributeBufferValues"] = undefined;
-export const setAttributeBuffers = debounce(
+const setAttributeBuffers = debounce(
   (attributeBufferValues: ViewerState["attributeBufferValues"]) => {
     if (
       lastCommitedAttributeBuffersState !== attributeBufferValues &&
@@ -43,7 +83,7 @@ export const setAttributeBuffers = debounce(
       attributeBufferValues
     ) {
       Object.entries(attributeBufferValues).forEach(([key, value]) => {
-        if (lastCommitedAttributeBuffersState[key] !== value) {
+        if (anyPropChanged(lastCommitedAttributeBuffersState[key], value, ["value", "optionId"])) {
           getAttributeBufferInfo(key, value.type)?.attributeBufferInfo.setValue(
             getBufferValueOrDefault(value)
           );
@@ -57,10 +97,10 @@ export const setAttributeBuffers = debounce(
 );
 
 let lastCommitedIndexBufferState: ViewerState["indexBufferValue"] = undefined;
-export const setIndexBuffer = debounce((indexBufferValue: ViewerState["indexBufferValue"]) => {
+const setIndexBuffer = debounce((indexBufferValue: ViewerState["indexBufferValue"]) => {
   if (
-    lastCommitedIndexBufferState !== indexBufferValue &&
     lastCommitedIndexBufferState &&
+    anyPropChanged(lastCommitedIndexBufferState, indexBufferValue, ["value", "optionId"]) &&
     indexBufferValue
   ) {
     getIndexBufferInfo()?.setValue(getBufferValueOrDefault(indexBufferValue));
@@ -70,10 +110,10 @@ export const setIndexBuffer = debounce((indexBufferValue: ViewerState["indexBuff
 }, 100);
 
 let lastCommitedUniformsState: ViewerState["uniformValues"] = undefined;
-export const setUniforms = (uniformValues: ViewerState["uniformValues"]) => {
+const setUniforms = (uniformValues: ViewerState["uniformValues"]) => {
   if (lastCommitedUniformsState !== uniformValues && lastCommitedUniformsState && uniformValues) {
     Object.entries(uniformValues).forEach(([key, value]) => {
-      if (lastCommitedUniformsState[key] !== value) {
+      if (anyPropChanged(lastCommitedUniformsState[key], value, ["value", "optionId"])) {
         getUniformInfo(key, value.type)?.uniformInfo.setValue(value.value);
       }
     });
@@ -82,14 +122,13 @@ export const setUniforms = (uniformValues: ViewerState["uniformValues"]) => {
 };
 
 let lastCommitedTexturesState: ViewerState["textureValues"] = undefined;
-export const setTextures = debounce((textureValues: ViewerState["textureValues"]) => {
+const setTextures = debounce((textureValues: ViewerState["textureValues"]) => {
   if (lastCommitedTexturesState !== textureValues && lastCommitedTexturesState && textureValues) {
     Object.entries(textureValues).forEach(([key, value]) => {
-      if (lastCommitedTexturesState[key] !== value) {
-        loadTextureForState(key, value.optionId, value.value);
+      if (anyPropChanged(lastCommitedTexturesState[key], value, ["optionId", "value"])) {
+        setTexture(key, value.optionId, value.value);
       }
     });
   }
-
   lastCommitedTexturesState = textureValues;
 }, 200);

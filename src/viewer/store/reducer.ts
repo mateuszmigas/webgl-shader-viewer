@@ -28,15 +28,34 @@ const mainReducer = (state: ViewerState = initialState, action: ViewerAction): V
         fragmentFilePath: action.payload.path,
       };
     }
-    case "SET_UNIFORM": {
-      const { name, ...rest } = action.payload;
+    case "SET_UNIFORM_OPTION": {
+      const { name, optionId, ...rest } = action.payload;
+      const current = state.uniformValues[name];
+
       return {
         ...state,
         uniformValues: {
           ...state.uniformValues,
           [name]: {
-            ...state.uniformValues[name],
+            ...current,
             ...rest,
+            optionId,
+          },
+        },
+      };
+    }
+    case "SET_UNIFORM_VALUE": {
+      const { name, value, ...rest } = action.payload;
+      const current = state.uniformValues[name];
+
+      return {
+        ...state,
+        uniformValues: {
+          ...state.uniformValues,
+          [name]: {
+            ...current,
+            ...rest,
+            value,
           },
         },
       };
@@ -115,7 +134,22 @@ const mainReducer = (state: ViewerState = initialState, action: ViewerAction): V
           ...state.textureValues,
           [name]: {
             ...current,
-            value: value,
+            value,
+          },
+        },
+      };
+    }
+    case "SET_TEXTURE_LOADING_ERROR": {
+      const { name, error } = action.payload;
+      const current = state.textureValues[name];
+
+      return {
+        ...state,
+        textureValues: {
+          ...state.textureValues,
+          [name]: {
+            ...current,
+            error,
           },
         },
       };

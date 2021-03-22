@@ -49,10 +49,11 @@ export const TextureField = React.memo(
       name: string;
       optionId: string;
       value: string;
+      error: string;
       setOption: (optionId: string) => void;
       setValue: (value: string) => void;
     }) => {
-      const { optionId, value, setOption, setValue } = props;
+      const { optionId, value, error, setOption, setValue } = props;
       const options = React.useMemo(
         () => [{ id: customOption.id, display: "Custom URL" }, ...getBindingOptions()],
         []
@@ -64,7 +65,7 @@ export const TextureField = React.memo(
           {options.length > 1 && (
             <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
           )}
-          {isCustom && <TextInput value={value} onChange={setValue}></TextInput>}
+          {isCustom && <TextInput value={value} error={error} onChange={setValue}></TextInput>}
         </div>
       );
     }

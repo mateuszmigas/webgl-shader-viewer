@@ -7,3 +7,6 @@ export const objectMap = <T extends { [key: string]: any }>(
     return result;
   }, {} as { [key: string]: any });
 };
+
+export const anyPropChanged = <T>(left: T, right: T, props: (keyof T)[]) =>
+  props.some(p => left?.[p] !== right?.[p]);
