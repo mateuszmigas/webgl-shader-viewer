@@ -12,6 +12,7 @@ This is a Visual Studio Code extension for previewing shader files.
 4. Generates inputs for dynamically controlling uniforms/textures/attributes either manually or predefined bindings
 
 ![](https://github.com/mateuszmigas/webgl-shader-viewer/blob/main/docs/images/screenshot2.jpg)
+![](https://github.com/mateuszmigas/webgl-shader-viewer/blob/main/docs/images/screenshot1.jpg)
 
 ### License
 
