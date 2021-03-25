@@ -20,7 +20,7 @@ export const MultiNumberInput = React.memo(
               return (
                 <input
                   key={column}
-                  className="component-input"
+                  className={`component-input ${readonly ? "component-input-readonly" : ""}`}
                   type="number"
                   disabled={readonly}
                   value={value[index]}

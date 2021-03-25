@@ -85,7 +85,6 @@ export class Panel {
               <title>No name</title>
           </head>
           <body>
-             <div class="icon"><i class="codicon codicon-account"></i> account</div>
               <div id="viewer"></div>
               <script nonce="${nonce}" src="${scriptUri}"></script>
           </body>

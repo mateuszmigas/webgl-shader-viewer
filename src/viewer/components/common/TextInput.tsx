@@ -13,7 +13,7 @@ export const TextInput = React.memo((props: TextInputProps) => {
   return (
     <div>
       <input
-        className="component-input"
+        className={`component-input ${readonly ? "component-input-readonly" : ""}`}
         disabled={readonly}
         value={value}
         onChange={e => onChange(e.target.value)}
