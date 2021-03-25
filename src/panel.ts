@@ -59,6 +59,13 @@ export class Panel {
       vscode.Uri.joinPath(this.extensionUri, "media", "styles.css")
     );
 
+    const codiconsUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, "media", "codicon.css")
+    );
+    const codiconsFontUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, "media", "codicon.ttf")
+    );
+
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
 
@@ -66,19 +73,19 @@ export class Panel {
           <html lang="en">
           <head>
               <meta charset="UTF-8">
-  
               <!--
                   Use a content security policy to only allow loading images from https or from our extension directory,
                   and only allow scripts that have a specific nonce.
               -->
-              <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
-  
+              <meta http-equiv="Content-Security-Policy" content="default-src 'none'; font-src ${codiconsFontUri}; style-src ${webview.cspSource} ${codiconsUri}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
               <link href="${stylesUri}" rel="stylesheet">
+              <link href="${codiconsUri}" rel="stylesheet" />
               <title>No name</title>
           </head>
           <body>
+             <div class="icon"><i class="codicon codicon-account"></i> account</div>
               <div id="viewer"></div>
               <script nonce="${nonce}" src="${scriptUri}"></script>
           </body>

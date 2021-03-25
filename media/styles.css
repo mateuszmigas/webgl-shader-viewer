@@ -5,6 +5,9 @@
   --input-padding-horizontal: 4px;
   --input-margin-vertical: 4px;
   --input-margin-horizontal: 0; */
+  --input-padding: 5px;
+  --input-height: 25px;
+  --border-line-width: 1px;
 }
 
 body {
@@ -26,10 +29,6 @@ form > * {
   margin-block-start: var(--input-margin-vertical);
   margin-block-end: var(--input-margin-vertical);
 } */
-
-*:focus {
-  outline-color: var(--vscode-focusBorder) !important;
-}
 
 /* a {
   color: var(--vscode-textLink-foreground);
@@ -64,7 +63,8 @@ button:hover {
 
 button:focus {
   /* outline-color: var(--vscode-focusBorder) !important; */
-  outline-color: var(--vscode-focusBorder);
+  /* outline-color: var(--vscode-focusBorder); */
+  outline: none;
 }
 
 button.secondary {
@@ -76,8 +76,8 @@ button.secondary:hover {
   background: var(--vscode-button-secondaryHoverBackground);
 }
 
-input:not([type="checkbox"]),
-textarea {
+/* input */
+input {
   box-sizing: border-box; /* width 100% */
   width: 100%;
   border: 1px solid var(--vscode-checkbox-border);
@@ -86,14 +86,18 @@ textarea {
   background-color: var(--vscode-input-background);
 }
 
-button.vscode-light {
-  border: 1px solid gray !important;
+input:focus {
+  outline-color: var(--vscode-focusBorder) !important;
 }
 
-input::placeholder,
+/* button.vscode-light {
+  border: 1px solid gray !important;
+} */
+
+/* input::placeholder,
 textarea::placeholder {
   color: var(--vscode-input-placeholderForeground);
-}
+} */
 
 /* main */
 html,
@@ -190,35 +194,7 @@ input::-webkit-inner-spin-button {
   background-color: gray;
 }
 
-button {
-  border: none;
-  padding: var(--input-padding-vertical) var(--input-padding-horizontal);
-  width: 100%;
-  text-align: center;
-  outline: 1px solid transparent;
-  outline-offset: 2px !important;
-  color: var(--vscode-button-foreground);
-  background: var(--vscode-button-background);
-}
-
-button:hover {
-  cursor: pointer;
-  background: var(--vscode-button-hoverBackground);
-}
-
-button:focus {
-  outline-color: var(--vscode-focusBorder);
-}
-
-button.secondary {
-  color: var(--vscode-button-secondaryForeground);
-  background: var(--vscode-button-secondaryBackground);
-}
-
-button.secondary:hover {
-  background: var(--vscode-button-secondaryHoverBackground);
-}
-
+/* dropdown */
 .dropdown-container {
   position: relative;
 }
@@ -228,37 +204,36 @@ button.secondary:hover {
   flex-grow: 1;
   align-items: center;
   justify-content: space-between;
+  border: var(--border-line-width) solid var(--vscode-checkbox-border);
+  color: var(--vscode-input-foreground);
+  background-color: var(--vscode-input-background);
+  padding: var(--input-padding);
 }
 
-.dropdown-clear {
-  width: 30px;
+.dropdown-select:hover {
+  background-color: var(--vscode-input-background);
+}
+
+.dropdown-select-open,
+.dropdown-select:focus {
+  border: var(--border-line-width) solid var(--vscode-focusBorder) !important;
 }
 
 .dropdown-main {
   display: flex;
   flex-grow: 1;
-  height: 25px;
+  height: var(--input-height);
 }
 
 .dropdown-list {
-  max-height: 300px;
-  overflow: auto;
+  box-sizing: border-box;
+  width: 100%;
+  max-height: 125px;
   position: absolute;
-  background: white;
-  width: calc(100% - 2px);
-  border: 1px solid;
+  background-color: var(--vscode-input-background);
+  border: var(--border-line-width) solid var(--vscode-focusBorder);
   margin-top: -1px;
   z-index: 1;
-}
-
-.dropdown-search {
-  width: calc(100% - 4px);
-  border: none;
-  border-bottom: 1px solid;
-}
-
-.dropdown-search:focus {
-  outline: none;
 }
 
 .dropdown-list:focus {
@@ -266,20 +241,20 @@ button.secondary:hover {
 }
 
 .dropdown-list-item {
-  height: 25px;
+  height: var(--input-height);
   display: flex;
 }
 
 .dropdown-list-item-text {
-  margin: 4px 4px 4px 8px;
-  font-size: 14px;
+  padding: var(--input-padding);
   user-select: none;
 }
 
-.selected {
-  color: blue;
+.dropdown-list-item-selected {
+  color: var(--vscode-focusBorder);
 }
 
-.highlighted {
-  background: lightgray;
+.dropdown-list-item-highlighted {
+  background: var(--vscode-focusBorder);
+  color: var(--vscode-input-foreground);
 }
