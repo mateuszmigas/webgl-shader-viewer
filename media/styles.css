@@ -1,7 +1,7 @@
 :root {
   --input-padding: 5px;
   --input-height: 25px;
-  --input-margin-top: 5px;
+  --default-margin: 5px;
   --border-line-width: 1px;
 }
 
@@ -34,13 +34,14 @@ input::-webkit-inner-spin-button {
 .viewer-options {
   grid-area: options;
   height: 100%;
-  overflow: scroll;
+  overflow: auto;
   display: flex;
   flex-direction: column;
+  border-right: var(--border-line-width) solid var(--vscode-checkbox-border);
 }
 
 .viewer-options-section {
-  margin: 5px;
+  margin: var(--default-margin);
 }
 
 .viewer-options-section-title {
@@ -52,7 +53,7 @@ input::-webkit-inner-spin-button {
 .viewer-options-section-field {
   display: flex;
   flex-direction: column;
-  margin-bottom: 5px;
+  margin-bottom: var(--default-margin);
 }
 
 .viewer-content {
@@ -61,6 +62,7 @@ input::-webkit-inner-spin-button {
 }
 
 .viewer-content-canvas {
+  box-sizing: border-box;
   grid-column: 1;
   grid-row: 1;
   position: absolute;
@@ -81,7 +83,7 @@ input::-webkit-inner-spin-button {
 
 .component-input-grid {
   display: grid;
-  grid-gap: 5px;
+  grid-gap: var(--default-margin);
   grid-auto-flow: row;
 }
 
@@ -93,7 +95,7 @@ input::-webkit-inner-spin-button {
 }
 
 .component-input {
-  margin-top: var(--input-margin-top);
+  margin-top: var(--default-margin);
   min-width: 0px;
 }
 
@@ -110,7 +112,7 @@ input::-webkit-inner-spin-button {
 button {
   border: none;
   text-align: center;
-  border: 1px solid var(--vscode-checkbox-border);
+  border: var(--border-line-width) solid var(--vscode-checkbox-border);
   color: var(--vscode-button-foreground);
   background: var(--vscode-button-background);
 }
@@ -138,7 +140,7 @@ input {
   box-sizing: border-box;
   width: 100%;
   height: var(--input-height);
-  border: 1px solid var(--vscode-checkbox-border);
+  border: var(--border-line-width) solid var(--vscode-checkbox-border);
   font-family: var(--vscode-font-family);
   color: var(--vscode-input-foreground);
   background-color: var(--vscode-input-background);
@@ -150,7 +152,7 @@ input:focus {
 
 /* dropdown */
 .dropdown-container {
-  margin-top: var(--input-margin-top);
+  margin-top: var(--default-margin);
   position: relative;
 }
 
