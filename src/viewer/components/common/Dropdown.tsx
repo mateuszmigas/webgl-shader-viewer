@@ -7,6 +7,7 @@ import {
   VirtualizedList,
   DropdownDispatch,
   DropdownActions,
+  createListKeyboardNavigator,
 } from "@mateuszmigas/react-dropdown";
 
 export type DropdownOption = {
@@ -43,14 +44,24 @@ export const Dropdown = React.memo(
     useDropdownCloseWhenClickedOutside(containerRef, dispatch);
     useFocusOnStateChange(listRef, state.isOpen, true);
 
-    const listKeyboardHandler = useDropdownListKeyboardNavigator(dispatch);
+    const listKeyboardHandler = React.useMemo(() => {
+      const defaultHandler = createListKeyboardNavigator(dispatch);
+      return (e: React.KeyboardEvent<Element>) => {
+        switch (e.key) {
+          case "Enter":
+            e.preventDefault();
+            return defaultHandler(e);
+          default:
+            defaultHandler(e);
+        }
+      };
+    }, [dispatch]);
 
     return (
       <div ref={containerRef} className="dropdown-container">
         <DropdownMain
           {...state}
           dispatch={dispatch}
-          showClearButton={false}
           itemRenderer={() => (
             <div>{selectedIndex !== null ? options[selectedIndex].display : ""}</div>
           )}
@@ -61,7 +72,7 @@ export const Dropdown = React.memo(
               itemCount={options.length}
               itemHeight={25}
               highlightedIndex={state.highlightedIndex}
-              maxHeight={200}
+              maxHeight={125}
               itemRenderer={index => (
                 <DropdownItem
                   text={options[index].display}
@@ -83,29 +94,26 @@ const DropdownMain = (props: {
   isOpen: boolean;
   itemRenderer: () => JSX.Element;
   dispatch: DropdownDispatch<DropdownActions>;
-  showClearButton?: boolean;
 }) => {
-  const { isOpen, itemRenderer, showClearButton = true, dispatch } = props;
+  const { isOpen, itemRenderer, dispatch } = props;
   const dropdownSelectRef = React.useRef(null);
   const handleSelect = React.useCallback(() => dispatch([isOpen ? "CloseList" : "OpenList"]), [
     isOpen,
     dispatch,
   ]);
-  const handleClear = React.useCallback(() => dispatch(["ClearSelection"]), [dispatch]);
 
   useFocusOnStateChange(dropdownSelectRef, isOpen, false);
 
   return (
     <div className="dropdown-main">
-      <button ref={dropdownSelectRef} className="dropdown-select" onClick={handleSelect}>
+      <button
+        ref={dropdownSelectRef}
+        className={`dropdown-select ${isOpen ? "dropdown-select-open" : ""}`}
+        onClick={handleSelect}
+      >
         {itemRenderer()}
-        <i className={`fa ${isOpen ? "fa-caret-up" : "fa-caret-down"}`}></i>
+        <i className={`codicon codicon-chevron-down`}></i>
       </button>
-      {showClearButton && (
-        <button className="dropdown-clear" onClick={handleClear}>
-          <i className="fa fa-times"></i>
-        </button>
-      )}
     </div>
   );
 };
@@ -118,8 +126,8 @@ const DropdownItem = (props: {
   dispatch: DropdownDispatch<DropdownActions>;
 }) => {
   const { text, index, isSelected, isHighlighted, dispatch } = props;
-  const style = `dropdown-list-item ${isSelected ? "selected" : ""}  ${
-    isHighlighted ? "highlighted" : ""
+  const style = `dropdown-list-item ${isSelected ? "dropdown-list-item-selected" : ""}  ${
+    isHighlighted ? "dropdown-list-item-highlighted" : ""
   }`;
 
   return (
