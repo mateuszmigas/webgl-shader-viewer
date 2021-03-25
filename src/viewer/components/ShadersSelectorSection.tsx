@@ -61,7 +61,7 @@ export const ShadersSelectorSection = React.memo(
         <div className="viewer-options-section">
           <SectionTitle text={translations.shaders}>
             <button className="component-button" onClick={syncShaderDocuments}>
-              Sync
+              <i className={`codicon codicon-sync`}></i>
             </button>
           </SectionTitle>
           <SectionField text={translations.vertexShader}>

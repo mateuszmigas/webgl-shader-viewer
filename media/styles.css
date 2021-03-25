@@ -46,6 +46,7 @@ input::-webkit-inner-spin-button {
 .viewer-options-section-title {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .viewer-options-section-field {
@@ -73,6 +74,9 @@ input::-webkit-inner-spin-button {
 }
 
 .component-button {
+  height: var(--input-height);
+  display: flex;
+  align-items: center;
 }
 
 .component-input-grid {
@@ -105,9 +109,8 @@ input::-webkit-inner-spin-button {
 /* button */
 button {
   border: none;
-  padding: var(--input-padding-vertical) var(--input-padding-horizontal);
-  width: 100%;
   text-align: center;
+  border: 1px solid var(--vscode-checkbox-border);
   color: var(--vscode-button-foreground);
   background: var(--vscode-button-background);
 }
