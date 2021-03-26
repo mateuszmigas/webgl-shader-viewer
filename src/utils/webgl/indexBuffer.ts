@@ -1,6 +1,6 @@
 export class IndexBufferInfo {
   private buffer: WebGLBuffer | null;
-  private count: number = 0;
+  private count = 0;
 
   constructor(private context: WebGLRenderingContext) {
     this.buffer = context.createBuffer();

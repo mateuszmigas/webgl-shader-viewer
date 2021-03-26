@@ -1,8 +1,9 @@
+import { translations } from "@common/translations";
 import { meshes, MeshInfo } from "../../meshes";
 import { AttributeBufferType } from "@utils/webgl/attributeBuffer";
 
 const getMeshBinding = (meshId: string, name: keyof MeshInfo) =>
-  JSON.stringify((meshes.get(meshId) as any)[name]);
+  JSON.stringify(meshes.get(meshId)[name]);
 
 export const attributeBufferBindings = new Map<
   string,
@@ -12,7 +13,7 @@ export const attributeBufferBindings = new Map<
     "positions",
     {
       type: AttributeBufferType.FLOAT_VEC4,
-      display: "Binding - Mesh positions",
+      display: translations.bindings.meshPositions,
       getValue: id => getMeshBinding(id, "positions"),
     },
   ],
@@ -20,7 +21,7 @@ export const attributeBufferBindings = new Map<
     "textureCoordinates",
     {
       type: AttributeBufferType.FLOAT_VEC2,
-      display: "Binding - Mesh texture coords",
+      display: translations.bindings.meshTextureCoordinates,
       getValue: id => getMeshBinding(id, "textureCoordinates"),
     },
   ],
@@ -28,7 +29,7 @@ export const attributeBufferBindings = new Map<
     "colors",
     {
       type: AttributeBufferType.FLOAT_VEC4,
-      display: "Binding - Mesh colors",
+      display: translations.bindings.meshColors,
       getValue: id => getMeshBinding(id, "colors"),
     },
   ],

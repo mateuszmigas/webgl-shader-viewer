@@ -30,6 +30,7 @@ import { CameraPosition } from "@utils/cameraManipulator";
 import { getOrCreateIndexBufferInfo } from "@utils/webgl/indexBufferStore";
 import { getOrCreateTextureInfos } from "@utils/webgl/textureInfoStore";
 import { commitStateOnInit } from "@utils/webgl/stateMediator";
+import { translations } from "@common/translations";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
@@ -87,7 +88,7 @@ export const Viewer = connect(
       contextRef.current = canvasRef.current.getContext("webgl");
 
       if (!contextRef.current) {
-        throw new Error("Unable to create webgl context");
+        throw new Error(translations.errors.contextNotCreated);
       }
 
       observeElementBoundingRect(contentRef.current, rect => {

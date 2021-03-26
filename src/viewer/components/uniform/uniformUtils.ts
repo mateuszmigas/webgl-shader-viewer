@@ -3,7 +3,7 @@ import { assertNever } from "@utils/typeGuards";
 import { UniformType } from "@utils/webgl/uniform";
 import { customOption } from "@common/constants";
 
-const getDefaultOption = (type: UniformType) => customOption.id;
+const getDefaultOption = () => customOption.id;
 const getDefaultValue = (type: UniformType) => {
   switch (type) {
     case UniformType.FLOAT_VEC2:
@@ -20,6 +20,6 @@ const getDefaultValue = (type: UniformType) => {
 };
 
 export const getDefaultProps = (type: UniformType) => ({
-  optionId: getDefaultOption(type),
+  optionId: getDefaultOption(),
   value: getDefaultValue(type),
 });

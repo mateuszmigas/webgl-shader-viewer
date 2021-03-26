@@ -1,22 +1,23 @@
+import { translations } from "@common/translations";
 export const textureBindings = new Map<string, { display: string; fileName: string }>([
   [
     "texture-sky",
     {
-      display: "Binding - Sky",
+      display: translations.bindings.textureSky,
       fileName: "texture-sky.jpg",
     },
   ],
   [
     "texture-grass",
     {
-      display: "Binding - Grass",
+      display: translations.bindings.textureGrass,
       fileName: "texture-grass.jpg",
     },
   ],
   [
     "texture-egypt",
     {
-      display: "Binding - Egypt",
+      display: translations.bindings.textureEgypt,
       fileName: "texture-egypt.jpg",
     },
   ],

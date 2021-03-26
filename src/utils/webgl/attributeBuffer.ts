@@ -9,7 +9,7 @@ export enum AttributeBufferType {
 export class AttributeBufferInfo {
   private buffer: WebGLBuffer | null;
   private location: number;
-  private count: number = 0;
+  private count = 0;
 
   constructor(
     private context: WebGLRenderingContext,

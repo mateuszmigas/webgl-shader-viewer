@@ -17,7 +17,7 @@ export const TextureSection = React.memo(
   connect(mapStateToProps)(({ textureFields }: { textureFields: TextureFieldInfo[] }) => {
     return (
       <div className="viewer-options-section">
-        <SectionTitle text={translations.textures}></SectionTitle>
+        <SectionTitle text={translations.textures.title}></SectionTitle>
         {textureFields.map(tx => (
           <SectionField key={tx.name} text={tx.name}>
             <TextureField {...tx}></TextureField>

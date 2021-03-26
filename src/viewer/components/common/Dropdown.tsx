@@ -2,7 +2,6 @@ import React from "react";
 import {
   useFocusOnStateChange,
   useDropdownCloseWhenClickedOutside,
-  useDropdownListKeyboardNavigator,
   useDropdownState,
   VirtualizedList,
   DropdownDispatch,

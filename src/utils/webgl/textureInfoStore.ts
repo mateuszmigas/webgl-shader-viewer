@@ -23,7 +23,9 @@ const rebuildCache = (newElements: { key: CacheKey; value: CacheValue }[]) => {
   });
 
   newElements.forEach(nw => {
-    if (!cache.has(nw.key)) cache.set(nw.key, nw.value);
+    if (!cache.has(nw.key)) {
+      cache.set(nw.key, nw.value);
+    }
   });
 };
 

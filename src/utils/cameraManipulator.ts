@@ -1,4 +1,5 @@
-import { Vector3 } from "./types";
+import { mat4 } from "./math";
+import { Matrix4Array, Vector3 } from "./types";
 
 type EventType = keyof HTMLElementEventMap;
 type EventHandler<T extends Event> = (event: T) => void;
@@ -9,6 +10,25 @@ export const cameraPositionToVector3 = (cameraPosition: CameraPosition): Vector3
   const z = r * Math.cos(cameraPosition.longitude);
   const x = r * Math.sin(cameraPosition.longitude);
   return { x, y, z };
+};
+
+export const getCameraMatrix = (
+  cameraPosition: CameraPosition,
+  size: { width: number; height: number }
+): Matrix4Array => {
+  const fieldOfView = (45 * Math.PI) / 180;
+  const { width, height } = size;
+  const aspect = width / height;
+  const zNear = 0.1;
+  const zFar = 100.0;
+  const projectionMatrix = mat4.create();
+  mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
+  const modelViewMatrix = mat4.create();
+  const vec = cameraPositionToVector3(cameraPosition);
+  mat4.lookAt(modelViewMatrix, [vec.x, vec.y, vec.z], [0, 0, 0], [0, 1, 0]);
+  const res = mat4.create();
+  mat4.multiply(res, projectionMatrix, modelViewMatrix);
+  return Array.from(res) as Matrix4Array;
 };
 
 export type CameraPosition = {

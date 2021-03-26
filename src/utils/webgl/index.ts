@@ -1,3 +1,4 @@
+import { translations } from "@common/translations";
 import { removeLast } from "@utils/string";
 import { TextureInfo } from "./textureInfo";
 import { IndexBufferInfo } from "./indexBuffer";
@@ -52,7 +53,6 @@ export const compileShadersFromSource = (
   }
 
   if (vertexError || fragmentError) {
-    //todo cleanup
     return ["", vertexError, fragmentError] as ShaderCompileErrors;
   }
 
@@ -162,7 +162,7 @@ export const renderProgram = (
     renderInfo.indexBufferInfo.setIndexBuffer();
     context.drawElements(
       primitiveType,
-      renderInfo.indexBufferInfo.getCount(), //numElements,
+      renderInfo.indexBufferInfo.getCount(),
       context.UNSIGNED_SHORT,
       offset
     );
@@ -180,15 +180,15 @@ export const formatShaderCompileErrors = (result: ShaderCompileErrors) => {
   const errors: string[] = [];
 
   if (programErrors) {
-    errors.push("PROGRAM:", programErrors);
+    errors.push(translations.errors.program, programErrors);
   }
 
   if (vertexShaderErrors) {
-    errors.push("VERTEX SHADER:", vertexShaderErrors);
+    errors.push(translations.errors.vertexShader, vertexShaderErrors);
   }
 
   if (fragmentShaderErrors) {
-    errors.push("FRAGMENT SHADER:", fragmentShaderErrors);
+    errors.push(translations.errors.fragmentShader, fragmentShaderErrors);
   }
 
   return errors.join("\r\n");

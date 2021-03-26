@@ -11,8 +11,8 @@ import { SectionField } from "./common/SectionField";
 import { SectionTitle } from "./common/SectionTitle";
 
 const drawModeOptions: { id: DrawMode; display: string }[] = [
-  { id: "arrays", display: "Arrays" },
-  { id: "elements", display: "Elements" },
+  { id: "arrays", display: translations.drawOptions.drawMode.arrays },
+  { id: "elements", display: translations.drawOptions.drawMode.elements },
 ];
 
 const meshOptions = Array.from(meshes.entries()).map(([key, value]) => ({
@@ -50,14 +50,14 @@ export const DrawOptionsSection = React.memo(
 
       return (
         <div className="viewer-options-section">
-          <SectionTitle text={translations.drawOptions}></SectionTitle>
+          <SectionTitle text={translations.drawOptions.title}></SectionTitle>
           <SectionField text={"Mesh"}>
             <Dropdown selectedItemId={meshId} onChange={setMeshId} options={meshOptions}></Dropdown>
           </SectionField>
           <SectionField text={"Draw mode"}>
             <Dropdown
               selectedItemId={drawMode}
-              onChange={setDrawMode as any}
+              onChange={setDrawMode as (_: string) => void}
               options={drawModeOptions}
             ></Dropdown>
           </SectionField>
