@@ -1,8 +1,20 @@
 :root {
-  --input-padding: 5px;
-  --input-height: 25px;
-  --default-margin: 5px;
-  --border-line-width: 1px;
+  --sv-input-padding: 5px;
+  --sv-input-height: 25px;
+  --sv-default-margin: 5px;
+  --sv-default-border: 1px solid var(--vscode-checkbox-border);
+  --sv-focus-color: var(--vscode-focusBorder);
+  --sv-focus-border: 1px solid var(--vscode-focusBorder);
+  --sv-error-foreground: var(--vscode-errorForeground);
+  --sv-background-color: var(--vscode-editor-background);
+  --sv-disabled-background-color: var(--vscode-list-inactiveFocusBackground);
+  --sv-disabled-foreground-color: var(--vscode-input-placeholderForeground);
+  --sv-button-foreground-color: var(--vscode-button-foreground);
+  --sv-button-background-color: var(--vscode-button-background);
+  --sv-button-hover-background-color: var(--vscode-button-hoverBackground);
+  --sv-input-foreground-color: var(--vscode-input-foreground);
+  --sv-input-background-color: var(--vscode-input-background);
+  --sv-font-family: var(--vscode-font-family);
 }
 
 /* main */
@@ -37,11 +49,11 @@ input::-webkit-inner-spin-button {
   overflow: auto;
   display: flex;
   flex-direction: column;
-  border-right: var(--border-line-width) solid var(--vscode-checkbox-border);
+  border-right: var(--sv-default-border);
 }
 
 .viewer-options-section {
-  margin: var(--default-margin);
+  margin: var(--sv-default-margin);
 }
 
 .viewer-options-section-title {
@@ -53,7 +65,7 @@ input::-webkit-inner-spin-button {
 .viewer-options-section-field {
   display: flex;
   flex-direction: column;
-  margin-bottom: var(--default-margin);
+  margin-bottom: var(--sv-default-margin);
 }
 
 .viewer-content {
@@ -72,89 +84,81 @@ input::-webkit-inner-spin-button {
   grid-column: 1;
   grid-row: 1;
   z-index: 1;
-  color: var(--vscode-errorForeground);
-  background-color: var(--vscode-editor-background);
+  color: var(--sv-error-foreground);
+  background-color: var(--sv-background-color);
   padding: 10px;
 }
 
 .component-button {
-  height: var(--input-height);
+  height: var(--sv-input-height);
   display: flex;
   align-items: center;
 }
 
 .component-input-grid {
   display: grid;
-  grid-gap: var(--default-margin);
+  grid-gap: var(--sv-default-margin);
   grid-auto-flow: row;
 }
 
 .component-input-row {
-  height: var(--input-height);
+  height: var(--sv-input-height);
   display: grid;
-  grid-gap: var(--input-padding);
+  grid-gap: var(--sv-input-padding);
   grid-auto-flow: column;
 }
 
 .component-input {
-  margin-top: var(--default-margin);
+  margin-top: var(--sv-default-margin);
   min-width: 0px;
 }
 
 .component-input-error {
-  color: var(--vscode-errorForeground);
+  color: var(--sv-error-foreground);
 }
 
 .component-input-readonly {
-  background-color: var(--vscode-list-inactiveFocusBackground);
-  color: var(--vscode-input-placeholderForeground);
+  background-color: var(--sv-disabled-background-color);
+  color: var(--sv-disabled-foreground-color);
 }
 
 /* button */
 button {
   border: none;
   text-align: center;
-  border: var(--border-line-width) solid var(--vscode-checkbox-border);
-  color: var(--vscode-button-foreground);
-  background: var(--vscode-button-background);
+  border: var(--sv-default-border);
+  color: var(--sv-button-foreground-color);
+  background: var(--sv-button-background-color);
 }
 
 button:hover {
   cursor: pointer;
-  background: var(--vscode-button-hoverBackground);
+  background: var(--sv-button-hover-background-color);
 }
 
 button:focus {
   outline: none;
-}
-
-button.secondary {
-  color: var(--vscode-button-secondaryForeground);
-  background: var(--vscode-button-secondaryBackground);
-}
-
-button.secondary:hover {
-  background: var(--vscode-button-secondaryHoverBackground);
+  border: var(--sv-focus-border);
 }
 
 /* input */
 input {
   box-sizing: border-box;
   width: 100%;
-  height: var(--input-height);
-  border: var(--border-line-width) solid var(--vscode-checkbox-border);
-  font-family: var(--vscode-font-family);
-  color: var(--vscode-input-foreground);
-  background-color: var(--vscode-input-background);
+  height: var(--sv-input-height);
+  border: var(--sv-default-border);
+  font-family: var(--sv-font-family);
+  color: var(--sv-input-foreground-color);
+  background-color: var(--sv-input-background-color);
 }
 
 input:focus {
-  outline-color: var(--vscode-focusBorder) !important;
+  outline-color: var(--sv-focus-color) !important;
 }
 
 /* dropdown */
 .dropdown-container {
-  margin-top: var(--default-margin);
+  margin-top: var(--sv-default-margin);
   position: relative;
 }
 
@@ -163,33 +167,33 @@ input:focus {
   flex-grow: 1;
   align-items: center;
   justify-content: space-between;
-  border: var(--border-line-width) solid var(--vscode-checkbox-border);
-  color: var(--vscode-input-foreground);
-  background-color: var(--vscode-input-background);
-  padding: var(--input-padding);
+  border: var(--sv-default-border);
+  color: var(--sv-input-foreground-color);
+  background-color: var(--sv-input-background-color);
+  padding: var(--sv-input-padding);
 }
 
 .dropdown-select:hover {
-  background-color: var(--vscode-input-background);
+  background-color: var(--sv-input-background-color);
 }
 
 .dropdown-select-open,
 .dropdown-select:focus {
-  border: var(--border-line-width) solid var(--vscode-focusBorder) !important;
+  border: var(--sv-focus-border) !important;
 }
 
 .dropdown-main {
   display: flex;
   flex-grow: 1;
-  height: var(--input-height);
+  height: var(--sv-input-height);
 }
 
 .dropdown-list {
   width: calc(100% - 2px);
   max-height: 125px;
   position: absolute;
-  background-color: var(--vscode-input-background);
-  border: var(--border-line-width) solid var(--vscode-focusBorder);
+  background-color: var(--sv-input-background-color);
+  border: var(--sv-focus-border);
   z-index: 1;
 }
 
@@ -198,20 +202,20 @@ input:focus {
 }
 
 .dropdown-list-item {
-  height: var(--input-height);
+  height: var(--sv-input-height);
   display: flex;
 }
 
 .dropdown-list-item-text {
-  padding: var(--input-padding);
+  padding: var(--sv-input-padding);
   user-select: none;
 }
 
 .dropdown-list-item-selected {
-  color: var(--vscode-focusBorder);
+  color: var(--sv-focus-color);
 }
 
 .dropdown-list-item-highlighted {
-  background: var(--vscode-focusBorder);
-  color: var(--vscode-input-foreground);
+  background: var(--sv-focus-color);
+  color: var(--sv-input-foreground-color);
 }

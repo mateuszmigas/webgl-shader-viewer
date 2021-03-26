@@ -59,8 +59,12 @@ export const ShadersSelectorSection = React.memo(
 
       return (
         <div className="viewer-options-section">
-          <SectionTitle text={translations.shaders}>
-            <button className="component-button" onClick={syncShaderDocuments}>
+          <SectionTitle text={translations.shaders.title}>
+            <button
+              className="component-button"
+              title={translations.shaders.syncTooltip}
+              onClick={syncShaderDocuments}
+            >
               <i className={`codicon codicon-sync`}></i>
             </button>
           </SectionTitle>

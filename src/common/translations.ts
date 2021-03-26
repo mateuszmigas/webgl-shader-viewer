@@ -1,6 +1,9 @@
 export const translations = {
   custom: "Custom",
-  shaders: "Shaders",
+  shaders: {
+    title: "Shaders",
+    syncTooltip: "Synchronize extension with workspace glsl files",
+  },
   vertexShader: "Vertex Shader",
   fragmentShader: "Fragment Shader",
   drawOptions: { title: "Draw options", drawMode: { elements: "Elements", arrays: "Arrays" } },

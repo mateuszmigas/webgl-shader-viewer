@@ -31,6 +31,7 @@ import { getOrCreateIndexBufferInfo } from "@utils/webgl/indexBufferStore";
 import { getOrCreateTextureInfos } from "@utils/webgl/textureInfoStore";
 import { commitStateOnInit } from "@utils/webgl/stateMediator";
 import { translations } from "@common/translations";
+import { __prod__ } from "@common/constants";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
@@ -97,7 +98,9 @@ export const Viewer = connect(
         setViewerSize({ ...rect });
       });
 
-      viewerEndpoint.showWebViewDevTools();
+      if (!__prod__) {
+        viewerEndpoint.showWebViewDevTools();
+      }
     }, [setViewerSize]);
 
     React.useEffect(() => {
