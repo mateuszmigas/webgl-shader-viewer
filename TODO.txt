@@ -2,7 +2,7 @@
 2. textures from workspace
 3. async loading at start
 5. tests
-6. clear stuff when compile error
+6. clear stuff when compile error (covering for now)
 7. color picker
 
 //todo state slices
