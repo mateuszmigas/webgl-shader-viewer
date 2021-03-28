@@ -56,7 +56,7 @@ const setTexture = async (name: string, optionId: string, value: string): Promis
       type: "SET_TEXTURE_LOADING_ERROR",
       payload: { name, error },
     });
-    textureInfo.setPlaceholderTexture();
+    error && textureInfo.setPlaceholderTexture();
   };
 
   if (!uri) {
