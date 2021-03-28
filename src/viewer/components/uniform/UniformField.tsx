@@ -13,7 +13,6 @@ import {
 import { customOption } from "@common/constants";
 import { Dropdown } from "../common/Dropdown";
 import { getBindingOptions } from "./uniformBindings";
-import { getDefaultProps } from "./uniformUtils";
 
 type OwnProps = {
   name: string;
@@ -43,8 +42,9 @@ const renderUniformInput = (
 };
 
 const mapStateToProps = (state: ViewerState, ownProps: OwnProps) => {
-  const uniformValue = state.uniformValues[ownProps.name];
-  return uniformValue?.type === ownProps.type ? uniformValue : getDefaultProps(ownProps.type);
+  return {
+    ...state.uniformValues[ownProps.name],
+  };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>, ownProps: OwnProps) => {

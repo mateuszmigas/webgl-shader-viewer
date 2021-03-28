@@ -2,29 +2,26 @@ import React from "react";
 import { connect } from "react-redux";
 import { ViewerState } from "@viewerStore/state";
 import { translations } from "@common/translations";
-import { UniformType } from "@utils/webgl/uniform";
 import { SectionField, SectionTitle } from "../common";
 import { UniformField } from "./UniformField";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
-    values: state.uniformValues,
+    uniformValues: state.uniformValues,
   };
 };
 
-export type UniformFieldInfo = { name: string; type: UniformType };
-
 export const UniformSection = React.memo(
-  connect(mapStateToProps)(({ uniformFields }: { uniformFields: UniformFieldInfo[] }) => {
-    return (
+  connect(mapStateToProps)(({ uniformValues }: { uniformValues: ViewerState["uniformValues"] }) => {
+    return Object.keys(uniformValues).length ? (
       <div className="viewer-options-section">
         <SectionTitle text={translations.uniforms}></SectionTitle>
-        {uniformFields.map(uf => (
-          <SectionField key={uf.name} text={uf.name}>
-            <UniformField {...uf}></UniformField>
+        {Object.entries(uniformValues).map(([name, value]) => (
+          <SectionField key={name} text={name}>
+            <UniformField name={name} {...value}></UniformField>
           </SectionField>
         ))}
       </div>
-    );
+    ) : null;
   })
 );

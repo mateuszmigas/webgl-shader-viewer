@@ -6,7 +6,6 @@ import { customOption } from "@common/constants";
 import { TextInput } from "../common/TextInput";
 import { Dropdown } from "../common/Dropdown";
 import { getBindingOptions } from "./textureBindings";
-import { getDefaultProps } from "./texturesUtils";
 import { translations } from "@common/translations";
 
 type OwnProps = {
@@ -14,8 +13,9 @@ type OwnProps = {
 };
 
 const mapStateToProps = (state: ViewerState, ownProps: OwnProps) => {
-  const textureValue = state.textureValues[ownProps.name];
-  return textureValue ?? getDefaultProps();
+  return {
+    ...state.textureValues[ownProps.name],
+  };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>, ownProps: OwnProps) => {

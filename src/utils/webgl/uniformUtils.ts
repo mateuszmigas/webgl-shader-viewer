@@ -3,7 +3,13 @@ import { assertNever } from "@utils/typeGuards";
 import { UniformType } from "@utils/webgl/uniform";
 import { customOption } from "@common/constants";
 
-const getDefaultOption = () => customOption.id;
+const getDefaultOption = (name: string) => {
+  const lowerCaseName = name.toLocaleLowerCase();
+  if (lowerCaseName.includes("camera")) {
+    return "perspectiveCamera";
+  }
+  return customOption.id;
+};
 const getDefaultValue = (type: UniformType) => {
   switch (type) {
     case UniformType.FLOAT_VEC2:
@@ -19,7 +25,7 @@ const getDefaultValue = (type: UniformType) => {
   }
 };
 
-export const getDefaultProps = (type: UniformType) => ({
-  optionId: getDefaultOption(),
+export const getDefaultUniformState = (name: string, type: UniformType) => ({
+  optionId: getDefaultOption(name),
   value: getDefaultValue(type),
 });

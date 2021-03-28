@@ -1,3 +1,4 @@
+//todo strongly typed
 export const objectMap = <T extends { [key: string]: any }>(
   object: T,
   map: (value: any, key: string) => any

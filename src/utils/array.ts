@@ -19,3 +19,15 @@ export const range = (range: number | [number, number]) => {
 };
 
 export const repeat = <T>(count: number, value: T): T[] => Array(count).fill(value);
+
+export const convertArrayToObject = <T, R>(
+  array: T[],
+  map: (item: T) => [string, R]
+): { [key: string]: R } => {
+  const initialValue = {};
+  return array.reduce((accumulator, item) => {
+    const [key, value] = map(item);
+    accumulator[key] = value;
+    return accumulator;
+  }, initialValue as { [key: string]: R });
+};

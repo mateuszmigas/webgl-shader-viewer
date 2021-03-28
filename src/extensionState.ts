@@ -1,4 +1,3 @@
-import { customOption } from "@common/constants";
 import { CameraPosition } from "@utils/cameraManipulator";
 import { DrawMode } from "@utils/webgl/index";
 import { vscodeApi } from "./communication/vscodeApi";
@@ -31,7 +30,7 @@ const defaultState: ExtensionState = {
   fragmentFilePath: null,
   uniformValues: {},
   attributeBufferValues: {},
-  indexBufferValue: { optionId: customOption.id, value: "[]", error: "" },
+  indexBufferValue: { optionId: "indices", value: "[]", error: "" },
   textureValues: {},
   cameraPosition: { longitude: 1, latitude: 1, radius: 2 },
   viewerSize: { width: 0, height: 0 },
@@ -41,7 +40,7 @@ const defaultState: ExtensionState = {
 
 export const getExtensionState = (): ExtensionState => ({
   ...defaultState,
-  ...vscodeApi.getState(),
+  //...vscodeApi.getState(),
 });
 
 export const setExtensionState = (newState: Partial<ExtensionState>) =>

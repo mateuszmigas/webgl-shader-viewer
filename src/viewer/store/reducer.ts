@@ -1,3 +1,4 @@
+import { getDefaultTextureState } from "./../../utils/webgl/textureUtils";
 import { validateIndexBuffer } from "./../validation/indexBufferValidator";
 import { indexBufferBindings } from "./../components/indexBuffer/indexBufferBindings";
 import { uniformBindings } from "../components/uniform/uniformBindings";
@@ -8,6 +9,9 @@ import { attributeBufferBindings } from "../components/attributeBuffer/attribute
 import { objectMap } from "@utils/object";
 import { validateAttributeBuffer } from "../validation/attributeBufferValidator";
 import { compose } from "redux";
+import { getDefaultAttributeBufferState } from "@utils/webgl/attributeBufferUtils";
+import { convertArrayToObject } from "@utils/array";
+import { getDefaultUniformState } from "@utils/webgl/uniformUtils";
 
 const initialState: ViewerState = {
   ...getExtensionState(),
@@ -26,6 +30,41 @@ const mainReducer = (state: ViewerState = initialState, action: ViewerAction): V
       return {
         ...state,
         fragmentFilePath: action.payload.path,
+      };
+    }
+    case "SET_NEW_SHADER_INFO": {
+      const attributeBufferValues = convertArrayToObject(
+        action.payload.attributeBuffersInfos,
+        ab => {
+          const attibuteBufferValue = state.attributeBufferValues[ab.name];
+          const value =
+            attibuteBufferValue?.type === ab.type
+              ? attibuteBufferValue
+              : getDefaultAttributeBufferState();
+
+          return [ab.name, { type: ab.type, ...value }];
+        }
+      );
+
+      const uniformValues = convertArrayToObject(action.payload.uniformInfos, uf => {
+        const uniformValue = state.uniformValues[uf.name];
+        const value =
+          uniformValue?.type === uf.type ? uniformValue : getDefaultUniformState(uf.name, uf.type);
+
+        return [uf.name, { type: uf.type, ...value }];
+      });
+
+      const textureValues = convertArrayToObject(action.payload.texturesInfos, tx => {
+        const textureValue = state.textureValues[tx.name];
+        const value = textureValue ?? getDefaultTextureState();
+        return [tx.name, value];
+      });
+
+      return {
+        ...state,
+        attributeBufferValues,
+        uniformValues,
+        textureValues,
       };
     }
     case "SET_UNIFORM_OPTION": {

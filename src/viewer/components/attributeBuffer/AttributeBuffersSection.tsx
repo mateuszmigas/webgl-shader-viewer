@@ -2,31 +2,32 @@ import React from "react";
 import { connect } from "react-redux";
 import { ViewerState } from "@viewerStore/state";
 import { translations } from "@common/translations";
-import { AttributeBufferType } from "@utils/webgl/attributeBuffer";
 import { SectionField, SectionTitle } from "../common";
 import { AttributeBufferField } from "./AttributeBufferField";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
-    values: state.attributeBufferValues,
+    attributeBufferValues: state.attributeBufferValues,
   };
 };
 
-export type AttributeBufferFieldInfo = { name: string; type: AttributeBufferType };
-
 export const AttributeBuffersSection = React.memo(
-  connect(mapStateToProps)((props: { attributeBufferFields: AttributeBufferFieldInfo[] }) => {
-    const { attributeBufferFields } = props;
-
-    return (
-      <div className="viewer-options-section">
-        <SectionTitle text={translations.attributeBuffers}></SectionTitle>
-        {attributeBufferFields.map(abf => (
-          <SectionField key={abf.name} text={abf.name}>
-            <AttributeBufferField key={abf.name} {...abf}></AttributeBufferField>
-          </SectionField>
-        ))}
-      </div>
-    );
-  })
+  connect(mapStateToProps)(
+    ({
+      attributeBufferValues,
+    }: {
+      attributeBufferValues: ViewerState["attributeBufferValues"];
+    }) => {
+      return Object.keys(attributeBufferValues).length ? (
+        <div className="viewer-options-section">
+          <SectionTitle text={translations.attributeBuffers}></SectionTitle>
+          {Object.entries(attributeBufferValues).map(([name, value]) => (
+            <SectionField key={name} text={name}>
+              <AttributeBufferField name={name} {...value}></AttributeBufferField>
+            </SectionField>
+          ))}
+        </div>
+      ) : null;
+    }
+  )
 );

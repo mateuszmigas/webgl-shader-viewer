@@ -8,7 +8,6 @@ import { TextInput } from "../common/TextInput";
 import { customOption } from "@common/constants";
 import { Dropdown } from "../common/Dropdown";
 import { getBindingOptions } from "./attributeBufferBindings";
-import { getDefaultProps } from "./attributeBufferUtils";
 
 type OwnProps = {
   name: string;
@@ -16,8 +15,9 @@ type OwnProps = {
 };
 
 const mapStateToProps = (state: ViewerState, ownProps: OwnProps) => {
-  const attibuteBufferValue = state.attributeBufferValues[ownProps.name];
-  return attibuteBufferValue?.type === ownProps.type ? attibuteBufferValue : getDefaultProps();
+  return {
+    ...state.attributeBufferValues[ownProps.name],
+  };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>, ownProps: OwnProps) => {

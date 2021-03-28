@@ -11,19 +11,12 @@ import {
   renderProgram,
 } from "@utils/webgl";
 import { getOrCreateAttributeBufferInfos } from "@utils/webgl/attributeBufferStore";
-import { UniformType } from "@utils/webgl/uniform";
 import { DrawOptionsSection } from "./DrawOptionsSection";
 import { ShadersSelectorSection } from "./ShadersSelectorSection";
-import { TextureFieldInfo, TextureSection } from "./texture/TexturesSection";
-import { UniformSection } from "./uniform/UniformsSection";
 import { usePerspectiveCamera } from "../hooks/usePerspectiveCamera";
 import { Dispatch } from "redux";
 import { ViewerAction } from "../store/actions";
 import { useDocumentWatcher } from "../hooks/useDocumentWatcher";
-import {
-  AttributeBufferFieldInfo,
-  AttributeBuffersSection,
-} from "./attributeBuffer/AttributeBuffersSection";
 import { getOrCreateUniformInfos } from "@utils/webgl/uniformStore";
 import { store } from "..";
 import { CameraPosition } from "@utils/cameraManipulator";
@@ -32,6 +25,11 @@ import { getOrCreateTextureInfos } from "@utils/webgl/textureInfoStore";
 import { commitStateOnInit } from "@utils/webgl/stateMediator";
 import { translations } from "@common/translations";
 import { __prod__ } from "@common/constants";
+import { AttributeBufferType } from "@utils/webgl/attributeBuffer";
+import { UniformType } from "@utils/webgl/uniform";
+import { UniformSection } from "./uniform/UniformsSection";
+import { AttributeBuffersSection } from "./attributeBuffer/AttributeBuffersSection";
+import { TextureSection } from "./texture/TexturesSection";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
@@ -47,6 +45,15 @@ const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>) => {
       dispatch({ type: "SET_CAMERA_POSITION", payload: { position: newCameraPosition } }),
     setViewerSize: (size: { width: number; height: number }) =>
       dispatch({ type: "SET_VIWER_SIZE", payload: { size } }),
+    setNewShaderInfo: (
+      attributeBuffersInfos: { name: string; type: AttributeBufferType }[],
+      uniformInfos: { name: string; type: UniformType }[],
+      texturesInfos: { name: string }[]
+    ) =>
+      dispatch({
+        type: "SET_NEW_SHADER_INFO",
+        payload: { attributeBuffersInfos, uniformInfos, texturesInfos },
+      }),
   };
 };
 
@@ -60,6 +67,11 @@ export const Viewer = connect(
     cameraPosition: CameraPosition;
     setCameraPosition: (newCameraPosition: CameraPosition) => void;
     setViewerSize: (size: { width: number; height: number }) => void;
+    setNewShaderInfo: (
+      attributeBuffersInfos: { name: string; type: AttributeBufferType }[],
+      uniformInfos: { name: string; type: UniformType }[],
+      texturesInfos: { name: string }[]
+    ) => void;
   }) => {
     const {
       selectedVertexFileId,
@@ -67,18 +79,12 @@ export const Viewer = connect(
       cameraPosition,
       setCameraPosition,
       setViewerSize,
+      setNewShaderInfo,
     } = props;
 
     const [shaderCompileErrors, setShaderCompileErrors] = React.useState("");
     const [selectedVertexFileText, setSelectedVertexFileText] = React.useState("");
     const [selectedFragmentFileText, setSelectedFragmentFileText] = React.useState("");
-    const [attributeBufferFieldsInfo, setAttributeBufferFieldsInfo] = React.useState<
-      AttributeBufferFieldInfo[]
-    >([]);
-    const [uniformFieldsInfo, setUniformFieldsInfo] = React.useState<
-      { name: string; type: UniformType }[]
-    >([]);
-    const [textureFieldsInfo, setTextureFieldsInfo] = React.useState<TextureFieldInfo[]>([]);
     const contentRef = React.useRef<HTMLDivElement>(null);
     const canvasRef = React.useRef<HTMLCanvasElement>(null);
     const contextRef = React.useRef<WebGLRenderingContext>(null);
@@ -104,7 +110,9 @@ export const Viewer = connect(
     }, [setViewerSize]);
 
     React.useEffect(() => {
-      if (!selectedVertexFileText || !selectedFragmentFileText) return;
+      if (!selectedVertexFileText || !selectedFragmentFileText) {
+        return;
+      }
 
       const result = compileShadersFromSource(
         contextRef.current,
@@ -119,9 +127,13 @@ export const Viewer = connect(
         const program = result;
         const programUniforms = getProgramUniforms(contextRef.current, program);
         const programAttributeBuffers = getProgramAttributeBuffers(contextRef.current, program);
-        setUniformFieldsInfo(programUniforms.dataUniforms);
-        setTextureFieldsInfo(programUniforms.textureUniforms);
-        setAttributeBufferFieldsInfo(programAttributeBuffers);
+
+        setNewShaderInfo(
+          programAttributeBuffers,
+          programUniforms.dataUniforms,
+          programUniforms.textureUniforms
+        );
+
         const attributeBufferInfos = getOrCreateAttributeBufferInfos(
           contextRef.current,
           program,
@@ -176,17 +188,9 @@ export const Viewer = connect(
         <div className="viewer-options">
           <ShadersSelectorSection></ShadersSelectorSection>
           <DrawOptionsSection></DrawOptionsSection>
-          {uniformFieldsInfo.length > 0 && (
-            <UniformSection uniformFields={uniformFieldsInfo}></UniformSection>
-          )}
-          {attributeBufferFieldsInfo.length > 0 && (
-            <AttributeBuffersSection
-              attributeBufferFields={attributeBufferFieldsInfo}
-            ></AttributeBuffersSection>
-          )}
-          {textureFieldsInfo.length > 0 && (
-            <TextureSection textureFields={textureFieldsInfo}></TextureSection>
-          )}
+          <UniformSection></UniformSection>
+          <AttributeBuffersSection></AttributeBuffersSection>
+          <TextureSection></TextureSection>
         </div>
         <div ref={contentRef} className="viewer-content">
           {shaderCompileErrors && (

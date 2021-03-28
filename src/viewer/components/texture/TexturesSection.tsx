@@ -7,23 +7,21 @@ import { TextureField } from "./TextureField";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
-    values: state.textureValues,
+    textureValues: state.textureValues,
   };
 };
 
-export type TextureFieldInfo = { name: string };
-
 export const TextureSection = React.memo(
-  connect(mapStateToProps)(({ textureFields }: { textureFields: TextureFieldInfo[] }) => {
-    return (
+  connect(mapStateToProps)(({ textureValues }: { textureValues: ViewerState["textureValues"] }) => {
+    return Object.keys(textureValues).length ? (
       <div className="viewer-options-section">
         <SectionTitle text={translations.textures.title}></SectionTitle>
-        {textureFields.map(tx => (
-          <SectionField key={tx.name} text={tx.name}>
-            <TextureField {...tx}></TextureField>
+        {Object.entries(textureValues).map(([name, value]) => (
+          <SectionField key={name} text={name}>
+            <TextureField name={name} {...value}></TextureField>
           </SectionField>
         ))}
       </div>
-    );
+    ) : null;
   })
 );

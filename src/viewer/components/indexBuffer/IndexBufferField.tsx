@@ -7,6 +7,7 @@ import { customOption } from "@common/constants";
 import { Dropdown } from "../common/Dropdown";
 import { SectionField } from "../common/SectionField";
 import { getBindingOptions } from "./indexBufferBindings";
+import { translations } from "@common/translations";
 
 const options = [customOption, ...getBindingOptions()];
 
@@ -53,7 +54,7 @@ export const IndexBufferField = React.memo(
       const isCustom = optionId === customOption.id;
 
       return (
-        <SectionField text={"Indices"}>
+        <SectionField text={translations.indices.title}>
           <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
           <TextInput
             value={value}

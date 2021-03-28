@@ -1,5 +1,7 @@
 import { CameraPosition } from "@utils/cameraManipulator";
 import { DrawMode } from "@utils/webgl/index";
+import { AttributeBufferType } from "@utils/webgl/attributeBuffer";
+import { UniformType } from "@utils/webgl/uniform";
 
 export type ViewerAction =
   | {
@@ -9,6 +11,14 @@ export type ViewerAction =
   | {
       type: "SET_FRAGMENT_FILE_PATH";
       payload: { path: string | null };
+    }
+  | {
+      type: "SET_NEW_SHADER_INFO";
+      payload: {
+        attributeBuffersInfos: { name: string; type: AttributeBufferType }[];
+        uniformInfos: { name: string; type: UniformType }[];
+        texturesInfos: { name: string }[];
+      };
     }
   | {
       type: "SET_UNIFORM_VALUE";
