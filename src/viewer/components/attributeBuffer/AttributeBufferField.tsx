@@ -7,7 +7,7 @@ import { AttributeBufferType } from "@utils/webgl/attributeBuffer";
 import { TextInput } from "../common/TextInput";
 import { customOption } from "@common/constants";
 import { Dropdown } from "../common/Dropdown";
-import { getBindingOptions } from "./attributeBufferBindings";
+import { getBindingOptions } from "@utils/webgl/attributeBufferUtils";
 
 type OwnProps = {
   name: string;

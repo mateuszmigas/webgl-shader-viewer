@@ -1,17 +1,18 @@
-import { getDefaultTextureState } from "./../../utils/webgl/textureUtils";
 import { validateIndexBuffer } from "./../validation/indexBufferValidator";
 import { indexBufferBindings } from "./../components/indexBuffer/indexBufferBindings";
-import { uniformBindings } from "../components/uniform/uniformBindings";
 import { getExtensionState } from "@extensionState";
 import { ViewerAction } from "./actions";
 import { ViewerState } from "./state";
-import { attributeBufferBindings } from "../components/attributeBuffer/attributeBufferBindings";
 import { objectMap } from "@utils/object";
 import { validateAttributeBuffer } from "../validation/attributeBufferValidator";
 import { compose } from "redux";
-import { getDefaultAttributeBufferState } from "@utils/webgl/attributeBufferUtils";
+import {
+  attributeBufferBindings,
+  getDefaultAttributeBufferState,
+} from "@utils/webgl/attributeBufferUtils";
 import { convertArrayToObject } from "@utils/array";
-import { getDefaultUniformState } from "@utils/webgl/uniformUtils";
+import { getDefaultUniformState, uniformBindings } from "@utils/webgl/uniformUtils";
+import { getDefaultTextureState } from "@utils/webgl/textureUtils";
 
 const initialState: ViewerState = {
   ...getExtensionState(),
@@ -40,7 +41,7 @@ const mainReducer = (state: ViewerState = initialState, action: ViewerAction): V
           const value =
             attibuteBufferValue?.type === ab.type
               ? attibuteBufferValue
-              : getDefaultAttributeBufferState();
+              : getDefaultAttributeBufferState(ab.name, ab.type);
 
           return [ab.name, { type: ab.type, ...value }];
         }

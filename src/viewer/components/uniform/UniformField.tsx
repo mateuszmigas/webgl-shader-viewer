@@ -12,7 +12,7 @@ import {
 } from "../common";
 import { customOption } from "@common/constants";
 import { Dropdown } from "../common/Dropdown";
-import { getBindingOptions } from "./uniformBindings";
+import { getBindingOptions } from "@utils/webgl/attributeBufferUtils";
 
 type OwnProps = {
   name: string;

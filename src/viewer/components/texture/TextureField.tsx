@@ -5,8 +5,8 @@ import { ViewerState } from "@viewerStore/state";
 import { customOption } from "@common/constants";
 import { TextInput } from "../common/TextInput";
 import { Dropdown } from "../common/Dropdown";
-import { getBindingOptions } from "./textureBindings";
 import { translations } from "@common/translations";
+import { getBindingOptions } from "@utils/webgl/textureUtils";
 
 type OwnProps = {
   name: string;

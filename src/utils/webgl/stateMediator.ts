@@ -5,12 +5,12 @@ import { getAttributeBufferInfo } from "./attributeBufferStore";
 import { getIndexBufferInfo } from "./indexBufferStore";
 import { getUniformInfo } from "./uniformStore";
 import { getTextureInfo } from "./textureInfoStore";
-import { textureBindings } from "viewer/components/texture/textureBindings";
 import { viewerEndpoint } from "@communication/viewerEndpoint";
 import { loadImage } from "@utils/image";
 import { translations } from "@common/translations";
 import { anyPropChanged } from "@utils/object";
 import { store } from "viewer";
+import { textureBindings } from "./textureUtils";
 
 export const commitStateOnInit = () => {
   const state = store.getState();

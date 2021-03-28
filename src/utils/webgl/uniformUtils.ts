@@ -1,7 +1,32 @@
 import { repeat } from "@utils/array";
 import { assertNever } from "@utils/typeGuards";
-import { UniformType } from "@utils/webgl/uniform";
 import { customOption } from "@common/constants";
+import { translations } from "@common/translations";
+import { getCameraMatrix } from "@utils/cameraManipulator";
+import { UniformType } from "@utils/webgl/uniform";
+
+type Key = "perspectiveCamera";
+export const uniformBindings = new Map<
+  Key,
+  { display: string; type: UniformType; getValue: (...arg: any[]) => any }
+>([
+  [
+    "perspectiveCamera",
+    {
+      type: UniformType.FLOAT_MAT4,
+      display: translations.bindings.uniformPerspectiveCamera,
+      getValue: (cameraPosition, size) => getCameraMatrix(cameraPosition, size),
+    },
+  ],
+]);
+
+export const getBindingOptions = (type: UniformType) =>
+  Array.from(uniformBindings.entries())
+    .filter(([_, value]) => value.type === type)
+    .map(([key, value]) => ({
+      id: key,
+      display: value.display,
+    }));
 
 const getDefaultOption = (name: string) => {
   const lowerCaseName = name.toLocaleLowerCase();
