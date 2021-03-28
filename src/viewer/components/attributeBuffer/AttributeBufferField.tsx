@@ -3,11 +3,11 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { ViewerAction } from "@viewerStore/actions";
 import { ViewerState } from "@viewerStore/state";
-import { AttributeBufferType } from "@utils/webgl/attributeBuffer";
+import { AttributeBufferType } from "@utils/webgl/attributeBuffer/attributeBuffer";
 import { TextInput } from "../common/TextInput";
 import { customOption } from "@common/constants";
 import { Dropdown } from "../common/Dropdown";
-import { getBindingOptions } from "@utils/webgl/attributeBufferUtils";
+import { getAttributeBufferBindingOptionsForType } from "@utils/webgl/attributeBuffer/attributeBufferUtils";
 
 type OwnProps = {
   name: string;
@@ -58,7 +58,7 @@ export const AttributeBufferField = React.memo(
       setValue: (value: string) => void;
     }) => {
       const { type, value, optionId, error, setOption, setValue } = props;
-      const options = [customOption, ...getBindingOptions(type)];
+      const options = [customOption, ...getAttributeBufferBindingOptionsForType(type)];
       const isCustom = optionId === customOption.id;
 
       return (

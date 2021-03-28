@@ -1,5 +1,5 @@
-import { Matrix4Array, Vector2Array, Vector3Array, Vector4Array } from "../types";
-import { assertNever } from "../typeGuards";
+import { Matrix4Array, Vector2Array, Vector3Array, Vector4Array } from "../../types";
+import { assertNever } from "../../typeGuards";
 
 export enum UniformType {
   FLOAT_VEC2 = 35664,

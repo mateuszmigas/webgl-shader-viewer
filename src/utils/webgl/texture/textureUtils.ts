@@ -1,6 +1,6 @@
 import { translations } from "@common/translations";
 
-export const textureBindings = new Map<string, { display: string; fileName: string }>([
+const bindings = new Map<string, { display: string; fileName: string }>([
   [
     "texture-sky",
     {
@@ -24,8 +24,10 @@ export const textureBindings = new Map<string, { display: string; fileName: stri
   ],
 ]);
 
-export const getBindingOptions = () =>
-  Array.from(textureBindings.entries()).map(([key, value]) => ({
+export const getTextureBinding = (name: string) => bindings.get(name);
+
+export const getTextureBindingOptions = () =>
+  Array.from(bindings.entries()).map(([key, value]) => ({
     id: key,
     display: value.display,
   }));

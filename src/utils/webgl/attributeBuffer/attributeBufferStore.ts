@@ -1,4 +1,4 @@
-import { CompositeKeyMap } from "../compositeKeyMap";
+import { CompositeKeyMap } from "@utils/compositeKeyMap";
 import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
 
 type CacheKey = {

@@ -1,16 +1,16 @@
+import { getTextureBinding } from "./texture/textureUtils";
 import { ViewerState } from "@viewerStore/state";
 import { debounce } from "../function";
 import { safeJSONParse } from "../parsing";
-import { getAttributeBufferInfo } from "./attributeBufferStore";
-import { getIndexBufferInfo } from "./indexBufferStore";
-import { getUniformInfo } from "./uniformStore";
-import { getTextureInfo } from "./textureInfoStore";
 import { viewerEndpoint } from "@communication/viewerEndpoint";
 import { loadImage } from "@utils/image";
 import { translations } from "@common/translations";
 import { anyPropChanged } from "@utils/object";
 import { store } from "viewer";
-import { textureBindings } from "./textureUtils";
+import { getAttributeBufferInfo } from "./attributeBuffer/attributeBufferStore";
+import { getIndexBufferInfo } from "./indexBuffer/indexBufferStore";
+import { getTextureInfo } from "./texture/textureStore";
+import { getUniformInfo } from "./uniform/uniformStore";
 
 export const commitStateOnInit = () => {
   const state = store.getState();
@@ -49,7 +49,7 @@ const setTexture = async (name: string, optionId: string, value: string): Promis
     return;
   }
 
-  const binding = textureBindings.get(optionId);
+  const binding = getTextureBinding(optionId);
   const uri = binding ? await viewerEndpoint.getExtensionFileUri(binding.fileName) : value;
   const onError = (error: string) => {
     store.dispatch({

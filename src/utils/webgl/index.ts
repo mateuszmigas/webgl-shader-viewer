@@ -1,10 +1,10 @@
 import { translations } from "@common/translations";
 import { removeLast } from "@utils/string";
-import { TextureInfo } from "./textureInfo";
-import { IndexBufferInfo } from "./indexBuffer";
+import { TextureInfo } from "./texture/texture";
+import { IndexBufferInfo } from "./indexBuffer/indexBuffer";
 import { hasProperty } from "../typeGuards";
-import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer";
-import { UniformInfo, UniformType } from "./uniform";
+import { AttributeBufferInfo, AttributeBufferType } from "./attributeBuffer/attributeBuffer";
+import { UniformInfo, UniformType } from "./uniform/uniform";
 
 export type DrawMode = "elements" | "arrays";
 export type DrawOptions = {

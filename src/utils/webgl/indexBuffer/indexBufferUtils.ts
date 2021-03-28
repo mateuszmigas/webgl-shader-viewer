@@ -1,13 +1,10 @@
 import { translations } from "@common/translations";
-import { meshes, MeshInfo } from "../../meshes";
+import { MeshInfo, meshes } from "viewer/meshes";
 
 const getMeshBinding = (meshId: string, name: keyof MeshInfo) =>
   JSON.stringify(meshes.get(meshId)[name]);
 
-export const indexBufferBindings = new Map<
-  string,
-  { display: string; getValue: (id: string) => any }
->([
+const bindings = new Map<string, { display: string; getValue: (id: string) => any }>([
   [
     "indices",
     {
@@ -17,8 +14,10 @@ export const indexBufferBindings = new Map<
   ],
 ]);
 
-export const getBindingOptions = () =>
-  Array.from(indexBufferBindings.entries()).map(([key, value]) => ({
+export const getIndexBufferBinding = (name: string) => bindings.get(name);
+
+export const getIndexBufferBindingOptions = () =>
+  Array.from(bindings.entries()).map(([key, value]) => ({
     id: key,
     display: value.display,
   }));

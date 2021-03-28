@@ -20,7 +20,7 @@ export type ExtensionState = {
   indexBufferValue: { optionId: string; value: string; error: string };
   textureValues: Record<string, { optionId: string; value: string; error: string }>;
   cameraPosition: CameraPosition;
-  viewerSize: { width: number; height: number };
+
   drawMode: DrawMode;
   meshId: string;
 };
@@ -33,14 +33,13 @@ const defaultState: ExtensionState = {
   indexBufferValue: { optionId: "indices", value: "[]", error: "" },
   textureValues: {},
   cameraPosition: { longitude: 1, latitude: 1, radius: 2 },
-  viewerSize: { width: 0, height: 0 },
   drawMode: "elements",
   meshId: "cube",
 };
 
 export const getExtensionState = (): ExtensionState => ({
   ...defaultState,
-  //...vscodeApi.getState(),
+  ...vscodeApi.getState(),
 });
 
 export const setExtensionState = (newState: Partial<ExtensionState>) =>

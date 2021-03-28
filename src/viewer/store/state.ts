@@ -1,5 +1,5 @@
 import { ExtensionState } from "@extensionState";
 
 export type ViewerState = ExtensionState & {
-  counter: number;
+  viewerSize: { width: number; height: number };
 };

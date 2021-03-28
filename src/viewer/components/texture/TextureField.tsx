@@ -6,7 +6,7 @@ import { customOption } from "@common/constants";
 import { TextInput } from "../common/TextInput";
 import { Dropdown } from "../common/Dropdown";
 import { translations } from "@common/translations";
-import { getBindingOptions } from "@utils/webgl/textureUtils";
+import { getTextureBindingOptions } from "@utils/webgl/texture/textureUtils";
 
 type OwnProps = {
   name: string;
@@ -58,7 +58,7 @@ export const TextureField = React.memo(
       const options = React.useMemo(
         () => [
           { id: customOption.id, display: translations.textures.customUrl },
-          ...getBindingOptions(),
+          ...getTextureBindingOptions(),
         ],
         []
       );

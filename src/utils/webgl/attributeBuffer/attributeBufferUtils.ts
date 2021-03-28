@@ -1,14 +1,13 @@
 import { customOption } from "@common/constants";
 import { translations } from "@common/translations";
-import { AttributeBufferType } from "@utils/webgl/attributeBuffer";
+import { AttributeBufferType } from "@utils/webgl/attributeBuffer/attributeBuffer";
 import { meshes, MeshInfo } from "viewer/meshes";
 
 const getMeshBinding = (meshId: string, name: keyof MeshInfo) =>
   JSON.stringify(meshes.get(meshId)[name]);
 
-type Key = "positions" | "textureCoordinates" | "colors";
-export const attributeBufferBindings = new Map<
-  Key,
+const bindings = new Map<
+  string,
   { display: string; type: AttributeBufferType; getValue: (id: string) => any }
 >([
   [
@@ -37,15 +36,7 @@ export const attributeBufferBindings = new Map<
   ],
 ]);
 
-export const getBindingOptions = (type: AttributeBufferType) =>
-  Array.from(attributeBufferBindings.entries())
-    .filter(([_, value]) => value.type === type)
-    .map(([key, value]) => ({
-      id: key,
-      display: value.display,
-    }));
-
-const getDefaultOption = (name: string): Key | "custom" => {
+const getDefaultOption = (name: string) => {
   const lowerCaseName = name.toLocaleLowerCase();
   if (lowerCaseName.includes("posit")) {
     return "positions";
@@ -59,7 +50,17 @@ const getDefaultOption = (name: string): Key | "custom" => {
   return customOption.id;
 };
 
-export const getDefaultAttributeBufferState = (name: string, type: AttributeBufferType) => ({
+export const getAttributeBufferBinding = (name: string) => bindings.get(name);
+
+export const getAttributeBufferBindingOptionsForType = (type: AttributeBufferType) =>
+  Array.from(bindings.entries())
+    .filter(([_, value]) => value.type === type)
+    .map(([key, value]) => ({
+      id: key,
+      display: value.display,
+    }));
+
+export const getDefaultAttributeBufferState = (name: string) => ({
   optionId: getDefaultOption(name),
   value: "[]",
   error: "",

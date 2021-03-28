@@ -1,7 +1,7 @@
 import { CameraPosition } from "@utils/cameraManipulator";
 import { DrawMode } from "@utils/webgl/index";
-import { AttributeBufferType } from "@utils/webgl/attributeBuffer";
-import { UniformType } from "@utils/webgl/uniform";
+import { AttributeBufferType } from "@utils/webgl/attributeBuffer/attributeBuffer";
+import { UniformType } from "@utils/webgl/uniform/uniform";
 
 export type ViewerAction =
   | {
@@ -13,7 +13,7 @@ export type ViewerAction =
       payload: { path: string | null };
     }
   | {
-      type: "SET_NEW_SHADER_INFO";
+      type: "REBUILD_SHADER_INFO";
       payload: {
         attributeBuffersInfos: { name: string; type: AttributeBufferType }[];
         uniformInfos: { name: string; type: UniformType }[];

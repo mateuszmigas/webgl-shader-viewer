@@ -6,10 +6,10 @@ import { TextInput } from "../common/TextInput";
 import { customOption } from "@common/constants";
 import { Dropdown } from "../common/Dropdown";
 import { SectionField } from "../common/SectionField";
-import { getBindingOptions } from "./indexBufferBindings";
 import { translations } from "@common/translations";
+import { getIndexBufferBindingOptions } from "@utils/webgl/indexBuffer/indexBufferUtils";
 
-const options = [customOption, ...getBindingOptions()];
+const options = [customOption, ...getIndexBufferBindingOptions()];
 
 const mapStateToProps = (state: ViewerState) => {
   return {

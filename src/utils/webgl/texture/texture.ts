@@ -1,4 +1,4 @@
-import { isPowerOf2 } from "../math";
+import { isPowerOf2 } from "../../math";
 
 export class TextureInfo {
   private texture: WebGLTexture | null;

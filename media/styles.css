@@ -68,6 +68,10 @@ input::-webkit-inner-spin-button {
   margin-bottom: var(--sv-default-margin);
 }
 
+.viewer-options-section-field-label {
+  margin-bottom: var(--sv-default-margin);
+}
+
 .viewer-content {
   grid-area: content;
   display: grid;
@@ -109,7 +113,7 @@ input::-webkit-inner-spin-button {
 }
 
 .component-input {
-  margin-top: var(--sv-default-margin);
+  margin-bottom: var(--sv-default-margin);
   min-width: 0px;
 }
 
@@ -158,7 +162,7 @@ input:focus {
 
 /* dropdown */
 .dropdown-container {
-  margin-top: var(--sv-default-margin);
+  margin-bottom: var(--sv-default-margin);
   position: relative;
 }
 

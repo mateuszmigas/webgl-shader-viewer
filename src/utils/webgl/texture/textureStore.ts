@@ -1,5 +1,5 @@
-import { CompositeKeyMap } from "../compositeKeyMap";
-import { TextureInfo } from "./textureInfo";
+import { CompositeKeyMap } from "@utils/compositeKeyMap";
+import { TextureInfo } from "./texture";
 
 type CacheKey = {
   name: string;

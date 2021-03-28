@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { ViewerAction } from "@viewerStore/actions";
 import { ViewerState } from "@viewerStore/state";
-import { UniformType } from "@utils/webgl/uniform";
+import { UniformType } from "@utils/webgl/uniform/uniform";
 import {
   Vector2NumberInput,
   Vector3NumberInput,
@@ -12,7 +12,7 @@ import {
 } from "../common";
 import { customOption } from "@common/constants";
 import { Dropdown } from "../common/Dropdown";
-import { getBindingOptions } from "@utils/webgl/attributeBufferUtils";
+import { getUniformBindingOptionsForType } from "@utils/webgl/uniform/uniformUtils";
 
 type OwnProps = {
   name: string;
@@ -84,7 +84,10 @@ export const UniformField = React.memo(
       setValue: (value: any) => void;
     }) => {
       const { type, optionId, value, setOption, setValue } = props;
-      const options = React.useMemo(() => [customOption, ...getBindingOptions(type)], [type]);
+      const options = React.useMemo(
+        () => [customOption, ...getUniformBindingOptionsForType(type)],
+        [type]
+      );
       const isCustom = optionId === customOption.id;
 
       return (

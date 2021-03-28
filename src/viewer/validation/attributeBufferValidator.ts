@@ -1,5 +1,5 @@
 import { assertNever } from "@utils/typeGuards";
-import { AttributeBufferType } from "@utils/webgl/attributeBuffer";
+import { AttributeBufferType } from "@utils/webgl/attributeBuffer/attributeBuffer";
 import { validateArrayElements } from "./common";
 
 const getNumElements = (type: AttributeBufferType) => {

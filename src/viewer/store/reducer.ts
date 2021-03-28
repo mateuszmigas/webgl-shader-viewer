@@ -1,22 +1,22 @@
 import { validateIndexBuffer } from "./../validation/indexBufferValidator";
-import { indexBufferBindings } from "./../components/indexBuffer/indexBufferBindings";
 import { getExtensionState } from "@extensionState";
 import { ViewerAction } from "./actions";
 import { ViewerState } from "./state";
 import { objectMap } from "@utils/object";
 import { validateAttributeBuffer } from "../validation/attributeBufferValidator";
 import { compose } from "redux";
-import {
-  attributeBufferBindings,
-  getDefaultAttributeBufferState,
-} from "@utils/webgl/attributeBufferUtils";
 import { convertArrayToObject } from "@utils/array";
-import { getDefaultUniformState, uniformBindings } from "@utils/webgl/uniformUtils";
-import { getDefaultTextureState } from "@utils/webgl/textureUtils";
+import {
+  getAttributeBufferBinding,
+  getDefaultAttributeBufferState,
+} from "@utils/webgl/attributeBuffer/attributeBufferUtils";
+import { getDefaultUniformState, getUniformBinding } from "@utils/webgl/uniform/uniformUtils";
+import { getDefaultTextureState } from "@utils/webgl/texture/textureUtils";
+import { getIndexBufferBinding } from "@utils/webgl/indexBuffer/indexBufferUtils";
 
 const initialState: ViewerState = {
   ...getExtensionState(),
-  counter: 0,
+  viewerSize: { width: 0, height: 0 },
 };
 
 const mainReducer = (state: ViewerState = initialState, action: ViewerAction): ViewerState => {
@@ -33,7 +33,7 @@ const mainReducer = (state: ViewerState = initialState, action: ViewerAction): V
         fragmentFilePath: action.payload.path,
       };
     }
-    case "SET_NEW_SHADER_INFO": {
+    case "REBUILD_SHADER_INFO": {
       const attributeBufferValues = convertArrayToObject(
         action.payload.attributeBuffersInfos,
         ab => {
@@ -41,7 +41,7 @@ const mainReducer = (state: ViewerState = initialState, action: ViewerAction): V
           const value =
             attibuteBufferValue?.type === ab.type
               ? attibuteBufferValue
-              : getDefaultAttributeBufferState(ab.name, ab.type);
+              : getDefaultAttributeBufferState(ab.name);
 
           return [ab.name, { type: ab.type, ...value }];
         }
@@ -228,7 +228,7 @@ const applyAttributeBufferBindingsReducer = (state: ViewerState): ViewerState =>
   return {
     ...state,
     attributeBufferValues: objectMap(state.attributeBufferValues, propValue => {
-      const binding = attributeBufferBindings.get(propValue.optionId);
+      const binding = getAttributeBufferBinding(propValue.optionId);
       return {
         ...propValue,
         ...(binding
@@ -243,7 +243,7 @@ const applyAttributeBufferBindingsReducer = (state: ViewerState): ViewerState =>
 
 const applyIndexBufferBindingsReducer = (state: ViewerState): ViewerState => {
   const indexBufferValue = state.indexBufferValue;
-  const binding = indexBufferBindings.get(indexBufferValue.optionId);
+  const binding = getIndexBufferBinding(indexBufferValue.optionId);
 
   return {
     ...state,
@@ -264,7 +264,7 @@ const applyUniformBindingsReducer = (state: ViewerState): ViewerState => {
     uniformValues: objectMap(state.uniformValues, propValue => ({
       ...propValue,
       value:
-        uniformBindings.get(propValue.optionId)?.getValue(state.cameraPosition, state.viewerSize) ??
+        getUniformBinding(propValue.optionId)?.getValue(state.cameraPosition, state.viewerSize) ??
         propValue.value,
     })),
   };

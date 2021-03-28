@@ -1,5 +1,5 @@
+import { CompositeKeyMap } from "@utils/compositeKeyMap";
 import { UniformInfo, UniformType } from "./uniform";
-import { CompositeKeyMap } from "../compositeKeyMap";
 
 type CacheKey = {
   name: string;

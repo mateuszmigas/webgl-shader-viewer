@@ -10,26 +10,26 @@ import {
   getProgramUniforms,
   renderProgram,
 } from "@utils/webgl";
-import { getOrCreateAttributeBufferInfos } from "@utils/webgl/attributeBufferStore";
 import { DrawOptionsSection } from "./DrawOptionsSection";
 import { ShadersSelectorSection } from "./ShadersSelectorSection";
 import { usePerspectiveCamera } from "../hooks/usePerspectiveCamera";
 import { Dispatch } from "redux";
 import { ViewerAction } from "../store/actions";
 import { useDocumentWatcher } from "../hooks/useDocumentWatcher";
-import { getOrCreateUniformInfos } from "@utils/webgl/uniformStore";
 import { store } from "..";
 import { CameraPosition } from "@utils/cameraManipulator";
-import { getOrCreateIndexBufferInfo } from "@utils/webgl/indexBufferStore";
-import { getOrCreateTextureInfos } from "@utils/webgl/textureInfoStore";
 import { commitStateOnInit } from "@utils/webgl/stateMediator";
 import { translations } from "@common/translations";
 import { __prod__ } from "@common/constants";
-import { AttributeBufferType } from "@utils/webgl/attributeBuffer";
-import { UniformType } from "@utils/webgl/uniform";
+import { AttributeBufferType } from "@utils/webgl/attributeBuffer/attributeBuffer";
+import { UniformType } from "@utils/webgl/uniform/uniform";
 import { UniformSection } from "./uniform/UniformsSection";
 import { AttributeBuffersSection } from "./attributeBuffer/AttributeBuffersSection";
 import { TextureSection } from "./texture/TexturesSection";
+import { getOrCreateAttributeBufferInfos } from "@utils/webgl/attributeBuffer/attributeBufferStore";
+import { getOrCreateIndexBufferInfo } from "@utils/webgl/indexBuffer/indexBufferStore";
+import { getOrCreateTextureInfos } from "@utils/webgl/texture/textureStore";
+import { getOrCreateUniformInfos } from "@utils/webgl/uniform/uniformStore";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
@@ -51,7 +51,7 @@ const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>) => {
       texturesInfos: { name: string }[]
     ) =>
       dispatch({
-        type: "SET_NEW_SHADER_INFO",
+        type: "REBUILD_SHADER_INFO",
         payload: { attributeBuffersInfos, uniformInfos, texturesInfos },
       }),
   };
