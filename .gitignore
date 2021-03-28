@@ -4,3 +4,4 @@ node_modules
 .vscode-test/
 *.vsix
 /media/main.js
+example.zip

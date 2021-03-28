@@ -65,6 +65,10 @@ const setTexture = async (name: string, optionId: string, value: string): Promis
     try {
       const img = await loadImage(uri);
       textureInfo.setSource(img);
+      store.dispatch({
+        type: "SET_TEXTURE_LOADING_ERROR",
+        payload: { name, error: "" },
+      });
     } catch {
       onError(translations.errors.fetchingImage);
     }
