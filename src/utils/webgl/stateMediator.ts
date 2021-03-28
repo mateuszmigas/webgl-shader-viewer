@@ -51,7 +51,7 @@ const setTexture = async (name: string, optionId: string, value: string): Promis
 
   const binding = getTextureBinding(optionId);
   const uri = binding ? await viewerEndpoint.getExtensionFileUri(binding.fileName) : value;
-  const onError = (error: string) => {
+  const setError = (error: string) => {
     store.dispatch({
       type: "SET_TEXTURE_LOADING_ERROR",
       payload: { name, error },
@@ -60,17 +60,14 @@ const setTexture = async (name: string, optionId: string, value: string): Promis
   };
 
   if (!uri) {
-    onError(translations.errors.emptyUrl);
+    setError(translations.errors.emptyUrl);
   } else {
     try {
       const img = await loadImage(uri);
       textureInfo.setSource(img);
-      store.dispatch({
-        type: "SET_TEXTURE_LOADING_ERROR",
-        payload: { name, error: "" },
-      });
+      setError("");
     } catch {
-      onError(translations.errors.fetchingImage);
+      setError(translations.errors.fetchingImage);
     }
   }
 };
