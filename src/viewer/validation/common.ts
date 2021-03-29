@@ -1,18 +1,19 @@
-export const validateArrayElements = (value: string, elementSize: number) => {
+import { translations } from "@common/translations";
+export const validateArrayElements = (value: string) => {
   try {
     const parsedResult = JSON.parse(value);
     if (!Array.isArray(parsedResult)) {
-      return "this is not an array type";
+      return translations.errors.parsing.notArray;
     } else {
-      const isEveryElementCorrectSize = parsedResult.every(item =>
-        Array.isArray(item) ? item.length === elementSize : elementSize === 1
+      const distinctElementSizes = new Set(
+        parsedResult.map(item => (Array.isArray(item) ? item.length : 1))
       );
-      if (!isEveryElementCorrectSize) {
-        return "not every element id the arra is same size";
+      if (distinctElementSizes.size > 1) {
+        return translations.errors.parsing.notEveryArrayElementSameSize;
       }
     }
   } catch {
-    return "this is not a valid format";
+    return translations.errors.parsing.invalidJsonFormat;
   }
 
   return "";

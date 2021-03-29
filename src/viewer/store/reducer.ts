@@ -234,7 +234,7 @@ const applyAttributeBufferBindingsReducer = (state: ViewerState): ViewerState =>
         ...(binding
           ? { value: binding.getValue(state.meshId), error: "" }
           : {
-              error: validateAttributeBuffer(propValue.value, propValue.type),
+              error: validateAttributeBuffer(propValue.value),
             }),
       };
     }),

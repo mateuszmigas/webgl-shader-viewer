@@ -23,6 +23,11 @@ export const translations = {
     vertexShader: "VERTEX SHADER:",
     fragmentShader: "FRAGMENT SHADER:",
     contextNotCreated: "Unable to create webgl context",
+    parsing: {
+      notArray: "Not an array",
+      invalidJsonFormat: "Invalid JSON format",
+      notEveryArrayElementSameSize: "Not every array element is same size",
+    },
   },
   bindings: {
     meshPositions: "Binding - Mesh positions",

@@ -1,3 +1,3 @@
 import { validateArrayElements } from "./common";
 
-export const validateIndexBuffer = (value: string) => validateArrayElements(value, 1);
+export const validateIndexBuffer = (value: string) => validateArrayElements(value);

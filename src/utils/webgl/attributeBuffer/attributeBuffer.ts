@@ -1,5 +1,3 @@
-import { assertNever } from "utils/typeGuards";
-
 export enum AttributeBufferType {
   FLOAT_VEC2 = 35664,
   FLOAT_VEC3 = 35665,
@@ -9,7 +7,8 @@ export enum AttributeBufferType {
 export class AttributeBufferInfo {
   private buffer: WebGLBuffer | null;
   private location: number;
-  private count = 0;
+  private elementCount = 0;
+  private elementSize = 0;
 
   constructor(
     private context: WebGLRenderingContext,
@@ -26,7 +25,8 @@ export class AttributeBufferInfo {
   }
 
   setValue(newValue: number[][]) {
-    this.count = newValue.length;
+    this.elementCount = newValue.length;
+    this.elementSize = newValue[0]?.length ?? 1;
     this.context.bindBuffer(this.context.ARRAY_BUFFER, this.buffer);
     const flatten = [].concat(...newValue);
     this.context.bufferData(
@@ -40,11 +40,11 @@ export class AttributeBufferInfo {
     if (this.buffer !== null) {
       this.context.enableVertexAttribArray(this.location);
       this.context.bindBuffer(this.context.ARRAY_BUFFER, this.buffer);
-      const size = getNumComponents(this.type); // 2 components per iteration
-      const type = this.context.FLOAT; // the data is 32bit floats
-      const normalize = false; // don't normalize the data
-      const stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
-      const offset = 0; // start at the beginning of the buffer
+      const size = this.elementSize;
+      const type = this.context.FLOAT;
+      const normalize = false;
+      const stride = 0;
+      const offset = 0;
       this.context.vertexAttribPointer(this.location, size, type, normalize, stride, offset);
     }
   }
@@ -54,7 +54,7 @@ export class AttributeBufferInfo {
   }
 
   getCount() {
-    return this.count;
+    return this.elementCount;
   }
 
   deleteBuffer() {
@@ -62,16 +62,3 @@ export class AttributeBufferInfo {
     this.buffer = null;
   }
 }
-
-const getNumComponents = (bufferType: AttributeBufferType) => {
-  switch (bufferType) {
-    case AttributeBufferType.FLOAT_VEC2:
-      return 2;
-    case AttributeBufferType.FLOAT_VEC3:
-      return 3;
-    case AttributeBufferType.FLOAT_VEC4:
-      return 4;
-    default:
-      assertNever(bufferType);
-  }
-};

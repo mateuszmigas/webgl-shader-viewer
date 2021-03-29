@@ -104,9 +104,9 @@ export const Viewer = connect(
         setViewerSize({ ...rect });
       });
 
-      if (!__prod__) {
-        viewerEndpoint.showWebViewDevTools();
-      }
+      //if (!__prod__) {
+      viewerEndpoint.showWebViewDevTools();
+      //}
     }, [setViewerSize]);
 
     React.useEffect(() => {
