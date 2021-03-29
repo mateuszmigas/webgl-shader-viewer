@@ -35,6 +35,8 @@ const getDefaultValue = (type: UniformType) => {
       return repeat(3, 1);
     case UniformType.FLOAT_VEC4:
       return repeat(4, 1);
+    case UniformType.FLOAT_MAT3:
+      return [1, 0, 0, 0, 1, 0, 0, 0, 1];
     case UniformType.FLOAT_MAT4:
       return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
     default:

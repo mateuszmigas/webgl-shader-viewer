@@ -27,6 +27,14 @@ const bindings = new Map<
     },
   ],
   [
+    "normals",
+    {
+      type: AttributeBufferType.FLOAT_VEC3,
+      display: translations.bindings.meshNormals,
+      getValue: id => getMeshBinding(id, "normals"),
+    },
+  ],
+  [
     "colors",
     {
       type: AttributeBufferType.FLOAT_VEC4,
@@ -46,6 +54,9 @@ const getDefaultOption = (name: string) => {
   }
   if (lowerCaseName.includes("colors")) {
     return "colors";
+  }
+  if (lowerCaseName.includes("normal")) {
+    return "normals";
   }
   return customOption.id;
 };

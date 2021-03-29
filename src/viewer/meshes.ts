@@ -1,9 +1,10 @@
-import { Vector2Array, Vector4Array } from "../utils/types";
+import { Vector2Array, Vector3Array, Vector4Array } from "../utils/types";
 
 export type MeshInfo = {
   display: string;
   positions: Vector4Array[];
   colors: Vector4Array[];
+  normals: Vector3Array[];
   textureCoordinates: Vector2Array[];
   indices: number[];
 };
@@ -61,6 +62,38 @@ export const meshes = new Map<string, MeshInfo>([
         ...repeat4Times([0.0, 0.0, 1.0, 1.0]), // Bottom face: blue
         ...repeat4Times([1.0, 1.0, 0.0, 1.0]), // Right face: yellow
         ...repeat4Times([1.0, 0.0, 1.0, 1.0]), // Left face: purple
+      ],
+      normals: [
+        // Front
+        [0.0, 0.0, 1.0],
+        [0.0, 0.0, 1.0],
+        [0.0, 0.0, 1.0],
+        [0.0, 0.0, 1.0],
+        // Back
+        [0.0, 0.0, -1.0],
+        [0.0, 0.0, -1.0],
+        [0.0, 0.0, -1.0],
+        [0.0, 0.0, -1.0],
+        // Top
+        [0.0, 1.0, 0.0],
+        [0.0, 1.0, 0.0],
+        [0.0, 1.0, 0.0],
+        [0.0, 1.0, 0.0],
+        // Bottom
+        [0.0, -1.0, 0.0],
+        [0.0, -1.0, 0.0],
+        [0.0, -1.0, 0.0],
+        [0.0, -1.0, 0.0],
+        // Right
+        [1.0, 0.0, 0.0],
+        [1.0, 0.0, 0.0],
+        [1.0, 0.0, 0.0],
+        [1.0, 0.0, 0.0],
+        // Left
+        [-1.0, 0.0, 0.0],
+        [-1.0, 0.0, 0.0],
+        [-1.0, 0.0, 0.0],
+        [-1.0, 0.0, 0.0],
       ],
       textureCoordinates: [
         // Front
@@ -145,6 +178,7 @@ export const meshes = new Map<string, MeshInfo>([
         [-0.5, 0.5, 0, 1],
       ],
       colors: repeat4Times([1.0, 1.0, 1.0, 1.0]),
+      normals: [], //todo
       textureCoordinates: [
         [0.0, 0.0],
         [1.0, 0.0],

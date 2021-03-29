@@ -1,10 +1,14 @@
-// an attribute will receive data from a buffer
 attribute vec4 a_position;
+attribute vec3 a_normal;
 
-// all shaders have a main function
+uniform mat4 u_matrix;
+
+varying vec3 v_normal;
+
 void main(){
+    // Multiply the position by the matrix.
+    gl_Position=u_matrix*a_position;
     
-    // gl_Position is a special variable a vertex shader
-    // is responsible for setting
-    gl_Position=a_position;
+    // Pass the normal to the fragment shader
+    v_normal=a_normal;
 }

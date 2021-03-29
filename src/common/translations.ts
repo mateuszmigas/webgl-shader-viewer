@@ -32,6 +32,7 @@ export const translations = {
   bindings: {
     meshPositions: "Binding - Mesh positions",
     meshTextureCoordinates: "Binding - Mesh texture coords",
+    meshNormals: "Binding - Mesh normals",
     meshColors: "Binding - Mesh colors",
     meshIndices: "Binding - Mesh indices",
     textureSky: "Binding - Sky",

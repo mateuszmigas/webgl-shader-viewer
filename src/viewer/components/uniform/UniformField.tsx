@@ -8,11 +8,13 @@ import {
   Vector2NumberInput,
   Vector3NumberInput,
   Vector4NumberInput,
+  Matrix3x3NumberInput,
   Matrix4x4NumberInput,
 } from "../common";
 import { customOption } from "@common/constants";
 import { Dropdown } from "../common/Dropdown";
 import { getUniformBindingOptionsForType } from "@utils/webgl/uniform/uniformUtils";
+import { assertNever } from "@utils/typeGuards";
 
 type OwnProps = {
   name: string;
@@ -34,10 +36,12 @@ const renderUniformInput = (
       return <Vector3NumberInput {...props}></Vector3NumberInput>;
     case UniformType.FLOAT_VEC4:
       return <Vector4NumberInput {...props}></Vector4NumberInput>;
+    case UniformType.FLOAT_MAT3:
+      return <Matrix3x3NumberInput {...props}></Matrix3x3NumberInput>;
     case UniformType.FLOAT_MAT4:
       return <Matrix4x4NumberInput {...props}></Matrix4x4NumberInput>;
     default:
-      return <div>Uniform not supported</div>;
+      assertNever(type);
   }
 };
 
