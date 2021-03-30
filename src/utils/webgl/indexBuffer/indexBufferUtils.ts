@@ -1,5 +1,5 @@
 import { translations } from "@common/translations";
-import { MeshInfo, meshes } from "viewer/meshes";
+import { meshes, MeshInfo } from "viewer/meshes";
 
 const getMeshBinding = (meshId: string, name: keyof MeshInfo) =>
   JSON.stringify(meshes.get(meshId)[name]);

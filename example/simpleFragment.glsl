@@ -6,6 +6,9 @@ varying vec3 v_normal;
 uniform vec3 u_reverseLightDirection;
 uniform vec4 u_color;
 
+varying highp vec2 vTextureCoord;
+uniform sampler2D uSampler;
+
 void main(){
     // because v_normal is a varying it's interpolated
     // so it will not be a unit vector. Normalizing it
@@ -18,5 +21,7 @@ void main(){
     
     // Lets multiply just the color portion (not the alpha)
     // by the light
-    gl_FragColor.rgb*=light;
+    vec4 textureColor=texture2D(uSampler,vTextureCoord);
+    //gl_FragColor.rgb*=light;
+    gl_FragColor=textureColor;
 }

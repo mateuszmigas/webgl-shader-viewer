@@ -5,3 +5,4 @@
 7. color picker???
 8. strongly typed uniforms
 9. slice reducers
+10. add sphere/teapot meshes
