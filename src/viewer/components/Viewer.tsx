@@ -18,7 +18,7 @@ import { ViewerAction } from "../store/actions";
 import { useDocumentWatcher } from "../hooks/useDocumentWatcher";
 import { store } from "..";
 import { CameraPosition } from "@utils/cameraManipulator";
-import { commitStateOnInit } from "@utils/webgl/stateMediator";
+import { commitStateOnInit, commitStateOnRender } from "@utils/webgl/stateMediator";
 import { translations } from "@common/translations";
 import { __prod__ } from "@common/constants";
 import { AttributeBufferType } from "@utils/webgl/attributeBuffer/attributeBuffer";
@@ -154,7 +154,8 @@ export const Viewer = connect(
         commitStateOnInit();
 
         const render = () => {
-          const { drawMode } = store.getState();
+          const state = store.getState();
+          commitStateOnRender(state);
           renderProgram(
             contextRef.current,
             program,
@@ -164,7 +165,7 @@ export const Viewer = connect(
               attributeBufferInfos,
               indexBufferInfo,
             },
-            { drawMode }
+            { drawMode: state.drawMode }
           );
 
           animationFrameHandleRef.current = requestAnimationFrame(render);
