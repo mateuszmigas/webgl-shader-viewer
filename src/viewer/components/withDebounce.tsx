@@ -1,4 +1,4 @@
-import { debounce, shallowEqual } from "@utils/function";
+import { debounce } from "@utils/function";
 import React from "react";
 
 export const withDebounce = <T extends object>(
