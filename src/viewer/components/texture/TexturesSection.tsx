@@ -11,8 +11,8 @@ const mapStateToProps = (state: ViewerState) => {
   };
 };
 
-export const TextureSection = React.memo(
-  connect(mapStateToProps)(({ textureValues }: { textureValues: ViewerState["textureValues"] }) => {
+export const TextureSection = connect(mapStateToProps)(
+  React.memo(({ textureValues }: { textureValues: ViewerState["textureValues"] }) => {
     return Object.keys(textureValues).length ? (
       <div className="viewer-options-section">
         <SectionTitle text={translations.textures.title}></SectionTitle>

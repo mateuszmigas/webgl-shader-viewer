@@ -41,11 +41,11 @@ const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>, ownProps: OwnProps
   };
 };
 
-export const TextureField = React.memo(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(
+export const TextureField = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(
+  React.memo(
     (props: {
       name: string;
       optionId: string;

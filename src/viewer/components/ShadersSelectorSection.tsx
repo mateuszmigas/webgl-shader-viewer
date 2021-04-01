@@ -24,11 +24,11 @@ const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>) => {
   };
 };
 
-export const ShadersSelectorSection = React.memo(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(
+export const ShadersSelectorSection = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(
+  React.memo(
     (props: {
       selectedVertexFileId: string;
       selectedFragmentFileId: string;

@@ -261,12 +261,13 @@ const applyIndexBufferBindingsReducer = (state: ViewerState): ViewerState => {
 const applyUniformBindingsReducer = (state: ViewerState): ViewerState => {
   return {
     ...state,
-    uniformValues: objectMap(state.uniformValues, propValue => ({
-      ...propValue,
-      value:
-        getUniformBinding(propValue.optionId)?.getValue(state.cameraPosition, state.viewerSize) ??
-        propValue.value,
-    })),
+    uniformValues: objectMap(state.uniformValues, propValue => {
+      const binding = getUniformBinding(propValue.optionId);
+      return {
+        ...propValue,
+        value: binding?.getValue(state.cameraPosition, state.viewerSize) ?? propValue.value,
+      };
+    }),
   };
 };
 

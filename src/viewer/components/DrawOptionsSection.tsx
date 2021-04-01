@@ -35,11 +35,11 @@ const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>) => {
   };
 };
 
-export const DrawOptionsSection = React.memo(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(
+export const DrawOptionsSection = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(
+  React.memo(
     (props: {
       drawMode: DrawMode;
       meshId: string;

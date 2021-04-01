@@ -11,8 +11,8 @@ const mapStateToProps = (state: ViewerState) => {
   };
 };
 
-export const UniformSection = React.memo(
-  connect(mapStateToProps)(({ uniformValues }: { uniformValues: ViewerState["uniformValues"] }) => {
+export const UniformSection = connect(mapStateToProps)(
+  React.memo(({ uniformValues }: { uniformValues: ViewerState["uniformValues"] }) => {
     return Object.keys(uniformValues).length ? (
       <div className="viewer-options-section">
         <SectionTitle text={translations.uniforms}></SectionTitle>

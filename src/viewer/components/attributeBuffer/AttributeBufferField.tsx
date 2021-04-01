@@ -43,11 +43,11 @@ const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>, ownProps: OwnProps
   };
 };
 
-export const AttributeBufferField = React.memo(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(
+export const AttributeBufferField = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(
+  React.memo(
     (props: {
       name: string;
       type: number;

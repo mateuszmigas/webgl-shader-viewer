@@ -38,11 +38,11 @@ const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>) => {
   };
 };
 
-export const IndexBufferField = React.memo(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(
+export const IndexBufferField = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(
+  React.memo(
     (props: {
       optionId: string;
       value: string;

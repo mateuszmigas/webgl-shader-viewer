@@ -1,9 +1,11 @@
+import { ViewerState } from "@viewerStore/state";
 import { repeat } from "@utils/array";
 import { assertNever } from "@utils/typeGuards";
 import { customOption } from "@common/constants";
 import { translations } from "@common/translations";
-import { getCameraMatrix } from "@utils/cameraManipulator";
+import { CameraPosition, getCameraMatrix } from "@utils/cameraManipulator";
 import { UniformType } from "@utils/webgl/uniform/uniform";
+import { memoizeResult } from "@utils/function";
 
 const bindings = new Map<
   string,
@@ -14,7 +16,10 @@ const bindings = new Map<
     {
       type: UniformType.FLOAT_MAT4,
       display: translations.bindings.uniformPerspectiveCamera,
-      getValue: (cameraPosition, size) => getCameraMatrix(cameraPosition, size),
+      getValue: memoizeResult(
+        (cameraPosition: CameraPosition, size: { width: number; height: number }) =>
+          getCameraMatrix(cameraPosition, size)
+      ),
     },
   ],
 ]);

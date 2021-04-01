@@ -11,8 +11,8 @@ const mapStateToProps = (state: ViewerState) => {
   };
 };
 
-export const AttributeBuffersSection = React.memo(
-  connect(mapStateToProps)(
+export const AttributeBuffersSection = connect(mapStateToProps)(
+  React.memo(
     ({
       attributeBufferValues,
     }: {

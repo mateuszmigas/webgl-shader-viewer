@@ -15,6 +15,7 @@ import { customOption } from "@common/constants";
 import { Dropdown } from "../common/Dropdown";
 import { getUniformBindingOptionsForType } from "@utils/webgl/uniform/uniformUtils";
 import { assertNever } from "@utils/typeGuards";
+import { withDebounce } from "../withDebounce";
 
 type OwnProps = {
   name: string;
@@ -74,38 +75,45 @@ const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>, ownProps: OwnProps
   };
 };
 
-export const UniformField = React.memo(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(
-    (props: {
-      name: string;
-      type: number;
-      optionId: string;
-      value: any;
-      setOption: (optionId: string) => void;
-      setValue: (value: any) => void;
-    }) => {
-      const { type, optionId, value, setOption, setValue } = props;
-      const options = React.useMemo(
-        () => [customOption, ...getUniformBindingOptionsForType(type)],
-        [type]
-      );
-      const isCustom = optionId === customOption.id;
+export const UniformField = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(
+  React.memo(
+    withDebounce(
+      (props: {
+        name: string;
+        type: number;
+        optionId: string;
+        value: any;
+        setOption: (optionId: string) => void;
+        setValue: (value: any) => void;
+      }) => {
+        const { type, optionId, value, setOption, setValue } = props;
+        const options = React.useMemo(
+          () => [customOption, ...getUniformBindingOptionsForType(type)],
+          [type]
+        );
+        const isCustom = optionId === customOption.id;
 
-      return (
-        <div>
-          {options.length > 1 && (
-            <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
-          )}
-          {renderUniformInput(type, {
-            value,
-            onChange: isCustom ? setValue : undefined,
-            readonly: !isCustom,
-          })}
-        </div>
-      );
-    }
+        return (
+          <div>
+            {options.length > 1 && (
+              <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
+            )}
+            {renderUniformInput(type, {
+              value,
+              onChange: isCustom ? setValue : undefined,
+              readonly: !isCustom,
+            })}
+          </div>
+        );
+      },
+      {
+        shouldDebounce: (oldProps, newProps) =>
+          newProps.optionId !== customOption.id && oldProps.value !== newProps.value,
+        waitMs: 100,
+      }
+    )
   )
 );
