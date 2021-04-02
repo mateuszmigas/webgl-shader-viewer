@@ -1,8 +1,13 @@
-1. show optimized uniforms with warning (not active for webgl), requires extra regex parsing
-2. textures from user workspace
-3. show loader at start
-5. tests
-7. color picker???
-8. strongly typed uniforms
-9. slice reducers
-10. add sphere/teapot meshes
+must have:
+- textures from user workspace
+- tests
+- logo
+- optimize mouse move
+
+nice to have:
+- show optimized uniforms with warning (not active for webgl), requires extra regex parsing
+- show loader at start
+- color picker
+- strongly typed uniforms
+- slice reducers
+- load meshes from files, obj

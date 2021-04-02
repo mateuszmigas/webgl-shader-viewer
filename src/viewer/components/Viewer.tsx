@@ -35,7 +35,6 @@ const mapStateToProps = (state: ViewerState) => {
   return {
     selectedVertexFileId: state.vertexFilePath,
     selectedFragmentFileId: state.fragmentFilePath,
-    cameraPosition: state.cameraPosition,
   };
 };
 
@@ -65,7 +64,6 @@ export const Viewer = connect(
     (props: {
       selectedVertexFileId: string;
       selectedFragmentFileId: string;
-      cameraPosition: CameraPosition;
       setCameraPosition: (newCameraPosition: CameraPosition) => void;
       setViewerSize: (size: { width: number; height: number }) => void;
       setNewShaderInfo: (
@@ -77,7 +75,6 @@ export const Viewer = connect(
       const {
         selectedVertexFileId,
         selectedFragmentFileId,
-        cameraPosition,
         setCameraPosition,
         setViewerSize,
         setNewShaderInfo,
@@ -182,7 +179,7 @@ export const Viewer = connect(
         }
       }, [selectedVertexFileText, selectedFragmentFileText]);
 
-      usePerspectiveCamera(contentRef.current, cameraPosition, setCameraPosition);
+      usePerspectiveCamera(contentRef.current, store.getState().cameraPosition, setCameraPosition);
       useDocumentWatcher(selectedVertexFileId, setSelectedVertexFileText);
       useDocumentWatcher(selectedFragmentFileId, setSelectedFragmentFileText);
 

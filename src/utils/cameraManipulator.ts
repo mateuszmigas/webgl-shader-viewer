@@ -1,4 +1,5 @@
 import { mat4 } from "./math";
+import { ThrottleHtmlManipulator } from "./throttleManipulator";
 import { Matrix4Array, Vector3 } from "./types";
 
 type EventType = keyof HTMLElementEventMap;
@@ -86,7 +87,7 @@ const reducer = (position: CameraPosition, action: Action): CameraPosition => {
   }
 };
 
-export class CameraPositionManipulator {
+export class CameraPositionManipulator extends ThrottleHtmlManipulator {
   private pointerPosition = { x: 0, y: 0 };
   eventListeners = new Map<string, EventHandler<Event>>();
   private isMoving = false;
@@ -96,6 +97,7 @@ export class CameraPositionManipulator {
     private positionProvider: () => CameraPosition,
     private onPositionChange: (newPosition: CameraPosition) => void
   ) {
+    super(element);
     this.registerEvent("mousedown", this.onMouseDown);
     this.registerEvent("mousemove", this.onMouseMove);
     this.registerEvent("mouseup", this.onMouseUp);
@@ -105,11 +107,6 @@ export class CameraPositionManipulator {
 
   dispose() {
     this.eventListeners.forEach((value, key) => this.element.removeEventListener(key, value));
-  }
-
-  private registerEvent<T extends Event>(type: EventType, handler: EventHandler<T>) {
-    this.element.addEventListener(type, handler as EventHandler<Event>);
-    this.eventListeners.set(type, handler as EventHandler<Event>);
   }
 
   private dispatchAction = (action: Action) => {
