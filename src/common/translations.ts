@@ -40,4 +40,9 @@ export const translations = {
     textureEgypt: "Binding - Egypt",
     uniformPerspectiveCamera: "Binding - Perspective Camera",
   },
+  meshes: {
+    cube: "Cube",
+    sphere: "Sphere",
+    plane: "Plane",
+  },
 } as const;

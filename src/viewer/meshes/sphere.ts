@@ -1,16 +1,19 @@
+import { translations } from "@common/translations";
 import { TextCoord, Vector3 } from "./../../utils/types";
 import { MeshInfo } from "./meshInfo";
 
+//http://www.songho.ca/opengl/gl_sphere.html
 export const generateSphere = (): MeshInfo => {
-  const vertices: Vector3[] = [];
-  const normals: Vector3[] = [];
-  const texCoords: TextCoord[] = [];
   const radius = 0.5;
   const sectorCount = 15;
   const stackCount = 15;
   const lengthInv = 1.0 / radius;
   const sectorStep = (2 * Math.PI) / sectorCount;
   const stackStep = Math.PI / stackCount;
+
+  const vertices: Vector3[] = [];
+  const normals: Vector3[] = [];
+  const texCoords: TextCoord[] = [];
 
   for (let i = 0; i <= stackCount; ++i) {
     const stackAngle = Math.PI / 2 - i * stackStep;
@@ -33,27 +36,24 @@ export const generateSphere = (): MeshInfo => {
   }
 
   const indices: number[] = [];
+
   for (let i = 0; i < stackCount; ++i) {
     let k1 = i * (sectorCount + 1);
     let k2 = k1 + sectorCount + 1;
 
     for (let j = 0; j < sectorCount; ++j, ++k1, ++k2) {
       if (i !== 0) {
-        indices.push(k1);
-        indices.push(k2);
-        indices.push(k1 + 1);
+        indices.push(k1, k2, k1 + 1);
       }
 
       if (i !== stackCount - 1) {
-        indices.push(k1 + 1);
-        indices.push(k2);
-        indices.push(k2 + 1);
+        indices.push(k1 + 1, k2, k2 + 1);
       }
     }
   }
 
   return {
-    display: "Sphere",
+    display: translations.meshes.sphere,
     positions: vertices.map(v => [v.x, v.y, v.z, 1]),
     colors: [],
     normals: normals.map(v => [v.x, v.y, v.z]),

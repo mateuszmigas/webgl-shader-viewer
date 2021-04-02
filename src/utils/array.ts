@@ -20,6 +20,10 @@ export const range = (range: number | [number, number]) => {
 
 export const repeat = <T>(count: number, value: T): T[] => Array(count).fill(value);
 
+export const repeat4Times = <T>(array: T[]) => {
+  return [].concat(array, array, array, array);
+};
+
 export const convertArrayToObject = <T, R>(
   array: T[],
   map: (item: T) => [string, R]
