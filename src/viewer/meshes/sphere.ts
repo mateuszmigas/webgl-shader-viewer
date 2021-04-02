@@ -5,8 +5,8 @@ import { MeshInfo } from "./meshInfo";
 //http://www.songho.ca/opengl/gl_sphere.html
 export const generateSphere = (): MeshInfo => {
   const radius = 0.5;
-  const sectorCount = 15;
-  const stackCount = 15;
+  const sectorCount = 30;
+  const stackCount = 30;
   const lengthInv = 1.0 / radius;
   const sectorStep = (2 * Math.PI) / sectorCount;
   const stackStep = Math.PI / stackCount;

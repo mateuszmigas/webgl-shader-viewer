@@ -17,11 +17,11 @@ void main(){
     
     float light=dot(normal,u_reverseLightDirection);
     
-    gl_FragColor=u_color;
+    gl_FragColor=texture2D(uSampler,vTextureCoord);
     
     // Lets multiply just the color portion (not the alpha)
     // by the light
     vec4 textureColor=texture2D(uSampler,vTextureCoord);
-    //gl_FragColor.rgb*=light;
-    gl_FragColor=textureColor;
+    gl_FragColor.rgb*=light;
+    //gl_FragColor=textureColor;
 }
