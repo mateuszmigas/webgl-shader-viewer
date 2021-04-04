@@ -1,5 +1,6 @@
 import React from "react";
 import { range } from "@utils/array";
+import { NumberInput } from "./NumberInput";
 
 export const MultiNumberInput = React.memo(
   (props: {
@@ -18,16 +19,12 @@ export const MultiNumberInput = React.memo(
             {range(columns).map(column => {
               const index = row * columns + column;
               return (
-                <input
+                <NumberInput
                   key={column}
-                  className={`component-input ${readonly ? "component-input-readonly" : ""}`}
-                  type="number"
-                  disabled={readonly}
+                  readonly={readonly}
                   value={value[index]}
-                  onChange={e =>
-                    onChange(value.map((v, i) => (i === index ? Number(e.target.value) : v)))
-                  }
-                ></input>
+                  onChange={newValue => onChange(value.map((v, i) => (i === index ? newValue : v)))}
+                ></NumberInput>
               );
             })}
           </div>

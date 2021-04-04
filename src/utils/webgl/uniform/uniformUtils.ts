@@ -34,6 +34,8 @@ const getDefaultOption = (name: string) => {
 
 const getDefaultValue = (type: UniformType) => {
   switch (type) {
+    case UniformType.FLOAT:
+      return 1;
     case UniformType.FLOAT_VEC2:
       return repeat(2, 1);
     case UniformType.FLOAT_VEC3:

@@ -10,6 +10,7 @@ import {
   Vector4NumberInput,
   Matrix3x3NumberInput,
   Matrix4x4NumberInput,
+  NumberInput,
 } from "../common";
 import { customOption } from "@common/constants";
 import { Dropdown } from "../common/Dropdown";
@@ -31,6 +32,8 @@ const renderUniformInput = (
   }
 ) => {
   switch (type) {
+    case UniformType.FLOAT:
+      return <NumberInput {...props}></NumberInput>;
     case UniformType.FLOAT_VEC2:
       return <Vector2NumberInput {...props}></Vector2NumberInput>;
     case UniformType.FLOAT_VEC3:
