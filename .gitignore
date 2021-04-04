@@ -3,5 +3,6 @@ dist
 node_modules
 .vscode-test/
 *.vsix
-/media/main.js
 example.zip
+/media/main.js
+/media/main.js.map
