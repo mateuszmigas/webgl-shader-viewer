@@ -1,15 +1,14 @@
 import { translations } from "@common/translations";
-import { meshes, MeshInfo } from "viewer/meshes";
+import { getSerializedProp } from "viewer/meshes";
 
-const getMeshBinding = (meshId: string, name: keyof MeshInfo) =>
-  JSON.stringify(meshes.get(meshId)[name]);
+const indices = getSerializedProp("indices");
 
 const bindings = new Map<string, { display: string; getValue: (id: string) => any }>([
   [
     "indices",
     {
       display: translations.bindings.meshIndices,
-      getValue: id => getMeshBinding(id, "indices"),
+      getValue: id => indices.get(id),
     },
   ],
 ]);

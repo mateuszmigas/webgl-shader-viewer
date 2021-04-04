@@ -1,10 +1,12 @@
 import { customOption } from "@common/constants";
 import { translations } from "@common/translations";
 import { AttributeBufferType } from "@utils/webgl/attributeBuffer/attributeBuffer";
-import { meshes, MeshInfo } from "viewer/meshes";
+import { getSerializedProp } from "viewer/meshes";
 
-const getMeshBinding = (meshId: string, name: keyof MeshInfo) =>
-  JSON.stringify(meshes.get(meshId)[name]);
+const positions = getSerializedProp("positions");
+const textureCoordinates = getSerializedProp("textureCoordinates");
+const normals = getSerializedProp("normals");
+const colors = getSerializedProp("colors");
 
 const bindings = new Map<
   string,
@@ -15,7 +17,7 @@ const bindings = new Map<
     {
       type: AttributeBufferType.FLOAT_VEC4,
       display: translations.bindings.meshPositions,
-      getValue: id => getMeshBinding(id, "positions"),
+      getValue: id => positions.get(id),
     },
   ],
   [
@@ -23,7 +25,7 @@ const bindings = new Map<
     {
       type: AttributeBufferType.FLOAT_VEC2,
       display: translations.bindings.meshTextureCoordinates,
-      getValue: id => getMeshBinding(id, "textureCoordinates"),
+      getValue: id => textureCoordinates.get(id),
     },
   ],
   [
@@ -31,7 +33,7 @@ const bindings = new Map<
     {
       type: AttributeBufferType.FLOAT_VEC3,
       display: translations.bindings.meshNormals,
-      getValue: id => getMeshBinding(id, "normals"),
+      getValue: id => normals.get(id),
     },
   ],
   [
@@ -39,7 +41,7 @@ const bindings = new Map<
     {
       type: AttributeBufferType.FLOAT_VEC4,
       display: translations.bindings.meshColors,
-      getValue: id => getMeshBinding(id, "colors"),
+      getValue: id => colors.get(id),
     },
   ],
 ]);
