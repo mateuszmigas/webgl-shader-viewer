@@ -1,29 +1,29 @@
 import React from "react";
-import { connect } from "react-redux";
+import { connect, shallowEqual } from "react-redux";
 import { ViewerState } from "@viewerStore/state";
 import { translations } from "@common/translations";
 import { SectionField, SectionTitle } from "../common";
 import { AttributeBufferField } from "./AttributeBufferField";
+import { objectMap } from "@utils/object";
+import { AttributeBufferType } from "@utils/webgl/attributeBuffer/attributeBuffer";
 
 const mapStateToProps = (state: ViewerState) => {
   return {
-    attributeBufferValues: state.attributeBufferValues,
+    attributeBuffers: objectMap(state.attributeBufferValues, propValue => propValue.type),
   };
 };
 
-export const AttributeBuffersSection = connect(mapStateToProps)(
+export const AttributeBuffersSection = connect(mapStateToProps, null, null, {
+  areStatePropsEqual: (o, n) => shallowEqual(o.attributeBuffers, n.attributeBuffers),
+})(
   React.memo(
-    ({
-      attributeBufferValues,
-    }: {
-      attributeBufferValues: ViewerState["attributeBufferValues"];
-    }) => {
-      return Object.keys(attributeBufferValues).length ? (
+    ({ attributeBuffers }: { attributeBuffers: { [key: string]: AttributeBufferType } }) => {
+      return Object.keys(attributeBuffers).length ? (
         <div className="viewer-options-section">
           <SectionTitle text={translations.attributeBuffers}></SectionTitle>
-          {Object.entries(attributeBufferValues).map(([name, value]) => (
+          {Object.entries(attributeBuffers).map(([name, type]) => (
             <SectionField key={name} text={name}>
-              <AttributeBufferField name={name} {...value}></AttributeBufferField>
+              <AttributeBufferField name={name} type={type}></AttributeBufferField>
             </SectionField>
           ))}
         </div>
