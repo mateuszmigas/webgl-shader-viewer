@@ -16,7 +16,7 @@ import { getIndexBufferBinding } from "@utils/webgl/indexBuffer/indexBufferUtils
 
 const initialState: ViewerState = {
   ...getExtensionState(),
-  viewerSize: { width: 0, height: 0 },
+  viewerSize: { width: 1, height: 1 },
 };
 
 const mainReducer = (state: ViewerState = initialState, action: ViewerAction): ViewerState => {
