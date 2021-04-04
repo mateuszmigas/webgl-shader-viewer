@@ -12,6 +12,7 @@ const mapStateToProps = (state: ViewerState) => {
   return {
     selectedVertexFileId: state.vertexFilePath,
     selectedFragmentFileId: state.fragmentFilePath,
+    workspaceShaderOptions: state.userWorkspace.shaderOptions,
   };
 };
 
@@ -32,54 +33,32 @@ export const ShadersSelectorSection = connect(
     (props: {
       selectedVertexFileId: string;
       selectedFragmentFileId: string;
+      workspaceShaderOptions: { id: string; display: string }[];
       setSelectedVertexFileId: (value: string | null) => void;
       setSelectedFragmentFileId: (value: string | null) => void;
     }) => {
       const {
         selectedVertexFileId,
         selectedFragmentFileId,
+        workspaceShaderOptions,
         setSelectedVertexFileId,
         setSelectedFragmentFileId,
       } = props;
-
-      const [shaderFileOptions, setShaderFileOptions] = React.useState<DropdownOption[]>([]);
-
-      const syncShaderDocuments = React.useCallback(() => {
-        viewerEndpoint.getWorkspaceFilesOfTypes(shaderExtensions).then(files => {
-          setShaderFileOptions(
-            files.map(file => ({
-              id: file.filePath,
-              display: file.fileName,
-            }))
-          );
-        });
-      }, []);
-
-      React.useEffect(() => syncShaderDocuments(), []);
-
       return (
         <div className="viewer-options-section">
-          <SectionTitle text={translations.shaders.title}>
-            <button
-              className="component-button"
-              title={translations.shaders.syncTooltip}
-              onClick={syncShaderDocuments}
-            >
-              <i className={`codicon codicon-sync`}></i>
-            </button>
-          </SectionTitle>
+          <SectionTitle text={translations.shaders.title}></SectionTitle>
           <SectionField text={translations.vertexShader}>
             <Dropdown
               selectedItemId={selectedVertexFileId}
               onChange={setSelectedVertexFileId}
-              options={shaderFileOptions}
+              options={workspaceShaderOptions}
             ></Dropdown>
           </SectionField>
           <SectionField text={translations.fragmentShader}>
             <Dropdown
               selectedItemId={selectedFragmentFileId}
               onChange={setSelectedFragmentFileId}
-              options={shaderFileOptions}
+              options={workspaceShaderOptions}
             ></Dropdown>
           </SectionField>
         </div>

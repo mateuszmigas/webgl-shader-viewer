@@ -1,5 +1,6 @@
 export const translations = {
   custom: "Custom",
+  synchronize: "Synchronize",
   shaders: {
     title: "Shaders",
     syncTooltip: "Synchronize extension with workspace glsl files",

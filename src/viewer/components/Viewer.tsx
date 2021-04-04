@@ -20,7 +20,7 @@ import { store } from "..";
 import { CameraPosition } from "@utils/cameraManipulator";
 import { commitStateOnInit, commitStateOnRender } from "@utils/webgl/stateMediator";
 import { translations } from "@common/translations";
-import { __prod__ } from "@common/constants";
+import { imagesExtensions, shaderExtensions, __prod__ } from "@common/constants";
 import { AttributeBufferType } from "@utils/webgl/attributeBuffer/attributeBuffer";
 import { UniformType } from "@utils/webgl/uniform/uniform";
 import { UniformSection } from "./uniform/UniformsSection";
@@ -53,6 +53,10 @@ const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>) => {
         type: "REBUILD_SHADER_INFO",
         payload: { attributeBuffersInfos, uniformInfos, texturesInfos },
       }),
+    setWorkspaceImageOptions: (options: { id: string; display: string }[]) =>
+      dispatch({ type: "SET_WORKSPACE_IMAGE_OPTIONS", payload: { options } }),
+    setWorkspaceShaderOptions: (options: { id: string; display: string }[]) =>
+      dispatch({ type: "SET_WORKSPACE_SHADER_OPTIONS", payload: { options } }),
   };
 };
 
@@ -71,6 +75,8 @@ export const Viewer = connect(
         uniformInfos: { name: string; type: UniformType }[],
         texturesInfos: { name: string }[]
       ) => void;
+      setWorkspaceImageOptions: (options: { id: string; display: string }[]) => void;
+      setWorkspaceShaderOptions: (options: { id: string; display: string }[]) => void;
     }) => {
       const {
         selectedVertexFileId,
@@ -78,6 +84,8 @@ export const Viewer = connect(
         setCameraPosition,
         setViewerSize,
         setNewShaderInfo,
+        setWorkspaceImageOptions,
+        setWorkspaceShaderOptions,
       } = props;
 
       const [shaderCompileErrors, setShaderCompileErrors] = React.useState("");
@@ -87,6 +95,24 @@ export const Viewer = connect(
       const canvasRef = React.useRef<HTMLCanvasElement>(null);
       const contextRef = React.useRef<WebGLRenderingContext>(null);
       const animationFrameHandleRef = React.useRef<number | null>(null);
+
+      const syncWorkspaceOptions = React.useCallback(async () => {
+        const [shaderFiles, imageFiles] = await Promise.all([
+          viewerEndpoint.getWorkspaceFilesOfTypes(shaderExtensions),
+          viewerEndpoint.getWorkspaceFilesOfTypes(imagesExtensions),
+        ]);
+
+        setWorkspaceShaderOptions(
+          shaderFiles.map(file => ({
+            id: file.filePath,
+            display: file.fileName,
+          }))
+        );
+
+        setWorkspaceImageOptions(
+          imageFiles.map(file => ({ id: file.uri, display: file.fileName }))
+        );
+      }, [setWorkspaceShaderOptions, setWorkspaceImageOptions]);
 
       //startup
       React.useEffect(() => {
@@ -105,6 +131,7 @@ export const Viewer = connect(
         //if (!__prod__) {
         viewerEndpoint.showWebViewDevTools();
         //}
+        syncWorkspaceOptions();
       }, [setViewerSize]);
 
       React.useEffect(() => {
@@ -186,6 +213,9 @@ export const Viewer = connect(
       return (
         <div className="viewer-grid">
           <div className="viewer-options">
+            <button className="component-button" onClick={syncWorkspaceOptions}>
+              {translations.synchronize}
+            </button>
             <ShadersSelectorSection></ShadersSelectorSection>
             <DrawOptionsSection></DrawOptionsSection>
             <UniformSection></UniformSection>

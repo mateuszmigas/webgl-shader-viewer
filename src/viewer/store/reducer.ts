@@ -17,6 +17,10 @@ import { getIndexBufferBinding } from "@utils/webgl/indexBuffer/indexBufferUtils
 const initialState: ViewerState = {
   ...getExtensionState(),
   viewerSize: { width: 1, height: 1 },
+  userWorkspace: {
+    imageOptions: [],
+    shaderOptions: [],
+  },
 };
 
 const mainReducer = (state: ViewerState = initialState, action: ViewerAction): ViewerState => {
@@ -165,8 +169,8 @@ const mainReducer = (state: ViewerState = initialState, action: ViewerAction): V
         },
       };
     }
-    case "SET_TEXTURE_VALUE": {
-      const { name, value } = action.payload;
+    case "SET_TEXTURE_CUSTOM_URL": {
+      const { name, customUrl } = action.payload;
       const current = state.textureValues[name];
       return {
         ...state,
@@ -174,7 +178,21 @@ const mainReducer = (state: ViewerState = initialState, action: ViewerAction): V
           ...state.textureValues,
           [name]: {
             ...current,
-            value,
+            customUrl,
+          },
+        },
+      };
+    }
+    case "SET_TEXTURE_WORKSPACE_URL": {
+      const { name, workspaceUrl } = action.payload;
+      const current = state.textureValues[name];
+      return {
+        ...state,
+        textureValues: {
+          ...state.textureValues,
+          [name]: {
+            ...current,
+            workspaceUrl,
           },
         },
       };
@@ -216,6 +234,24 @@ const mainReducer = (state: ViewerState = initialState, action: ViewerAction): V
       return {
         ...state,
         drawMode: action.payload.mode,
+      };
+    }
+    case "SET_WORKSPACE_IMAGE_OPTIONS": {
+      return {
+        ...state,
+        userWorkspace: {
+          ...state.userWorkspace,
+          imageOptions: action.payload.options,
+        },
+      };
+    }
+    case "SET_WORKSPACE_SHADER_OPTIONS": {
+      return {
+        ...state,
+        userWorkspace: {
+          ...state.userWorkspace,
+          shaderOptions: action.payload.options,
+        },
       };
     }
     default: {

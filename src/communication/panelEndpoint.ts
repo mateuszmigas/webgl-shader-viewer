@@ -8,14 +8,11 @@ export const panelEndpoint = (
   disposables: vscode.Disposable[]
 ) => {
   const postMessage = (msg: MessageResponse) => webView.postMessage(msg);
-  const getUri = (fileName: string) =>
+  const getMediaUri = (fileName: string) =>
     webView.asWebviewUri(vscode.Uri.joinPath(extensionUri, "media", fileName));
 
   return (message: MessageRequest) => {
-    const didSaveTextDocumentWatchers = new Map<
-      string,
-      (fileContent: string) => void
-    >();
+    const didSaveTextDocumentWatchers = new Map<string, (fileContent: string) => void>();
 
     vscode.workspace.onDidSaveTextDocument(
       listener => {
@@ -28,9 +25,7 @@ export const panelEndpoint = (
 
     switch (message.type) {
       case "showWebViewDevTools": {
-        vscode.commands.executeCommand(
-          "workbench.action.webview.openDeveloperTools"
-        );
+        vscode.commands.executeCommand("workbench.action.webview.openDeveloperTools");
         break;
       }
       case "getWorkspaceFilesOfTypes": {
@@ -53,21 +48,19 @@ export const panelEndpoint = (
         break;
       }
       case "getDocumentText": {
-        vscode.workspace
-          .openTextDocument(message.payload.fileName)
-          .then(document => {
-            postMessage({
-              ...message,
-              payload: {
-                fileName: message.payload.fileName,
-                text: document.getText(),
-              },
-            });
+        vscode.workspace.openTextDocument(message.payload.fileName).then(document => {
+          postMessage({
+            ...message,
+            payload: {
+              fileName: message.payload.fileName,
+              text: document.getText(),
+            },
           });
+        });
         break;
       }
       case "getExtensionFileUri": {
-        const uri = getUri(message.payload.fileName);
+        const uri = getMediaUri(message.payload.fileName);
         postMessage({
           ...message,
           payload: { uri: uri.toString() },
@@ -75,15 +68,12 @@ export const panelEndpoint = (
         break;
       }
       case "subscribeToDocumentTextChange": {
-        didSaveTextDocumentWatchers.set(
-          message.payload.fileName,
-          (newContent: string) => {
-            postMessage({
-              type: "onDocumentTextChange",
-              payload: { filePath: message.payload.fileName, text: newContent },
-            });
-          }
-        );
+        didSaveTextDocumentWatchers.set(message.payload.fileName, (newContent: string) => {
+          postMessage({
+            type: "onDocumentTextChange",
+            payload: { filePath: message.payload.fileName, text: newContent },
+          });
+        });
         break;
       }
       case "unsubscribeToDocumentTextChange": {

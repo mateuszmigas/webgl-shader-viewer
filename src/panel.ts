@@ -1,5 +1,6 @@
 import { panelEndpoint } from "communication/panelEndpoint";
 import * as vscode from "vscode";
+const mediaDirectory = "media";
 
 export class Panel {
   private static instance: Panel | undefined;
@@ -23,7 +24,7 @@ export class Panel {
       {
         enableScripts: true,
         enableCommandUris: true,
-        localResourceRoots: [vscode.Uri.joinPath(extensionUri, "media")],
+        localResourceRoots: [vscode.Uri.joinPath(extensionUri, mediaDirectory)],
       }
     );
 
@@ -52,18 +53,18 @@ export class Panel {
     const webview = this.panel.webview;
 
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.extensionUri, "media", "main.js")
+      vscode.Uri.joinPath(this.extensionUri, mediaDirectory, "main.js")
     );
 
     const stylesUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.extensionUri, "media", "styles.css")
+      vscode.Uri.joinPath(this.extensionUri, mediaDirectory, "styles.css")
     );
 
     const codiconsUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.extensionUri, "media", "codicon.css")
+      vscode.Uri.joinPath(this.extensionUri, mediaDirectory, "codicon.css")
     );
     const codiconsFontUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.extensionUri, "media", "codicon.ttf")
+      vscode.Uri.joinPath(this.extensionUri, mediaDirectory, "codicon.ttf")
     );
 
     // Use a nonce to only allow specific scripts to be run

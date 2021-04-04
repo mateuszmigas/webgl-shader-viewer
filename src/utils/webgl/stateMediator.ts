@@ -10,6 +10,7 @@ import { getAttributeBufferInfo } from "./attributeBuffer/attributeBufferStore";
 import { getIndexBufferInfo } from "./indexBuffer/indexBufferStore";
 import { getTextureInfo } from "./texture/textureStore";
 import { getUniformInfo } from "./uniform/uniformStore";
+import { customImageUrl } from "@common/constants";
 
 export const commitStateOnInit = () => {
   const state = store.getState();
@@ -29,9 +30,7 @@ export const commitStateOnInit = () => {
     );
 
   state.textureValues &&
-    Object.entries(state.textureValues).forEach(([key, value]) =>
-      setTexture(key, value.optionId, value.value)
-    );
+    Object.entries(state.textureValues).forEach(([key, value]) => setTexture(key, value));
 };
 
 export const commitStateOnRender = (state: ViewerState) => {
@@ -41,15 +40,23 @@ export const commitStateOnRender = (state: ViewerState) => {
   setTextures(state.textureValues);
 };
 
-const setTexture = async (name: string, optionId: string, value: string): Promise<string> => {
+const setTexture = async (
+  name: string,
+  value: { optionId: string; workspaceUrl: string; customUrl: string }
+): Promise<string> => {
   const textureInfo = getTextureInfo(name)?.textureInfo;
+  const { optionId, workspaceUrl, customUrl } = value;
 
   if (!textureInfo) {
     return;
   }
 
   const binding = getTextureBinding(optionId);
-  const uri = binding ? await viewerEndpoint.getExtensionFileUri(binding.fileName) : value;
+  const uri = binding
+    ? await viewerEndpoint.getExtensionFileUri(binding.fileName)
+    : optionId === customImageUrl.id
+    ? customUrl
+    : workspaceUrl;
   const setError = (error: string) => {
     store.dispatch({
       type: "SET_TEXTURE_LOADING_ERROR",
@@ -122,8 +129,14 @@ let lastCommitedTexturesState: ViewerState["textureValues"] = undefined;
 const setTextures = (textureValues: ViewerState["textureValues"]) => {
   if (lastCommitedTexturesState !== textureValues && lastCommitedTexturesState && textureValues) {
     Object.entries(textureValues).forEach(([key, value]) => {
-      if (anyPropChanged(lastCommitedTexturesState[key], value, ["optionId", "value"])) {
-        setTexture(key, value.optionId, value.value);
+      if (
+        anyPropChanged(lastCommitedTexturesState[key], value, [
+          "optionId",
+          "customUrl",
+          "workspaceUrl",
+        ])
+      ) {
+        setTexture(key, value);
       }
     });
   }

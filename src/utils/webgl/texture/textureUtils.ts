@@ -34,6 +34,7 @@ export const getTextureBindingOptions = () =>
 
 export const getDefaultTextureState = () => ({
   optionId: "texture-sky",
-  value: "",
+  customUrl: "",
+  workspaceUrl: "",
   error: "",
 });

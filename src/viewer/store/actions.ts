@@ -57,8 +57,12 @@ export type ViewerAction =
       };
     }
   | {
-      type: "SET_TEXTURE_VALUE";
-      payload: { name: string; value: string };
+      type: "SET_TEXTURE_CUSTOM_URL";
+      payload: { name: string; customUrl: string };
+    }
+  | {
+      type: "SET_TEXTURE_WORKSPACE_URL";
+      payload: { name: string; workspaceUrl: string };
     }
   | {
       type: "SET_TEXTURE_OPTION";
@@ -86,4 +90,12 @@ export type ViewerAction =
   | {
       type: "SET_VIWER_SIZE";
       payload: { size: { width: number; height: number } };
+    }
+  | {
+      type: "SET_WORKSPACE_IMAGE_OPTIONS";
+      payload: { options: { id: string; display: string }[] };
+    }
+  | {
+      type: "SET_WORKSPACE_SHADER_OPTIONS";
+      payload: { options: { id: string; display: string }[] };
     };

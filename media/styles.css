@@ -94,7 +94,8 @@ input::-webkit-inner-spin-button {
 }
 
 .component-button {
-  height: var(--sv-input-height);
+  min-height: var(--sv-input-height);
+  margin: var(--sv-default-margin);
   display: flex;
   align-items: center;
 }
