@@ -1,13 +1,9 @@
 import { debounce } from "@utils/function";
 import React from "react";
 import { Store } from "redux";
+import { useForceRender } from "./useForceRender";
 
 const referenceCompare = <TSelected>(left: TSelected, right: TSelected) => left === right;
-
-export const useForceRender = () => {
-  const [, forceRender] = React.useReducer(s => s + 1, 0);
-  return forceRender;
-};
 
 export const createUseViewerDebounceSelector = <TState>(store: Store<TState, any>) => <TSelected>(
   selector: (state: TState) => TSelected,
@@ -15,29 +11,28 @@ export const createUseViewerDebounceSelector = <TState>(store: Store<TState, any
   waitMs: number,
   equalityFn?: (oldState: TSelected, newState: TSelected) => boolean
 ) => {
-  const [, forceRender] = React.useReducer(s => s + 1, 0);
+  const forceRender = useForceRender();
   const areEqual = equalityFn ?? referenceCompare;
-  const selectedState = React.useRef(selector(store.getState()));
-  const debounceSetState = React.useMemo(
-    () =>
-      debounce((newValue: TSelected) => {
-        selectedState.current = newValue;
-        forceRender();
-      }, waitMs),
-    []
+  const state = React.useRef(selector(store.getState()));
+  const setState = React.useCallback(
+    (newValue: TSelected) => {
+      state.current = newValue;
+      forceRender();
+    },
+    [forceRender]
   );
+  const debounceSetState = React.useMemo(() => debounce(setState, waitMs), []);
 
   React.useLayoutEffect(() => {
     const unsubscribe = store.subscribe(() => {
       const newValue = selector(store.getState());
 
-      if (!areEqual(selectedState.current, newValue)) {
-        if (shouldDebounce(selectedState.current, newValue)) {
+      if (!areEqual(state.current, newValue)) {
+        if (shouldDebounce(state.current, newValue)) {
           debounceSetState(newValue);
         } else {
           debounceSetState.cancel();
-          selectedState.current = newValue;
-          forceRender();
+          setState(newValue);
         }
       }
     });
@@ -48,5 +43,5 @@ export const createUseViewerDebounceSelector = <TState>(store: Store<TState, any
     };
   }, []);
 
-  return selectedState.current;
+  return state.current;
 };

@@ -41,67 +41,60 @@ const renderUniformInput = (
   }
 };
 
-export const UniformField = React.memo(
-  (props: { name: string; type: number }) => {
-    console.log("rendering UniformField", props.name);
-    const { name, type } = props;
-    const { optionId, value } = useViewerDebounceSelector(
-      state => state.uniformValues[name],
-      (oldSelected, newSelected) =>
-        newSelected.optionId !== customOption.id && oldSelected.value !== newSelected.value,
-      200,
-      shallowEqual
-    );
-    const options = React.useMemo(() => [customOption, ...getUniformBindingOptionsForType(type)], [
-      type,
-    ]);
+export const UniformField = React.memo((props: { name: string; type: number }) => {
+  console.log("rendering UniformField", props.name);
+  const { name, type } = props;
+  const { optionId, value } = useViewerDebounceSelector(
+    state => state.uniformValues[name],
+    (oldSelected, newSelected) =>
+      newSelected.optionId !== customOption.id && oldSelected.value !== newSelected.value,
+    200,
+    shallowEqual
+  );
+  const options = React.useMemo(() => [customOption, ...getUniformBindingOptionsForType(type)], [
+    type,
+  ]);
 
-    const dispatch = useViewerDispatch();
+  const dispatch = useViewerDispatch();
 
-    const setOption = React.useCallback(
-      (optionId: string) =>
-        dispatch({
-          type: "SET_UNIFORM_OPTION",
-          payload: {
-            name,
-            type,
-            optionId,
-          },
-        }),
-      [dispatch]
-    );
+  const setOption = React.useCallback(
+    (optionId: string) =>
+      dispatch({
+        type: "SET_UNIFORM_OPTION",
+        payload: {
+          name,
+          type,
+          optionId,
+        },
+      }),
+    [dispatch]
+  );
 
-    const setValue = React.useCallback(
-      (value: string) =>
-        dispatch({
-          type: "SET_UNIFORM_VALUE",
-          payload: {
-            name,
-            type,
-            value,
-          },
-        }),
-      [dispatch]
-    );
-
-    const isCustom = optionId === customOption.id;
-
-    return (
-      <div>
-        {options.length > 1 && (
-          <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
-        )}
-        {renderUniformInput(type, {
+  const setValue = React.useCallback(
+    (value: string) =>
+      dispatch({
+        type: "SET_UNIFORM_VALUE",
+        payload: {
+          name,
+          type,
           value,
-          onChange: isCustom ? setValue : undefined,
-          readonly: !isCustom,
-        })}
-      </div>
-    );
-  }
-  // {
-  //   shouldDebounce: (oldProps, newProps) =>
-  //     newProps.optionId !== customOption.id && oldProps.value !== newProps.value,
-  //   waitMs: 100,
-  // }
-);
+        },
+      }),
+    [dispatch]
+  );
+
+  const isCustom = optionId === customOption.id;
+
+  return (
+    <div>
+      {options.length > 1 && (
+        <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
+      )}
+      {renderUniformInput(type, {
+        value,
+        onChange: isCustom ? setValue : undefined,
+        readonly: !isCustom,
+      })}
+    </div>
+  );
+});
