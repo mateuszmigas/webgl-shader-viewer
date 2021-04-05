@@ -1,69 +1,49 @@
-import React, { Dispatch } from "react";
-import { connect } from "react-redux";
-import { ViewerAction } from "@viewerStore/actions";
-import { ViewerState } from "@viewerStore/state";
+import React from "react";
 import { TextInput } from "../common/TextInput";
 import { customOption } from "@common/constants";
 import { Dropdown } from "../common/Dropdown";
 import { SectionField } from "../common/SectionField";
 import { translations } from "@common/translations";
 import { getIndexBufferBindingOptions } from "@utils/webgl/indexBuffer/indexBufferUtils";
+import { useViewerDispatch, useViewerSelector } from "@viewerStore";
+import { shallowEqual } from "@utils/object";
 
 const options = [customOption, ...getIndexBufferBindingOptions()];
 
-const mapStateToProps = (state: ViewerState) => {
-  return {
-    ...state.indexBufferValue,
-  };
-};
+export const IndexBufferField = React.memo(() => {
+  console.log("rendering IndexBufferField");
 
-const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>) => {
-  return {
-    setOption: (optionId: string) => {
-      return dispatch({
+  const { optionId, value, error } = useViewerSelector(
+    state => state.indexBufferValue,
+    shallowEqual
+  );
+  const dispatch = useViewerDispatch();
+  const setOption = React.useCallback(
+    (optionId: string) =>
+      dispatch({
         type: "SET_INDEX_BUFFER_OPTION",
         payload: {
           optionId,
         },
-      });
-    },
-    setValue: (value: string) => {
-      return dispatch({
+      }),
+    [dispatch]
+  );
+  const setValue = React.useCallback(
+    (value: string) =>
+      dispatch({
         type: "SET_INDEX_BUFFER_VALUE",
         payload: {
           value,
         },
-      });
-    },
-  };
-};
+      }),
+    [dispatch]
+  );
+  const isCustom = optionId === customOption.id;
 
-export const IndexBufferField = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(
-  React.memo(
-    (props: {
-      optionId: string;
-      value: string;
-      error: string;
-      setOption: (optionId: string) => void;
-      setValue: (value: string) => void;
-    }) => {
-      const { optionId, value, error, setOption, setValue } = props;
-      const isCustom = optionId === customOption.id;
-
-      return (
-        <SectionField text={translations.indices.title}>
-          <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
-          <TextInput
-            value={value}
-            onChange={setValue}
-            error={error}
-            readonly={!isCustom}
-          ></TextInput>
-        </SectionField>
-      );
-    }
-  )
-);
+  return (
+    <SectionField text={translations.indices.title}>
+      <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
+      <TextInput value={value} onChange={setValue} error={error} readonly={!isCustom}></TextInput>
+    </SectionField>
+  );
+});

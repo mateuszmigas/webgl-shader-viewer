@@ -55,7 +55,9 @@ export const UniformField = React.memo(
     const options = React.useMemo(() => [customOption, ...getUniformBindingOptionsForType(type)], [
       type,
     ]);
+
     const dispatch = useViewerDispatch();
+
     const setOption = React.useCallback(
       (optionId: string) =>
         dispatch({
