@@ -16,7 +16,6 @@ import { usePerspectiveCamera } from "../hooks/usePerspectiveCamera";
 import { Dispatch } from "redux";
 import { ViewerAction } from "../store/actions";
 import { useDocumentWatcher } from "../hooks/useDocumentWatcher";
-import { store } from "..";
 import { CameraPosition } from "@utils/cameraManipulator";
 import { commitStateOnInit, commitStateOnRender } from "@utils/webgl/stateMediator";
 import { translations } from "@common/translations";
@@ -30,6 +29,7 @@ import { getOrCreateAttributeBufferInfos } from "@utils/webgl/attributeBuffer/at
 import { getOrCreateIndexBufferInfo } from "@utils/webgl/indexBuffer/indexBufferStore";
 import { getOrCreateTextureInfos } from "@utils/webgl/texture/textureStore";
 import { getOrCreateUniformInfos } from "@utils/webgl/uniform/uniformStore";
+import { store } from "@viewerStore";
 
 const mapStateToProps = (state: ViewerState) => {
   return {

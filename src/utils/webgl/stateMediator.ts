@@ -5,12 +5,12 @@ import { viewerEndpoint } from "@communication/viewerEndpoint";
 import { loadImage } from "@utils/image";
 import { translations } from "@common/translations";
 import { anyPropChanged } from "@utils/object";
-import { store } from "viewer";
 import { getAttributeBufferInfo } from "./attributeBuffer/attributeBufferStore";
 import { getIndexBufferInfo } from "./indexBuffer/indexBufferStore";
 import { getTextureInfo } from "./texture/textureStore";
 import { getUniformInfo } from "./uniform/uniformStore";
 import { customImageUrl } from "@common/constants";
+import { store } from "@viewerStore";
 
 export const commitStateOnInit = () => {
   const state = store.getState();

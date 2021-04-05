@@ -1,105 +1,75 @@
-import React, { Dispatch } from "react";
-import { connect } from "react-redux";
-import { ViewerAction } from "@viewerStore/actions";
-import { ViewerState } from "@viewerStore/state";
+import React from "react";
 import { TextInput } from "../common/TextInput";
 import { Dropdown } from "../common/Dropdown";
 import { getTextureBindingOptions } from "@utils/webgl/texture/textureUtils";
 import { customImageUrl, workspaceImageUrl } from "@common/constants";
+import { useViewerDispatch, useViewerSelector } from "@viewerStore";
 
-type OwnProps = {
-  name: string;
-};
+export const TextureField = React.memo((props: { name: string }) => {
+  console.log("rendering texture field", props.name);
 
-const mapStateToProps = (state: ViewerState, ownProps: OwnProps) => {
-  return {
-    ...state.textureValues[ownProps.name],
-    workspaceImageOptions: state.userWorkspace.imageOptions,
-  };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>, ownProps: OwnProps) => {
-  return {
-    setOption: (optionId: string) => {
-      return dispatch({
+  const { name } = props;
+  const { optionId, customUrl, workspaceUrl, error } = useViewerSelector(
+    state => state.textureValues[name]
+  );
+  const workspaceImageOptions = useViewerSelector(state => state.userWorkspace.imageOptions);
+  const dispatch = useViewerDispatch();
+  const setOption = React.useCallback(
+    (optionId: string) =>
+      dispatch({
         type: "SET_TEXTURE_OPTION",
         payload: {
-          ...ownProps,
+          name,
           optionId,
         },
-      });
-    },
-    setWorkspaceUrl: (workspaceUrl: string) => {
+      }),
+    [dispatch]
+  );
+  const setWorkspaceUrl = React.useCallback(
+    (workspaceUrl: string) => {
       return dispatch({
         type: "SET_TEXTURE_WORKSPACE_URL",
         payload: {
-          ...ownProps,
+          name,
           workspaceUrl,
         },
       });
     },
-    serCustomUrl: (customUrl: string) => {
-      return dispatch({
+    [dispatch]
+  );
+  const setCustomUrl = React.useCallback(
+    (customUrl: string) =>
+      dispatch({
         type: "SET_TEXTURE_CUSTOM_URL",
         payload: {
-          ...ownProps,
+          name,
           customUrl,
         },
-      });
-    },
-  };
-};
+      }),
+    [dispatch]
+  );
+  const options = React.useMemo(
+    () => [customImageUrl, workspaceImageUrl, ...getTextureBindingOptions()],
+    []
+  );
+  const isCustomUrl = optionId === customImageUrl.id;
+  const isWorkspaceUrl = optionId === workspaceImageUrl.id;
 
-export const TextureField = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(
-  React.memo(
-    (props: {
-      name: string;
-      optionId: string;
-      customUrl: string;
-      error: string;
-      workspaceUrl: string;
-      workspaceImageOptions: { id: string; display: string }[];
-      setOption: (optionId: string) => void;
-      serCustomUrl: (customUrl: string) => void;
-      setWorkspaceUrl: (workspaceUrl: string) => void;
-    }) => {
-      const {
-        optionId,
-        customUrl,
-        error,
-        workspaceUrl,
-        workspaceImageOptions,
-        setOption,
-        serCustomUrl,
-        setWorkspaceUrl,
-      } = props;
-      const options = React.useMemo(
-        () => [customImageUrl, workspaceImageUrl, ...getTextureBindingOptions()],
-        []
-      );
-      const isCustomUrl = optionId === customImageUrl.id;
-      const isWorkspaceUrl = optionId === workspaceImageUrl.id;
-
-      return (
-        <div>
-          {options.length > 1 && (
-            <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
-          )}
-          {isCustomUrl && (
-            <TextInput value={customUrl} error={error} onChange={serCustomUrl}></TextInput>
-          )}
-          {isWorkspaceUrl && (
-            <Dropdown
-              selectedItemId={workspaceUrl}
-              onChange={setWorkspaceUrl}
-              options={workspaceImageOptions}
-            ></Dropdown>
-          )}
-        </div>
-      );
-    }
-  )
-);
+  return (
+    <div>
+      {options.length > 1 && (
+        <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
+      )}
+      {isCustomUrl && (
+        <TextInput value={customUrl} error={error} onChange={setCustomUrl}></TextInput>
+      )}
+      {isWorkspaceUrl && (
+        <Dropdown
+          selectedItemId={workspaceUrl}
+          onChange={setWorkspaceUrl}
+          options={workspaceImageOptions}
+        ></Dropdown>
+      )}
+    </div>
+  );
+});
