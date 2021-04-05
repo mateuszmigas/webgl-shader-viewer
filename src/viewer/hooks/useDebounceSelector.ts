@@ -4,29 +4,40 @@ import { Store } from "redux";
 
 const referenceCompare = <TSelected>(left: TSelected, right: TSelected) => left === right;
 
+export const useForceRender = () => {
+  const [, forceRender] = React.useReducer(s => s + 1, 0);
+  return forceRender;
+};
+
 export const createUseViewerDebounceSelector = <TState>(store: Store<TState, any>) => <TSelected>(
   selector: (state: TState) => TSelected,
   shouldDebounce: (oldState: TSelected, newState: TSelected) => boolean,
   waitMs: number,
   equalityFn?: (oldState: TSelected, newState: TSelected) => boolean
 ) => {
+  const [, forceRender] = React.useReducer(s => s + 1, 0);
   const areEqual = equalityFn ?? referenceCompare;
-  const [selectedState, setSelectedState] = React.useState(selector(store.getState()));
+  const selectedState = React.useRef(selector(store.getState()));
   const debounceSetState = React.useMemo(
-    () => debounce((slice: TSelected) => setSelectedState(slice), waitMs),
+    () =>
+      debounce((newValue: TSelected) => {
+        selectedState.current = newValue;
+        forceRender();
+      }, waitMs),
     []
   );
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const unsubscribe = store.subscribe(() => {
       const newValue = selector(store.getState());
 
-      if (!areEqual(selectedState, newValue)) {
-        if (shouldDebounce(selectedState, newValue)) {
+      if (!areEqual(selectedState.current, newValue)) {
+        if (shouldDebounce(selectedState.current, newValue)) {
           debounceSetState(newValue);
         } else {
           debounceSetState.cancel();
-          setSelectedState(newValue);
+          selectedState.current = newValue;
+          forceRender();
         }
       }
     });
@@ -37,5 +48,5 @@ export const createUseViewerDebounceSelector = <TState>(store: Store<TState, any
     };
   }, []);
 
-  return selectedState;
+  return selectedState.current;
 };

@@ -6,6 +6,7 @@ export type TupleOf<T, N extends number> = N extends N
 type _TupleOf<T, N extends number, R extends unknown[]> = R["length"] extends N
   ? R
   : _TupleOf<T, N, [T, ...R]>;
+export type ValueOf<T> = T[keyof T];
 
 export type Vector2Array = TupleOf<number, 2>;
 export type Vector3Array = TupleOf<number, 3>;

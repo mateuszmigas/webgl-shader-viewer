@@ -49,7 +49,7 @@ export const UniformField = React.memo(
       state => state.uniformValues[name],
       (oldSelected, newSelected) =>
         newSelected.optionId !== customOption.id && oldSelected.value !== newSelected.value,
-      500,
+      200,
       shallowEqual
     );
     const options = React.useMemo(() => [customOption, ...getUniformBindingOptionsForType(type)], [

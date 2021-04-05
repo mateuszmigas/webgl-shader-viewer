@@ -2,28 +2,28 @@ import { CameraPosition } from "@utils/cameraManipulator";
 import { DrawMode } from "@utils/webgl/index";
 import { vscodeApi } from "./communication/vscodeApi";
 
+export type AttributeBufferState = { type: number; optionId: string; value: string; error: string };
+export type IndexBufferState = { optionId: string; value: string; error: string };
+export type TextureState = {
+  optionId: string;
+  workspaceUrl: string;
+  customUrl: string;
+  error: string;
+};
+export type UniformState = {
+  type: number;
+  optionId: string;
+  value: any;
+};
+
 export type ExtensionState = {
   vertexFilePath: string | null;
   fragmentFilePath: string | null;
-  uniformValues: Record<
-    string,
-    {
-      type: number;
-      optionId: string;
-      value: any;
-    }
-  >;
-  attributeBufferValues: Record<
-    string,
-    { type: number; optionId: string; value: string; error: string }
-  >;
-  indexBufferValue: { optionId: string; value: string; error: string };
-  textureValues: Record<
-    string,
-    { optionId: string; workspaceUrl: string; customUrl: string; error: string }
-  >;
+  uniformValues: Record<string, UniformState>;
+  attributeBufferValues: Record<string, AttributeBufferState>;
+  indexBufferValue: IndexBufferState;
+  textureValues: Record<string, TextureState>;
   cameraPosition: CameraPosition;
-
   drawMode: DrawMode;
   meshId: string;
 };
