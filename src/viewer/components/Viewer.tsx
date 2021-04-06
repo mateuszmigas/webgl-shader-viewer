@@ -198,6 +198,7 @@ export const Viewer = React.memo(() => {
         <AttributeBuffersSection></AttributeBuffersSection>
         <TextureSection></TextureSection>
       </div>
+      <div className="viewer-separator"></div>
       <div ref={contentRef} className="viewer-content">
         {shaderCompileErrors && <div className="viewer-content-errors">{shaderCompileErrors}</div>}
         <canvas className="viewer-content-canvas" ref={canvasRef}></canvas>

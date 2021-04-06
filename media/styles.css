@@ -39,8 +39,13 @@ input::-webkit-inner-spin-button {
 .viewer-grid {
   height: 100%;
   display: grid;
-  grid-template-columns: 250px auto;
-  grid-template-areas: "options content";
+  grid-template-columns: 250px 1px auto;
+  grid-template-areas: "options separator content";
+}
+
+.viewer-separator {
+  grid-area: separator;
+  border-right: var(--sv-default-border);
 }
 
 .viewer-options {
@@ -49,7 +54,6 @@ input::-webkit-inner-spin-button {
   overflow: auto;
   display: flex;
   flex-direction: column;
-  border-right: var(--sv-default-border);
 }
 
 .viewer-options-section {
