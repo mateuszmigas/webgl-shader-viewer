@@ -27,7 +27,8 @@ export const createUseDebounceSelector = <TState>(store: Store<TState, any>) => 
     const unsubscribe = store.subscribe(() => {
       const newValue = selector(store.getState());
 
-      if (!areEqual(state.current, newValue)) {
+      //todo fix other way
+      if (!!newValue && !areEqual(state.current, newValue)) {
         if (shouldDebounce(state.current, newValue)) {
           debounceSetState(newValue);
         } else {
