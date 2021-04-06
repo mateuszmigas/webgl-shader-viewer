@@ -5,7 +5,7 @@ import { useForceRender } from "./useForceRender";
 
 const referenceCompare = <TSelected>(left: TSelected, right: TSelected) => left === right;
 
-export const createUseViewerDebounceSelector = <TState>(store: Store<TState, any>) => <TSelected>(
+export const createUseDebounceSelector = <TState>(store: Store<TState, any>) => <TSelected>(
   selector: (state: TState) => TSelected,
   shouldDebounce: (oldState: TSelected, newState: TSelected) => boolean,
   waitMs: number,

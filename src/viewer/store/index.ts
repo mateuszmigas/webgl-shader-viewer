@@ -2,7 +2,7 @@ import { ExtensionState, setExtensionState } from "@extensionState";
 import { debounce } from "@utils/function";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { createStore, Store } from "redux";
-import { createUseViewerDebounceSelector } from "viewer/hooks/useDebounceSelector";
+import { createUseDebounceSelector } from "viewer/hooks/useDebounceSelector";
 import { ViewerAction } from "./actions";
 import { reducer } from "./reducer";
 import { ViewerState } from "./state";
@@ -12,7 +12,7 @@ export const store: Store<ViewerState, ViewerAction> = createStore(reducer);
 export type ViewerDispatch = typeof store.dispatch;
 export const useViewerDispatch = () => useDispatch<ViewerDispatch>();
 export const useViewerSelector: TypedUseSelectorHook<ViewerState> = useSelector;
-export const useViewerDebounceSelector = createUseViewerDebounceSelector<ViewerState>(store);
+export const useViewerDebounceSelector = createUseDebounceSelector<ViewerState>(store);
 
 const storeExtensionState = debounce((extensionState: ExtensionState) => {
   setExtensionState(extensionState);
