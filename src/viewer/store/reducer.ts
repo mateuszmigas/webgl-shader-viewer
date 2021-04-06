@@ -1,3 +1,4 @@
+import { customOption } from "@common/constants";
 import { IndexBufferState, TextureState, UniformState } from "./../../extensionState";
 import { validateIndexBuffer } from "./../validation/indexBufferValidator";
 import { AttributeBufferState, getExtensionState } from "@extensionState";
@@ -47,10 +48,14 @@ const attributeBufferReducer = (
   switch (action.type) {
     case "SET_ATTRIBUTE_BUFFER_VALUE":
     case "SET_ATTRIBUTE_BUFFER_OPTION": {
-      return {
+      const newState = {
         ...state,
         ...action.payload,
       };
+      newState.error =
+        newState.optionId === customOption.id ? validateAttributeBuffer(newState.value) : "";
+
+      return newState;
     }
     default:
       return state;
@@ -61,10 +66,14 @@ const indexBufferReducer = (state: IndexBufferState, action: ViewerAction): Inde
   switch (action.type) {
     case "SET_INDEX_BUFFER_VALUE":
     case "SET_INDEX_BUFFER_OPTION": {
-      return {
+      const newState = {
         ...state,
         ...action.payload,
       };
+      newState.error =
+        newState.optionId === customOption.id ? validateIndexBuffer(newState.value) : "";
+
+      return newState;
     }
     default:
       return state;
@@ -230,49 +239,51 @@ const mainReducer = (state: ViewerState = initialState, action: ViewerAction): V
   }
 };
 
+//meshId
 const applyAttributeBufferBindingsReducer = (state: ViewerState): ViewerState => {
   return {
     ...state,
     attributeBufferValues: objectMap(state.attributeBufferValues, propValue => {
       const binding = getAttributeBufferBinding(propValue.optionId);
-      return {
-        ...propValue,
-        ...(binding
-          ? { value: binding.getValue(state.meshId), error: "" }
-          : {
-              error: validateAttributeBuffer(propValue.value),
-            }),
-      };
+      return binding
+        ? {
+            ...propValue,
+            value: binding.getValue(state.meshId),
+          }
+        : propValue;
     }),
   };
 };
 
+//meshId
 const applyIndexBufferBindingsReducer = (state: ViewerState): ViewerState => {
   const indexBufferValue = state.indexBufferValue;
   const binding = getIndexBufferBinding(indexBufferValue.optionId);
 
-  return {
-    ...state,
-    indexBufferValue: {
-      ...state.indexBufferValue,
-      ...(binding
-        ? { value: binding.getValue(state.meshId), error: "" }
-        : {
-            error: validateIndexBuffer(state.indexBufferValue.value),
-          }),
-    },
-  };
+  return binding
+    ? {
+        ...state,
+        indexBufferValue: {
+          ...state.indexBufferValue,
+          value: binding.getValue(state.meshId),
+        },
+      }
+    : state;
 };
 
+//optionId, camera
 const applyUniformBindingsReducer = (state: ViewerState): ViewerState => {
   return {
     ...state,
     uniformValues: objectMap(state.uniformValues, propValue => {
       const binding = getUniformBinding(propValue.optionId);
-      return {
-        ...propValue,
-        value: binding?.getValue(state.cameraPosition, state.viewerSize) ?? propValue.value,
-      };
+
+      return binding
+        ? {
+            ...propValue,
+            value: binding.getValue(state.cameraPosition, state.viewerSize),
+          }
+        : propValue;
     }),
   };
 };
