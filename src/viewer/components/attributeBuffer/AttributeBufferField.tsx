@@ -1,79 +1,57 @@
 import React from "react";
-import { connect } from "react-redux";
-import { Dispatch } from "redux";
-import { ViewerAction } from "@viewerStore/actions";
-import { ViewerState } from "@viewerStore/state";
-import { AttributeBufferType } from "@utils/webgl/attributeBuffer/attributeBuffer";
 import { TextInput } from "../common/TextInput";
 import { customOption } from "@common/constants";
 import { Dropdown } from "../common/Dropdown";
 import { getAttributeBufferBindingOptionsForType } from "@utils/webgl/attributeBuffer/attributeBufferUtils";
+import { useViewerDispatch, useViewerSelector } from "@viewerStore";
+import { shallowEqual } from "@utils/object";
 
-type OwnProps = {
-  name: string;
-  type: AttributeBufferType;
-};
+export const AttributeBufferField = React.memo((props: { name: string; type: number }) => {
+  console.log("rendering AttributeBufferField", props.name);
 
-const mapStateToProps = (state: ViewerState, ownProps: OwnProps) => {
-  return {
-    ...state.attributeBufferValues[ownProps.name],
-  };
-};
+  const { name, type } = props;
+  const { value, optionId, error } = useViewerSelector(
+    state => state.attributeBufferValues[name],
+    shallowEqual
+  );
 
-const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>, ownProps: OwnProps) => {
-  return {
-    setOption: (optionId: string) => {
-      return dispatch({
+  const dispatch = useViewerDispatch();
+
+  const setOption = React.useCallback(
+    (optionId: string) =>
+      dispatch({
         type: "SET_ATTRIBUTE_BUFFER_OPTION",
         payload: {
-          ...ownProps,
+          name,
+          type,
           optionId,
         },
-      });
-    },
-    setValue: (value: string) => {
-      return dispatch({
+      }),
+    [dispatch]
+  );
+
+  const setValue = React.useCallback(
+    (value: string) =>
+      dispatch({
         type: "SET_ATTRIBUTE_BUFFER_VALUE",
         payload: {
-          ...ownProps,
+          name,
+          type,
           value,
         },
-      });
-    },
-  };
-};
+      }),
+    [dispatch]
+  );
 
-export const AttributeBufferField = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(
-  React.memo(
-    (props: {
-      name: string;
-      type: number;
-      optionId: string;
-      value: string;
-      error: string;
-      setOption: (optionId: string) => void;
-      setValue: (value: string) => void;
-    }) => {
-      const { type, value, optionId, error, setOption, setValue } = props;
-      const options = [customOption, ...getAttributeBufferBindingOptionsForType(type)];
-      const isCustom = optionId === customOption.id;
+  const options = [customOption, ...getAttributeBufferBindingOptionsForType(type)];
+  const isCustom = optionId === customOption.id;
 
-      return (
-        <div>
-          {options.length > 1 && (
-            <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
-          )}
-          <TextInput
-            value={value}
-            onChange={setValue}
-            error={error}
-            readonly={!isCustom}
-          ></TextInput>
-        </div>
-      );
-    }
-  )
-);
+  return (
+    <div>
+      {options.length > 1 && (
+        <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
+      )}
+      <TextInput value={value} onChange={setValue} error={error} readonly={!isCustom}></TextInput>
+    </div>
+  );
+});

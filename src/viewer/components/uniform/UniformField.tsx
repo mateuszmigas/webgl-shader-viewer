@@ -1,8 +1,4 @@
 import React from "react";
-import { connect } from "react-redux";
-import { Dispatch } from "redux";
-import { ViewerAction } from "@viewerStore/actions";
-import { ViewerState } from "@viewerStore/state";
 import { UniformType } from "@utils/webgl/uniform/uniform";
 import {
   Vector2NumberInput,
@@ -16,12 +12,8 @@ import { customOption } from "@common/constants";
 import { Dropdown } from "../common/Dropdown";
 import { getUniformBindingOptionsForType } from "@utils/webgl/uniform/uniformUtils";
 import { assertNever } from "@utils/typeGuards";
-import { withDebounce } from "../withDebounce";
-
-type OwnProps = {
-  name: string;
-  type: UniformType;
-};
+import { useViewerDebounceSelector, useViewerDispatch, useViewerSelector } from "@viewerStore";
+import { shallowEqual } from "@utils/object";
 
 const renderUniformInput = (
   type: UniformType,
@@ -49,74 +41,60 @@ const renderUniformInput = (
   }
 };
 
-const mapStateToProps = (state: ViewerState, ownProps: OwnProps) => {
-  return {
-    ...state.uniformValues[ownProps.name],
-  };
-};
+export const UniformField = React.memo((props: { name: string; type: number }) => {
+  console.log("rendering UniformField", props.name);
+  const { name, type } = props;
+  const { optionId, value } = useViewerDebounceSelector(
+    state => state.uniformValues[name],
+    (oldSelected, newSelected) =>
+      newSelected.optionId !== customOption.id && oldSelected.value !== newSelected.value,
+    200,
+    shallowEqual
+  );
+  const options = React.useMemo(() => [customOption, ...getUniformBindingOptionsForType(type)], [
+    type,
+  ]);
 
-const mapDispatchToProps = (dispatch: Dispatch<ViewerAction>, ownProps: OwnProps) => {
-  return {
-    setOption: (optionId: string) => {
-      return dispatch({
+  const dispatch = useViewerDispatch();
+
+  const setOption = React.useCallback(
+    (optionId: string) =>
+      dispatch({
         type: "SET_UNIFORM_OPTION",
         payload: {
-          ...ownProps,
+          name,
+          type,
           optionId,
         },
-      });
-    },
-    setValue: (value: string) => {
-      return dispatch({
+      }),
+    [dispatch]
+  );
+
+  const setValue = React.useCallback(
+    (value: string) =>
+      dispatch({
         type: "SET_UNIFORM_VALUE",
         payload: {
-          ...ownProps,
+          name,
+          type,
           value,
         },
-      });
-    },
-  };
-};
+      }),
+    [dispatch]
+  );
 
-export const UniformField = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(
-  React.memo(
-    withDebounce(
-      (props: {
-        name: string;
-        type: number;
-        optionId: string;
-        value: any;
-        setOption: (optionId: string) => void;
-        setValue: (value: any) => void;
-      }) => {
-        const { type, optionId, value, setOption, setValue } = props;
-        const options = React.useMemo(
-          () => [customOption, ...getUniformBindingOptionsForType(type)],
-          [type]
-        );
-        const isCustom = optionId === customOption.id;
+  const isCustom = optionId === customOption.id;
 
-        return (
-          <div>
-            {options.length > 1 && (
-              <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
-            )}
-            {renderUniformInput(type, {
-              value,
-              onChange: isCustom ? setValue : undefined,
-              readonly: !isCustom,
-            })}
-          </div>
-        );
-      },
-      {
-        shouldDebounce: (oldProps, newProps) =>
-          newProps.optionId !== customOption.id && oldProps.value !== newProps.value,
-        waitMs: 100,
-      }
-    )
-  )
-);
+  return (
+    <div>
+      {options.length > 1 && (
+        <Dropdown selectedItemId={optionId} onChange={setOption} options={options}></Dropdown>
+      )}
+      {renderUniformInput(type, {
+        value,
+        onChange: isCustom ? setValue : undefined,
+        readonly: !isCustom,
+      })}
+    </div>
+  );
+});

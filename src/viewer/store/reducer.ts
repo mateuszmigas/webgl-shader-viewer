@@ -1,5 +1,7 @@
+import { customOption } from "@common/constants";
+import { IndexBufferState, TextureState, UniformState } from "./../../extensionState";
 import { validateIndexBuffer } from "./../validation/indexBufferValidator";
-import { getExtensionState } from "@extensionState";
+import { AttributeBufferState, getExtensionState } from "@extensionState";
 import { ViewerAction } from "./actions";
 import { ViewerState } from "./state";
 import { objectMap } from "@utils/object";
@@ -21,6 +23,77 @@ const initialState: ViewerState = {
     imageOptions: [],
     shaderOptions: [],
   },
+};
+
+const uniformReducer = (state: UniformState, action: ViewerAction): UniformState => {
+  switch (action.type) {
+    case "SET_UNIFORM_VALUE":
+    case "SET_UNIFORM_OPTION": {
+      console.log("updating uniform");
+
+      return {
+        ...state,
+        ...action.payload,
+      };
+    }
+    default:
+      return state;
+  }
+};
+
+const attributeBufferReducer = (
+  state: AttributeBufferState,
+  action: ViewerAction
+): AttributeBufferState => {
+  switch (action.type) {
+    case "SET_ATTRIBUTE_BUFFER_VALUE":
+    case "SET_ATTRIBUTE_BUFFER_OPTION": {
+      const newState = {
+        ...state,
+        ...action.payload,
+      };
+      newState.error =
+        newState.optionId === customOption.id ? validateAttributeBuffer(newState.value) : "";
+
+      return newState;
+    }
+    default:
+      return state;
+  }
+};
+
+const indexBufferReducer = (state: IndexBufferState, action: ViewerAction): IndexBufferState => {
+  switch (action.type) {
+    case "SET_INDEX_BUFFER_VALUE":
+    case "SET_INDEX_BUFFER_OPTION": {
+      const newState = {
+        ...state,
+        ...action.payload,
+      };
+      newState.error =
+        newState.optionId === customOption.id ? validateIndexBuffer(newState.value) : "";
+
+      return newState;
+    }
+    default:
+      return state;
+  }
+};
+
+const textureReducer = (state: TextureState, action: ViewerAction): TextureState => {
+  switch (action.type) {
+    case "SET_TEXTURE_WORKSPACE_URL":
+    case "SET_TEXTURE_CUSTOM_URL":
+    case "SET_TEXTURE_LOADING_ERROR":
+    case "SET_TEXTURE_OPTION": {
+      return {
+        ...state,
+        ...action.payload,
+      };
+    }
+    default:
+      return state;
+  }
 };
 
 const mainReducer = (state: ViewerState = initialState, action: ViewerAction): ViewerState => {
@@ -72,143 +145,49 @@ const mainReducer = (state: ViewerState = initialState, action: ViewerAction): V
         textureValues,
       };
     }
+    case "SET_UNIFORM_VALUE":
     case "SET_UNIFORM_OPTION": {
-      const { name, optionId, ...rest } = action.payload;
+      const { name } = action.payload;
       const current = state.uniformValues[name];
 
       return {
         ...state,
         uniformValues: {
           ...state.uniformValues,
-          [name]: {
-            ...current,
-            ...rest,
-            optionId,
-          },
+          [name]: uniformReducer(current, action),
         },
       };
     }
-    case "SET_UNIFORM_VALUE": {
-      const { name, value, ...rest } = action.payload;
-      const current = state.uniformValues[name];
-
-      return {
-        ...state,
-        uniformValues: {
-          ...state.uniformValues,
-          [name]: {
-            ...current,
-            ...rest,
-            value,
-          },
-        },
-      };
-    }
+    case "SET_ATTRIBUTE_BUFFER_VALUE":
     case "SET_ATTRIBUTE_BUFFER_OPTION": {
-      const { name, optionId, ...rest } = action.payload;
+      const { name } = action.payload;
       const current = state.attributeBufferValues[name];
       return {
         ...state,
         attributeBufferValues: {
           ...state.attributeBufferValues,
-          [name]: {
-            ...current,
-            ...rest,
-            optionId,
-          },
+          [name]: attributeBufferReducer(current, action),
         },
       };
     }
-    case "SET_ATTRIBUTE_BUFFER_VALUE": {
-      const { name, value, ...rest } = action.payload;
-      const current = state.attributeBufferValues[name];
-
-      return {
-        ...state,
-        attributeBufferValues: {
-          ...state.attributeBufferValues,
-          [name]: {
-            ...current,
-            ...rest,
-            value,
-          },
-        },
-      };
-    }
+    case "SET_INDEX_BUFFER_VALUE":
     case "SET_INDEX_BUFFER_OPTION": {
-      const { optionId } = action.payload;
       return {
         ...state,
-        indexBufferValue: {
-          ...state.indexBufferValue,
-          optionId,
-        },
+        indexBufferValue: indexBufferReducer(state.indexBufferValue, action),
       };
     }
-    case "SET_INDEX_BUFFER_VALUE": {
-      const { value } = action.payload;
-      return {
-        ...state,
-        indexBufferValue: {
-          ...state.indexBufferValue,
-          value,
-        },
-      };
-    }
+    case "SET_TEXTURE_WORKSPACE_URL":
+    case "SET_TEXTURE_CUSTOM_URL":
+    case "SET_TEXTURE_LOADING_ERROR":
     case "SET_TEXTURE_OPTION": {
-      const { name, optionId } = action.payload;
+      const { name } = action.payload;
       const current = state.textureValues[name];
       return {
         ...state,
         textureValues: {
           ...state.textureValues,
-          [name]: {
-            ...current,
-            optionId,
-          },
-        },
-      };
-    }
-    case "SET_TEXTURE_CUSTOM_URL": {
-      const { name, customUrl } = action.payload;
-      const current = state.textureValues[name];
-      return {
-        ...state,
-        textureValues: {
-          ...state.textureValues,
-          [name]: {
-            ...current,
-            customUrl,
-          },
-        },
-      };
-    }
-    case "SET_TEXTURE_WORKSPACE_URL": {
-      const { name, workspaceUrl } = action.payload;
-      const current = state.textureValues[name];
-      return {
-        ...state,
-        textureValues: {
-          ...state.textureValues,
-          [name]: {
-            ...current,
-            workspaceUrl,
-          },
-        },
-      };
-    }
-    case "SET_TEXTURE_LOADING_ERROR": {
-      const { name, error } = action.payload;
-      const current = state.textureValues[name];
-
-      return {
-        ...state,
-        textureValues: {
-          ...state.textureValues,
-          [name]: {
-            ...current,
-            error,
-          },
+          [name]: textureReducer(current, action),
         },
       };
     }
@@ -260,49 +239,51 @@ const mainReducer = (state: ViewerState = initialState, action: ViewerAction): V
   }
 };
 
+//meshId
 const applyAttributeBufferBindingsReducer = (state: ViewerState): ViewerState => {
   return {
     ...state,
     attributeBufferValues: objectMap(state.attributeBufferValues, propValue => {
       const binding = getAttributeBufferBinding(propValue.optionId);
-      return {
-        ...propValue,
-        ...(binding
-          ? { value: binding.getValue(state.meshId), error: "" }
-          : {
-              error: validateAttributeBuffer(propValue.value),
-            }),
-      };
+      return binding
+        ? {
+            ...propValue,
+            value: binding.getValue(state.meshId),
+          }
+        : propValue;
     }),
   };
 };
 
+//meshId
 const applyIndexBufferBindingsReducer = (state: ViewerState): ViewerState => {
   const indexBufferValue = state.indexBufferValue;
   const binding = getIndexBufferBinding(indexBufferValue.optionId);
 
-  return {
-    ...state,
-    indexBufferValue: {
-      ...state.indexBufferValue,
-      ...(binding
-        ? { value: binding.getValue(state.meshId), error: "" }
-        : {
-            error: validateIndexBuffer(state.indexBufferValue.value),
-          }),
-    },
-  };
+  return binding
+    ? {
+        ...state,
+        indexBufferValue: {
+          ...state.indexBufferValue,
+          value: binding.getValue(state.meshId),
+        },
+      }
+    : state;
 };
 
+//optionId, camera
 const applyUniformBindingsReducer = (state: ViewerState): ViewerState => {
   return {
     ...state,
     uniformValues: objectMap(state.uniformValues, propValue => {
       const binding = getUniformBinding(propValue.optionId);
-      return {
-        ...propValue,
-        value: binding?.getValue(state.cameraPosition, state.viewerSize) ?? propValue.value,
-      };
+
+      return binding
+        ? {
+            ...propValue,
+            value: binding.getValue(state.cameraPosition, state.viewerSize),
+          }
+        : propValue;
     }),
   };
 };
