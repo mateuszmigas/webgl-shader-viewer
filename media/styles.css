@@ -51,8 +51,9 @@ input::-webkit-inner-spin-button {
 .viewer-options {
   grid-area: options;
   height: 100%;
-  overflow: auto;
+  overflow: overlay;
   display: flex;
+  padding: 10px;
   flex-direction: column;
 }
 
