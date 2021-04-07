@@ -46,13 +46,19 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@mateuszmigas/react-dropdown@^0.9.0":
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/@mateuszmigas/react-dropdown/-/react-dropdown-0.9.0.tgz#794602c1152a3d903de8fe296efc40aa96d7b998"
-  integrity sha512-RiRKmLuSWrv0l0eupxHHy1k2IOSUo+Vt95Y2KRHNyboH0dZeW0Gj7XfuyiWY+z1S8sDTGSplWqhqBlxKOk3kTQ==
+"@mateuszmigas/react-dropdown@^0.9.3":
+  version "0.9.3"
+  resolved "https://registry.yarnpkg.com/@mateuszmigas/react-dropdown/-/react-dropdown-0.9.3.tgz#57afc025493f398581b6620607aa9aa2d8795e58"
+  integrity sha512-yMRFIc56vqszkcfiL9K7CndO5xSi+66R0/8dUfAvR8G8rlEjaiwOZR5eL8i2F0bNJF7/Y7IHHYLEXffcinZ0BA==
   dependencies:
+    "@mateuszmigas/react-union-state" "^1.0.2"
     react-window "^1.8.5"
     react-window-infinite-loader "^1.0.5"
+
+"@mateuszmigas/react-union-state@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@mateuszmigas/react-union-state/-/react-union-state-1.0.2.tgz#72044653e6ed135ad85a1d24ceca369b4c6f3f8d"
+  integrity sha512-6WEdlC1p0KDiT+kfDyHmohwkeMApKcZq/o8h0z8UXu7ofbsgiRK6ilpSJWbC/ghmJOuadNCIsH6UUhu6p+4epQ==
 
 "@nodelib/fs.scandir@2.1.3":
   version "2.1.3"

@@ -3,6 +3,7 @@ import {
   useFocusOnStateChange,
   useDropdownCloseWhenClickedOutside,
   useDropdownState,
+  useAdjustVerticalOffsetWhenOutsideViewport,
   VirtualizedList,
   DropdownDispatch,
   DropdownActions,
@@ -21,6 +22,9 @@ export const Dropdown = React.memo(
     options: DropdownOption[];
   }) => {
     const { selectedItemId, onChange, options } = props;
+    const maxHeight = 125;
+    const itemHeight = 25;
+    const height = Math.min(options.length * itemHeight, maxHeight);
 
     const [state, dispatch] = useDropdownState(
       options.length,
@@ -42,6 +46,7 @@ export const Dropdown = React.memo(
 
     useDropdownCloseWhenClickedOutside(containerRef, dispatch);
     useFocusOnStateChange(listRef, state.isOpen, true);
+    const { top } = useAdjustVerticalOffsetWhenOutsideViewport(containerRef, height);
 
     const listKeyboardHandler = React.useMemo(() => {
       const defaultHandler = createListKeyboardNavigator(dispatch);
@@ -66,12 +71,18 @@ export const Dropdown = React.memo(
           )}
         ></DropdownMain>
         {state.isOpen && (
-          <div className="dropdown-list" onKeyDown={listKeyboardHandler} ref={listRef} tabIndex={0}>
+          <div
+            className="dropdown-list"
+            style={{ top }}
+            onKeyDown={listKeyboardHandler}
+            ref={listRef}
+            tabIndex={0}
+          >
             <VirtualizedList
               itemCount={options.length}
-              itemHeight={25}
+              itemHeight={itemHeight}
               highlightedIndex={state.highlightedIndex}
-              maxHeight={125}
+              maxHeight={maxHeight}
               itemRenderer={index => (
                 <DropdownItem
                   text={options[index].display}
