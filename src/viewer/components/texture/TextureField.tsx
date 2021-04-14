@@ -6,8 +6,6 @@ import { customImageUrl, workspaceImageUrl } from "@common/constants";
 import { useViewerDispatch, useViewerSelector } from "@viewerStore";
 
 export const TextureField = React.memo((props: { name: string }) => {
-  console.log("rendering texture field", props.name);
-
   const { name } = props;
   const { optionId, customUrl, workspaceUrl, error } = useViewerSelector(
     state => state.textureValues[name]

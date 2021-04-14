@@ -28,8 +28,6 @@ import { getOrCreateUniformInfos } from "@utils/webgl/uniform/uniformStore";
 import { store, useViewerDispatch, useViewerSelector } from "@viewerStore";
 
 export const Viewer = React.memo(() => {
-  console.log("rendering Viewer");
-
   const selectedVertexFileId = useViewerSelector(state => state.vertexFilePath);
   const selectedFragmentFileId = useViewerSelector(state => state.fragmentFilePath);
   const [shaderCompileErrors, setShaderCompileErrors] = React.useState("");

@@ -42,7 +42,6 @@ const renderUniformInput = (
 };
 
 export const UniformField = React.memo((props: { name: string; type: number }) => {
-  console.log("rendering UniformField", props.name);
   const { name, type } = props;
   const { optionId, value } = useViewerDebounceSelector(
     state => state.uniformValues[name],

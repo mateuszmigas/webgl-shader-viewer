@@ -7,8 +7,6 @@ import { useViewerDispatch, useViewerSelector } from "@viewerStore";
 import { shallowEqual } from "@utils/object";
 
 export const AttributeBufferField = React.memo((props: { name: string; type: number }) => {
-  console.log("rendering AttributeBufferField", props.name);
-
   const { name, type } = props;
   const { value, optionId, error } = useViewerSelector(
     state => state.attributeBufferValues[name],

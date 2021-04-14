@@ -11,8 +11,6 @@ import { shallowEqual } from "@utils/object";
 const options = [customOption, ...getIndexBufferBindingOptions()];
 
 export const IndexBufferField = React.memo(() => {
-  console.log("rendering IndexBufferField");
-
   const { optionId, value, error } = useViewerSelector(
     state => state.indexBufferValue,
     shallowEqual

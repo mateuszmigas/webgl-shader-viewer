@@ -6,7 +6,6 @@ import { objectMap, shallowEqual } from "@utils/object";
 import { useViewerSelector } from "@viewerStore";
 
 export const UniformSection = React.memo(() => {
-  console.log("rendering UniformSection");
   const uniforms = useViewerSelector(
     state => objectMap(state.uniformValues, propValue => propValue.type),
     shallowEqual

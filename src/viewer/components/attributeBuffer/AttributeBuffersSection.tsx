@@ -11,7 +11,6 @@ export const AttributeBuffersSection = React.memo(() => {
     state => objectMap(state.attributeBufferValues, propValue => propValue.type),
     shallowEqual
   );
-  console.log("rendering AttributeBuffersSection");
   return Object.keys(attributeBuffers).length ? (
     <div className="viewer-options-section">
       <SectionTitle text={translations.attributeBuffers}></SectionTitle>

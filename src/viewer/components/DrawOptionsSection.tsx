@@ -19,8 +19,6 @@ const meshOptions = Array.from(meshes.entries()).map(([key, value]) => ({
 }));
 
 export const DrawOptionsSection = React.memo(() => {
-  console.log("rendering DrawOptionsSection");
-
   const drawMode = useViewerSelector(state => state.drawMode);
   const meshId = useViewerSelector(state => state.meshId);
   const dispatch = useViewerDispatch();

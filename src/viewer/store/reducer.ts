@@ -29,8 +29,6 @@ const uniformReducer = (state: UniformState, action: ViewerAction): UniformState
   switch (action.type) {
     case "SET_UNIFORM_VALUE":
     case "SET_UNIFORM_OPTION": {
-      console.log("updating uniform");
-
       return {
         ...state,
         ...action.payload,

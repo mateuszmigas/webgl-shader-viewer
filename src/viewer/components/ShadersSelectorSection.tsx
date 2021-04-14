@@ -4,7 +4,6 @@ import { Dropdown, SectionField, SectionTitle } from "./common";
 import { useViewerDispatch, useViewerSelector } from "@viewerStore";
 
 export const ShadersSelectorSection = React.memo(() => {
-  console.log("rendering ShadersSelectorSection");
   const selectedVertexFileId = useViewerSelector(state => state.vertexFilePath);
   const selectedFragmentFileId = useViewerSelector(state => state.fragmentFilePath);
   const workspaceShaderOptions = useViewerSelector(state => state.userWorkspace.shaderOptions);
