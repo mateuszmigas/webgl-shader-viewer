@@ -1,5 +1,5 @@
 import { translations } from "@common/translations";
-import { MeshInfo } from "viewer/meshes";
+import { MeshInfo } from "@meshes";
 import { repeat4Times } from "@utils/array";
 
 export const generatePlane = (): MeshInfo => ({

@@ -1,5 +1,5 @@
 import { translations } from "@common/translations";
-import { getSerializedProp } from "viewer/meshes";
+import { getSerializedProp } from "@meshes";
 
 const indices = getSerializedProp("indices");
 

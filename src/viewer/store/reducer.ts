@@ -1,7 +1,7 @@
 import { customOption } from "@common/constants";
 import { IndexBufferState, TextureState, UniformState } from "./../../extensionState";
 import { validateIndexBuffer } from "./../validation/indexBufferValidator";
-import { AttributeBufferState, getExtensionState } from "@extensionState";
+import { AttributeBufferState } from "@extensionState";
 import { ViewerAction } from "./actions";
 import { ViewerState } from "./state";
 import { objectMap } from "@utils/object";
@@ -15,15 +15,6 @@ import {
 import { getDefaultUniformState, getUniformBinding } from "@utils/webgl/uniform/uniformUtils";
 import { getDefaultTextureState } from "@utils/webgl/texture/textureUtils";
 import { getIndexBufferBinding } from "@utils/webgl/indexBuffer/indexBufferUtils";
-
-const initialState: ViewerState = {
-  ...getExtensionState(),
-  viewerSize: { width: 1, height: 1 },
-  userWorkspace: {
-    imageOptions: [],
-    shaderOptions: [],
-  },
-};
 
 const uniformReducer = (state: UniformState, action: ViewerAction): UniformState => {
   switch (action.type) {
@@ -94,7 +85,7 @@ const textureReducer = (state: TextureState, action: ViewerAction): TextureState
   }
 };
 
-const mainReducer = (state: ViewerState = initialState, action: ViewerAction): ViewerState => {
+const mainReducer = (state: ViewerState, action: ViewerAction): ViewerState => {
   switch (action.type) {
     case "SET_VERTEX_FILE_PATH": {
       return {

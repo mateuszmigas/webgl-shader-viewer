@@ -1,4 +1,4 @@
-import { ExtensionState, setExtensionState } from "@extensionState";
+import { ExtensionState, getExtensionState, setExtensionState } from "@extensionState";
 import { debounce } from "@utils/function";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { createStore, Store } from "redux";
@@ -8,7 +8,16 @@ import { reducer } from "./reducer";
 import { ViewerState } from "./state";
 export { ViewerState } from "./state";
 
-export const store: Store<ViewerState, ViewerAction> = createStore(reducer);
+export const initialState: ViewerState = {
+  ...getExtensionState(),
+  viewerSize: { width: 1, height: 1 },
+  userWorkspace: {
+    imageOptions: [],
+    shaderOptions: [],
+  },
+};
+
+export const store: Store<ViewerState, ViewerAction> = createStore(reducer, initialState);
 export type ViewerDispatch = typeof store.dispatch;
 export const useViewerDispatch = () => useDispatch<ViewerDispatch>();
 export const useViewerSelector: TypedUseSelectorHook<ViewerState> = useSelector;

@@ -1,7 +1,7 @@
+import { getSerializedProp } from "@meshes";
 import { customOption } from "@common/constants";
 import { translations } from "@common/translations";
 import { AttributeBufferType } from "@utils/webgl/attributeBuffer/attributeBuffer";
-import { getSerializedProp } from "viewer/meshes";
 
 const positions = getSerializedProp("positions");
 const textureCoordinates = getSerializedProp("textureCoordinates");
