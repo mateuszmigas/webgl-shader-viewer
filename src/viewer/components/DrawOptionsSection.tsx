@@ -1,7 +1,7 @@
 import React from "react";
 import { meshes } from "../meshes";
 import { translations } from "@common/translations";
-import { DrawMode } from "@utils/webgl";
+import { DrawMode } from "@utils/webgl/types";
 import { Dropdown } from "./common/Dropdown";
 import { IndexBufferField } from "./indexBuffer/IndexBufferField";
 import { SectionField } from "./common/SectionField";

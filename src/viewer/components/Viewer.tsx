@@ -1,21 +1,14 @@
 import React from "react";
 import { viewerEndpoint } from "communication/viewerEndpoint";
 import { observeElementBoundingRect } from "@utils/html";
-import {
-  compileShadersFromSource,
-  formatShaderCompileErrors,
-  getProgramAttributeBuffers,
-  getProgramUniforms,
-  renderProgram,
-} from "@utils/webgl";
 import { DrawOptionsSection } from "./DrawOptionsSection";
 import { ShadersSelectorSection } from "./ShadersSelectorSection";
 import { usePerspectiveCamera } from "../hooks/usePerspectiveCamera";
 import { useDocumentWatcher } from "../hooks/useDocumentWatcher";
 import { CameraPosition } from "@utils/cameraManipulator";
-import { commitStateOnInit, commitStateOnRender } from "@utils/webgl/stateMediator";
+import { commitStateOnInit, commitStateOnRender } from "@utils/webgl/stateSynchronizer";
 import { translations } from "@common/translations";
-import { imagesExtensions, shaderExtensions, __prod__ } from "@common/constants";
+import { imagesExtensions, shaderExtensions } from "@common/constants";
 import { AttributeBufferType } from "@utils/webgl/attributeBuffer/attributeBuffer";
 import { UniformType } from "@utils/webgl/uniform/uniform";
 import { UniformSection } from "./uniform/UniformsSection";
@@ -26,6 +19,13 @@ import { getOrCreateIndexBufferInfo } from "@utils/webgl/indexBuffer/indexBuffer
 import { getOrCreateTextureInfos } from "@utils/webgl/texture/textureStore";
 import { getOrCreateUniformInfos } from "@utils/webgl/uniform/uniformStore";
 import { store, useViewerDispatch, useViewerSelector } from "@viewerStore";
+import { formatShaderCompileErrors } from "@utils/webgl/compileErrors";
+import {
+  getProgramUniforms,
+  getProgramAttributeBuffers,
+  renderProgram,
+} from "@utils/webgl/program";
+import { compileShadersFromSource } from "@utils/webgl/shader";
 
 export const Viewer = React.memo(() => {
   const selectedVertexFileId = useViewerSelector(state => state.vertexFilePath);

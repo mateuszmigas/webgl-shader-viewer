@@ -1,5 +1,5 @@
 import { CameraPosition } from "@utils/cameraManipulator";
-import { DrawMode } from "@utils/webgl/index";
+import { DrawMode } from "@utils/webgl/types";
 import { AttributeBufferType } from "@utils/webgl/attributeBuffer/attributeBuffer";
 import { UniformType } from "@utils/webgl/uniform/uniform";
 

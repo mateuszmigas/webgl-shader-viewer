@@ -1,5 +1,5 @@
 import { CameraPosition } from "@utils/cameraManipulator";
-import { DrawMode } from "@utils/webgl/index";
+import { DrawMode } from "@utils/webgl/types";
 import { vscodeApi } from "./communication/vscodeApi";
 
 export type AttributeBufferState = { type: number; optionId: string; value: string; error: string };

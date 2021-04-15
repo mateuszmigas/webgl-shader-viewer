@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-const path = require("path");
+import path from "path";
 import { MessageRequest, MessageResponse } from "./messages";
 
 export const panelEndpoint = (

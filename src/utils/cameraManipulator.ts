@@ -2,7 +2,6 @@ import { mat4 } from "./math";
 import { ThrottleHtmlManipulator } from "./throttleManipulator";
 import { Matrix4Array, Vector3 } from "./types";
 
-type EventType = keyof HTMLElementEventMap;
 type EventHandler<T extends Event> = (event: T) => void;
 
 export const cameraPositionToVector3 = (cameraPosition: CameraPosition): Vector3 => {
