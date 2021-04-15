@@ -102,9 +102,6 @@ export const Viewer = React.memo(() => {
       setViewerSize({ ...rect });
     });
 
-    //if (!__prod__) {
-    viewerEndpoint.showWebViewDevTools();
-    //}
     syncWorkspaceOptions();
   }, [setViewerSize]);
 

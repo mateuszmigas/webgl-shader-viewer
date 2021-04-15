@@ -7,11 +7,11 @@ export const remove = <T>(array: T[], item: T) => {
 };
 
 export const range = (range: number | [number, number]) => {
-  if (Array.isArray(range))
+  if (Array.isArray(range)) {
     return Array(range[1] - range[0])
       .fill({})
       .map((_, i) => range[0] + i);
-  else {
+  } else {
     return Array(range)
       .fill({})
       .map((_, i) => i);
