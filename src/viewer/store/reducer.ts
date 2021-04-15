@@ -20,9 +20,10 @@ const uniformReducer = (state: UniformState, action: ViewerAction): UniformState
   switch (action.type) {
     case "SET_UNIFORM_VALUE":
     case "SET_UNIFORM_OPTION": {
+      const { name, ...rest } = action.payload;
       return {
         ...state,
-        ...action.payload,
+        ...rest,
       };
     }
     default:

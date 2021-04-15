@@ -115,7 +115,7 @@ describe("REBUILD_SHADER_INFO", () => {
     });
   });
 
-  test("preserves existing when names match", () => {
+  test("sets all infors while preserving existing", () => {
     const newState = reducer(
       {
         ...defaultState,
@@ -211,6 +211,92 @@ describe("REBUILD_SHADER_INFO", () => {
         customUrl: "",
         workspaceUrl: "",
         error: "",
+      },
+    });
+  });
+});
+
+describe("SET_UNIFORM_VALUE", () => {
+  test("sets uniform value for not existing", () => {
+    const newState = reducer(defaultState, {
+      type: "SET_UNIFORM_VALUE",
+      payload: { name: "UF1", type: UniformType.FLOAT_VEC3, value: 5 },
+    });
+
+    expect(newState.uniformValues).toStrictEqual({
+      UF1: {
+        type: UniformType.FLOAT_VEC3,
+        value: 5,
+      },
+    });
+  });
+
+  test("sets uniform value for existing", () => {
+    const newState = reducer(
+      {
+        ...defaultState,
+        uniformValues: {
+          UF1: {
+            type: UniformType.FLOAT_VEC3,
+            value: 1,
+            optionId: "custom",
+          },
+        },
+      },
+      {
+        type: "SET_UNIFORM_VALUE",
+        payload: { name: "UF1", type: UniformType.FLOAT_VEC3, value: 5 },
+      }
+    );
+
+    expect(newState.uniformValues).toStrictEqual({
+      UF1: {
+        optionId: "custom",
+        type: UniformType.FLOAT_VEC3,
+        value: 5,
+      },
+    });
+  });
+});
+
+describe("SET_UNIFORM_OPTION", () => {
+  test("sets uniform option for not existing", () => {
+    const newState = reducer(defaultState, {
+      type: "SET_UNIFORM_OPTION",
+      payload: { name: "UF1", type: UniformType.FLOAT_VEC3, optionId: "op1" },
+    });
+
+    expect(newState.uniformValues).toStrictEqual({
+      UF1: {
+        type: UniformType.FLOAT_VEC3,
+        optionId: "op1",
+      },
+    });
+  });
+
+  test("sets uniform option for existing", () => {
+    const newState = reducer(
+      {
+        ...defaultState,
+        uniformValues: {
+          UF1: {
+            type: UniformType.FLOAT_VEC3,
+            value: [1, 1, 1],
+            optionId: "custom",
+          },
+        },
+      },
+      {
+        type: "SET_UNIFORM_OPTION",
+        payload: { name: "UF1", type: UniformType.FLOAT_VEC3, optionId: "op2" },
+      }
+    );
+
+    expect(newState.uniformValues).toStrictEqual({
+      UF1: {
+        optionId: "op2",
+        value: [1, 1, 1],
+        type: UniformType.FLOAT_VEC3,
       },
     });
   });
