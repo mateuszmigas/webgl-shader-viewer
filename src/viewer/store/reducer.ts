@@ -38,9 +38,10 @@ const attributeBufferReducer = (
   switch (action.type) {
     case "SET_ATTRIBUTE_BUFFER_VALUE":
     case "SET_ATTRIBUTE_BUFFER_OPTION": {
+      const { name, ...rest } = action.payload;
       const newState = {
         ...state,
-        ...action.payload,
+        ...rest,
       };
       newState.error =
         newState.optionId === customOption.id ? validateAttributeBuffer(newState.value) : "";

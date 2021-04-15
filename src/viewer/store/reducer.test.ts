@@ -274,14 +274,14 @@ describe("SET_UNIFORM_OPTION", () => {
     });
   });
 
-  test("sets uniform option for existing", () => {
+  test("sets uniform option for existing, preserves value", () => {
     const newState = reducer(
       {
         ...defaultState,
         uniformValues: {
           UF1: {
             type: UniformType.FLOAT_VEC3,
-            value: [1, 1, 1],
+            value: [1, 2, 3],
             optionId: "custom",
           },
         },
@@ -295,8 +295,100 @@ describe("SET_UNIFORM_OPTION", () => {
     expect(newState.uniformValues).toStrictEqual({
       UF1: {
         optionId: "op2",
-        value: [1, 1, 1],
+        value: [1, 2, 3],
         type: UniformType.FLOAT_VEC3,
+      },
+    });
+  });
+});
+
+describe("SET_ATTRIBUTE_BUFFER_VALUE", () => {
+  test("sets attrubite buffer value for not existing", () => {
+    const newState = reducer(defaultState, {
+      type: "SET_ATTRIBUTE_BUFFER_VALUE",
+      payload: { name: "AB1", type: AttributeBufferType.FLOAT_VEC3, value: "[]" },
+    });
+
+    expect(newState.attributeBufferValues).toStrictEqual({
+      AB1: {
+        type: AttributeBufferType.FLOAT_VEC3,
+        value: "[]",
+        error: "",
+      },
+    });
+  });
+
+  test("sets attribute buffer value for existing and validates", () => {
+    const newState = reducer(
+      {
+        ...defaultState,
+        attributeBufferValues: {
+          AB1: {
+            type: AttributeBufferType.FLOAT_VEC3,
+            value: "[1]",
+            optionId: "custom",
+            error: "err1",
+          },
+        },
+      },
+      {
+        type: "SET_ATTRIBUTE_BUFFER_VALUE",
+        payload: { name: "AB1", type: AttributeBufferType.FLOAT_VEC3, value: "[2]" },
+      }
+    );
+
+    expect(newState.attributeBufferValues).toStrictEqual({
+      AB1: {
+        optionId: "custom",
+        type: AttributeBufferType.FLOAT_VEC3,
+        value: "[2]",
+        error: "",
+      },
+    });
+  });
+});
+
+describe("SET_ATTRIBUTE_BUFFER_OPTION", () => {
+  test("sets attribute buffer for not existing", () => {
+    const newState = reducer(defaultState, {
+      type: "SET_ATTRIBUTE_BUFFER_OPTION",
+      payload: { name: "AB1", type: AttributeBufferType.FLOAT_VEC3, optionId: "op1" },
+    });
+
+    expect(newState.attributeBufferValues).toStrictEqual({
+      AB1: {
+        type: AttributeBufferType.FLOAT_VEC3,
+        optionId: "op1",
+        error: "",
+      },
+    });
+  });
+
+  test("sets attribute buffer option for existing, validates and preserves value", () => {
+    const newState = reducer(
+      {
+        ...defaultState,
+        attributeBufferValues: {
+          AB1: {
+            type: AttributeBufferType.FLOAT_VEC3,
+            value: "[1, 2, 3]",
+            optionId: "custom",
+            error: "err1",
+          },
+        },
+      },
+      {
+        type: "SET_ATTRIBUTE_BUFFER_OPTION",
+        payload: { name: "AB1", type: AttributeBufferType.FLOAT_VEC3, optionId: "op2" },
+      }
+    );
+
+    expect(newState.attributeBufferValues).toStrictEqual({
+      AB1: {
+        optionId: "op2",
+        value: "[1, 2, 3]",
+        type: AttributeBufferType.FLOAT_VEC3,
+        error: "",
       },
     });
   });
