@@ -77,9 +77,10 @@ const textureReducer = (state: TextureState, action: ViewerAction): TextureState
     case "SET_TEXTURE_CUSTOM_URL":
     case "SET_TEXTURE_LOADING_ERROR":
     case "SET_TEXTURE_OPTION": {
+      const { name, ...rest } = action.payload;
       return {
         ...state,
-        ...action.payload,
+        ...rest,
       };
     }
     default:

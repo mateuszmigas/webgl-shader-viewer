@@ -22,7 +22,7 @@ const defaultState: ViewerState = {
 };
 
 describe("SET_VERTEX_FILE_PATH", () => {
-  test("sets vertex file path", () => {
+  test("sets correct vertex file path", () => {
     const newState = reducer(defaultState, {
       type: "SET_VERTEX_FILE_PATH",
       payload: { path: "c:/windows/temp" },
@@ -33,7 +33,7 @@ describe("SET_VERTEX_FILE_PATH", () => {
 });
 
 describe("SET_FRAGMENT_FILE_PATH", () => {
-  test("sets fragment file path", () => {
+  test("sets correct fragment file path", () => {
     const newState = reducer(defaultState, {
       type: "SET_FRAGMENT_FILE_PATH",
       payload: { path: "c:/windows/temp" },
@@ -304,7 +304,7 @@ describe("SET_UNIFORM_OPTION", () => {
 });
 
 describe("SET_ATTRIBUTE_BUFFER_VALUE", () => {
-  test("sets attribute buffer value for not existing", () => {
+  test("creates attribute buffer if doesn't exist", () => {
     const newState = reducer(defaultState, {
       type: "SET_ATTRIBUTE_BUFFER_VALUE",
       payload: { name: "AB1", type: AttributeBufferType.FLOAT_VEC3, value: "[]" },
@@ -319,7 +319,7 @@ describe("SET_ATTRIBUTE_BUFFER_VALUE", () => {
     });
   });
 
-  test("sets attribute buffer value for existing and validates", () => {
+  test("updates attribute buffer if already exist", () => {
     const newState = reducer(
       {
         ...defaultState,
@@ -347,10 +347,45 @@ describe("SET_ATTRIBUTE_BUFFER_VALUE", () => {
       },
     });
   });
+
+  test.each([
+    ["[]", ""],
+    ["aa", "Invalid JSON format"],
+  ])(
+    "validates attribute buffer when options set to custom (value: %o, error: %o)",
+    (value, expectedError) => {
+      const newState = reducer(
+        {
+          ...defaultState,
+          attributeBufferValues: {
+            AB1: {
+              type: AttributeBufferType.FLOAT_VEC3,
+              value: "[1]",
+              optionId: "custom",
+              error: "",
+            },
+          },
+        },
+        {
+          type: "SET_ATTRIBUTE_BUFFER_VALUE",
+          payload: { name: "AB1", type: AttributeBufferType.FLOAT_VEC3, value },
+        }
+      );
+
+      expect(newState.attributeBufferValues).toStrictEqual({
+        AB1: {
+          type: AttributeBufferType.FLOAT_VEC3,
+          value,
+          optionId: "custom",
+          error: expectedError,
+        },
+      });
+    }
+  );
 });
 
 describe("SET_ATTRIBUTE_BUFFER_OPTION", () => {
-  test("sets attribute buffer for not existing", () => {
+  test("creates attribute buffer if doesn't exist", () => {
     const newState = reducer(defaultState, {
       type: "SET_ATTRIBUTE_BUFFER_OPTION",
       payload: { name: "AB1", type: AttributeBufferType.FLOAT_VEC3, optionId: "op1" },
@@ -468,5 +503,216 @@ describe("SET_INDEX_BUFFER_OPTION", () => {
       value: "[1, 2, 3]",
       error: "",
     });
+  });
+});
+
+describe("SET_TEXTURE_CUSTOM_URL", () => {
+  test("sets correct custom url", () => {
+    const newState = reducer(
+      {
+        ...defaultState,
+        textureValues: {
+          TX1: {
+            optionId: "custom",
+            workspaceUrl: "https:\\someWorkspaceUrl",
+            customUrl: "https:\\someCustomUrl",
+            error: "someError",
+          },
+        },
+      },
+      {
+        type: "SET_TEXTURE_CUSTOM_URL",
+        payload: { name: "TX1", customUrl: "https:\\url" },
+      }
+    );
+
+    expect(newState.textureValues).toStrictEqual({
+      TX1: {
+        optionId: "custom",
+        workspaceUrl: "https:\\someWorkspaceUrl",
+        customUrl: "https:\\url",
+        error: "someError",
+      },
+    });
+  });
+});
+
+describe("SET_TEXTURE_WORKSPACE_URL", () => {
+  test("sets correct workspace url", () => {
+    const newState = reducer(
+      {
+        ...defaultState,
+        textureValues: {
+          TX1: {
+            optionId: "custom",
+            workspaceUrl: "https:\\someWorkspaceUrl",
+            customUrl: "https:\\someCustomUrl",
+            error: "someError",
+          },
+        },
+      },
+      {
+        type: "SET_TEXTURE_WORKSPACE_URL",
+        payload: { name: "TX1", workspaceUrl: "https:\\url" },
+      }
+    );
+
+    expect(newState.textureValues).toStrictEqual({
+      TX1: {
+        optionId: "custom",
+        workspaceUrl: "https:\\url",
+        customUrl: "https:\\someCustomUrl",
+        error: "someError",
+      },
+    });
+  });
+});
+
+describe("SET_TEXTURE_OPTION", () => {
+  test("sets correct option", () => {
+    const newState = reducer(
+      {
+        ...defaultState,
+        textureValues: {
+          TX1: {
+            optionId: "custom",
+            workspaceUrl: "https:\\someWorkspaceUrl",
+            customUrl: "https:\\someCustomUrl",
+            error: "someError",
+          },
+        },
+      },
+      {
+        type: "SET_TEXTURE_OPTION",
+        payload: { name: "TX1", optionId: "texture1" },
+      }
+    );
+
+    expect(newState.textureValues).toStrictEqual({
+      TX1: {
+        optionId: "texture1",
+        workspaceUrl: "https:\\someWorkspaceUrl",
+        customUrl: "https:\\someCustomUrl",
+        error: "someError",
+      },
+    });
+  });
+});
+
+describe("SET_TEXTURE_LOADING_ERROR", () => {
+  test("sets correct loading error", () => {
+    const newState = reducer(
+      {
+        ...defaultState,
+        textureValues: {
+          TX1: {
+            optionId: "custom",
+            workspaceUrl: "https:\\someWorkspaceUrl",
+            customUrl: "https:\\someCustomUrl",
+            error: "someError",
+          },
+        },
+      },
+      {
+        type: "SET_TEXTURE_LOADING_ERROR",
+        payload: { name: "TX1", error: "err" },
+      }
+    );
+
+    expect(newState.textureValues).toStrictEqual({
+      TX1: {
+        optionId: "custom",
+        workspaceUrl: "https:\\someWorkspaceUrl",
+        customUrl: "https:\\someCustomUrl",
+        error: "err",
+      },
+    });
+  });
+});
+
+describe("SET_MESH", () => {
+  test("sets correct vertex file path", () => {
+    const newState = reducer(defaultState, {
+      type: "SET_VERTEX_FILE_PATH",
+      payload: { path: "c:/windows/temp" },
+    });
+
+    expect(newState.vertexFilePath).toBe("c:/windows/temp");
+  });
+});
+//sets correct mesh
+//updates attribute buffers bound to mesh
+//updates index buffers bound to mesh
+
+describe("SET_DRAW_MODE", () => {
+  test("sets correct draw mode", () => {
+    const newState = reducer(defaultState, {
+      type: "SET_DRAW_MODE",
+      payload: { mode: "arrays" },
+    });
+
+    expect(newState.drawMode).toBe("arrays");
+  });
+});
+
+describe("SET_CAMERA_POSITION", () => {
+  test("sets correct vertex file path", () => {
+    const newState = reducer(defaultState, {
+      type: "SET_VERTEX_FILE_PATH",
+      payload: { path: "c:/windows/temp" },
+    });
+
+    expect(newState.vertexFilePath).toBe("c:/windows/temp");
+  });
+});
+//sets correct camera position
+//updates uniforms bound to camera
+
+describe("SET_VIWER_SIZE", () => {
+  test("sets correct viewer size", () => {
+    const newState = reducer(defaultState, {
+      type: "SET_VIWER_SIZE",
+      payload: { size: { width: 100, height: 200 } },
+    });
+
+    expect(newState.viewerSize).toStrictEqual({ width: 100, height: 200 });
+  });
+});
+
+describe("SET_WORKSPACE_IMAGE_OPTIONS", () => {
+  test("sets correct image options", () => {
+    const newState = reducer(defaultState, {
+      type: "SET_WORKSPACE_IMAGE_OPTIONS",
+      payload: {
+        options: [
+          { id: "1", display: "First" },
+          { id: "2", display: "Second" },
+        ],
+      },
+    });
+
+    expect(newState.userWorkspace.imageOptions).toStrictEqual([
+      { id: "1", display: "First" },
+      { id: "2", display: "Second" },
+    ]);
+  });
+});
+
+describe("SET_WORKSPACE_SHADER_OPTIONS", () => {
+  test("sets correct shader options", () => {
+    const newState = reducer(defaultState, {
+      type: "SET_WORKSPACE_SHADER_OPTIONS",
+      payload: {
+        options: [
+          { id: "1", display: "First" },
+          { id: "2", display: "Second" },
+        ],
+      },
+    });
+
+    expect(newState.userWorkspace.shaderOptions).toStrictEqual([
+      { id: "1", display: "First" },
+      { id: "2", display: "Second" },
+    ]);
   });
 });
