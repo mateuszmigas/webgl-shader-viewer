@@ -1,3 +1,4 @@
+import { meshes } from "./../meshes/index";
 import { AttributeBufferType } from "@utils/webgl/attributeBuffer/attributeBuffer";
 import { UniformType } from "@utils/webgl/uniform/uniform";
 import { ViewerState } from "@viewerStore/state";
@@ -303,7 +304,7 @@ describe("SET_UNIFORM_OPTION", () => {
 });
 
 describe("SET_ATTRIBUTE_BUFFER_VALUE", () => {
-  test("sets attrubite buffer value for not existing", () => {
+  test("sets attribute buffer value for not existing", () => {
     const newState = reducer(defaultState, {
       type: "SET_ATTRIBUTE_BUFFER_VALUE",
       payload: { name: "AB1", type: AttributeBufferType.FLOAT_VEC3, value: "[]" },
@@ -390,6 +391,82 @@ describe("SET_ATTRIBUTE_BUFFER_OPTION", () => {
         type: AttributeBufferType.FLOAT_VEC3,
         error: "",
       },
+    });
+  });
+});
+
+describe("SET_INDEX_BUFFER_VALUE", () => {
+  test("sets index buffer value for not existing", () => {
+    const newState = reducer(defaultState, {
+      type: "SET_INDEX_BUFFER_VALUE",
+      payload: { value: "[]" },
+    });
+
+    expect(newState.indexBufferValue).toStrictEqual({
+      error: "",
+      optionId: "indices",
+      value: `[${meshes.get(defaultState.meshId).indices}]`,
+    });
+  });
+
+  test("sets index buffer value for existing and validates", () => {
+    const newState = reducer(
+      {
+        ...defaultState,
+        indexBufferValue: {
+          value: "[1]",
+          optionId: "custom",
+          error: "err1",
+        },
+      },
+      {
+        type: "SET_INDEX_BUFFER_VALUE",
+        payload: { value: "[2]" },
+      }
+    );
+
+    expect(newState.indexBufferValue).toStrictEqual({
+      optionId: "custom",
+      value: "[2]",
+      error: "",
+    });
+  });
+});
+
+describe("SET_INDEX_BUFFER_OPTION", () => {
+  test("sets index buffer for not existing", () => {
+    const newState = reducer(defaultState, {
+      type: "SET_INDEX_BUFFER_OPTION",
+      payload: { optionId: "op1" },
+    });
+
+    expect(newState.indexBufferValue).toStrictEqual({
+      optionId: "op1",
+      error: "",
+      value: "[]",
+    });
+  });
+
+  test("sets index buffer option for existing, validates and preserves value", () => {
+    const newState = reducer(
+      {
+        ...defaultState,
+        indexBufferValue: {
+          value: "[1, 2, 3]",
+          optionId: "custom",
+          error: "err1",
+        },
+      },
+      {
+        type: "SET_INDEX_BUFFER_OPTION",
+        payload: { optionId: "op2" },
+      }
+    );
+
+    expect(newState.indexBufferValue).toStrictEqual({
+      optionId: "op2",
+      value: "[1, 2, 3]",
+      error: "",
     });
   });
 });
