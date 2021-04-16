@@ -231,7 +231,6 @@ const mainReducer = (state: ViewerState, action: ViewerAction): ViewerState => {
   }
 };
 
-//meshId
 const applyAttributeBufferBindingsReducer = (state: ViewerState): ViewerState => {
   return {
     ...state,
@@ -247,7 +246,6 @@ const applyAttributeBufferBindingsReducer = (state: ViewerState): ViewerState =>
   };
 };
 
-//meshId
 const applyIndexBufferBindingsReducer = (state: ViewerState): ViewerState => {
   const indexBufferValue = state.indexBufferValue;
   const binding = getIndexBufferBinding(indexBufferValue.optionId);
@@ -263,7 +261,6 @@ const applyIndexBufferBindingsReducer = (state: ViewerState): ViewerState => {
     : state;
 };
 
-//optionId, camera
 const applyUniformBindingsReducer = (state: ViewerState): ViewerState => {
   return {
     ...state,

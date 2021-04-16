@@ -219,7 +219,7 @@ describe("REBUILD_SHADER_INFO", () => {
 });
 
 describe("SET_UNIFORM_VALUE", () => {
-  test("sets uniform value for not existing", () => {
+  test("creates uniform if it doesn't exist", () => {
     const newState = reducer(defaultState, {
       type: "SET_UNIFORM_VALUE",
       payload: { name: "UF1", type: UniformType.FLOAT_VEC3, value: 5 },
@@ -233,7 +233,7 @@ describe("SET_UNIFORM_VALUE", () => {
     });
   });
 
-  test("sets uniform value for existing", () => {
+  test("updates uniform if it already exist", () => {
     const newState = reducer(
       {
         ...defaultState,
@@ -262,7 +262,7 @@ describe("SET_UNIFORM_VALUE", () => {
 });
 
 describe("SET_UNIFORM_OPTION", () => {
-  test("sets uniform option for not existing", () => {
+  test("creates uniform if it doesn't exist", () => {
     const newState = reducer(defaultState, {
       type: "SET_UNIFORM_OPTION",
       payload: { name: "UF1", type: UniformType.FLOAT_VEC3, optionId: "op1" },
@@ -276,7 +276,7 @@ describe("SET_UNIFORM_OPTION", () => {
     });
   });
 
-  test("sets uniform option for existing, preserves value", () => {
+  test("updates uniform if it already exist", () => {
     const newState = reducer(
       {
         ...defaultState,
@@ -305,7 +305,7 @@ describe("SET_UNIFORM_OPTION", () => {
 });
 
 describe("SET_ATTRIBUTE_BUFFER_VALUE", () => {
-  test("creates attribute buffer if doesn't exist", () => {
+  test("creates attribute buffer if it doesn't exist", () => {
     const newState = reducer(defaultState, {
       type: "SET_ATTRIBUTE_BUFFER_VALUE",
       payload: { name: "AB1", type: AttributeBufferType.FLOAT_VEC3, value: "[]" },
@@ -320,7 +320,7 @@ describe("SET_ATTRIBUTE_BUFFER_VALUE", () => {
     });
   });
 
-  test("updates attribute buffer if already exist", () => {
+  test("updates attribute buffer if it already exist", () => {
     const newState = reducer(
       {
         ...defaultState,
@@ -386,7 +386,7 @@ describe("SET_ATTRIBUTE_BUFFER_VALUE", () => {
 });
 
 describe("SET_ATTRIBUTE_BUFFER_OPTION", () => {
-  test("creates attribute buffer if doesn't exist", () => {
+  test("creates attribute buffer if it doesn't exist", () => {
     const newState = reducer(defaultState, {
       type: "SET_ATTRIBUTE_BUFFER_OPTION",
       payload: { name: "AB1", type: AttributeBufferType.FLOAT_VEC3, optionId: "op1" },
@@ -401,7 +401,7 @@ describe("SET_ATTRIBUTE_BUFFER_OPTION", () => {
     });
   });
 
-  test("sets attribute buffer option for existing, validates and preserves value", () => {
+  test("updates attribute buffer if it already exist", () => {
     const newState = reducer(
       {
         ...defaultState,
@@ -432,7 +432,7 @@ describe("SET_ATTRIBUTE_BUFFER_OPTION", () => {
 });
 
 describe("SET_INDEX_BUFFER_VALUE", () => {
-  test("sets index buffer value for not existing", () => {
+  test("creates index buffer if it doesn't exist", () => {
     const newState = reducer(defaultState, {
       type: "SET_INDEX_BUFFER_VALUE",
       payload: { value: "[]" },
@@ -441,11 +441,11 @@ describe("SET_INDEX_BUFFER_VALUE", () => {
     expect(newState.indexBufferValue).toStrictEqual({
       error: "",
       optionId: "indices",
-      value: `[${meshes.get(defaultState.meshId).indices}]`,
+      value: `[${meshes[defaultState.meshId].indices}]`,
     });
   });
 
-  test("sets index buffer value for existing and validates", () => {
+  test("updates index buffer if it already exist", () => {
     const newState = reducer(
       {
         ...defaultState,
@@ -467,10 +467,39 @@ describe("SET_INDEX_BUFFER_VALUE", () => {
       error: "",
     });
   });
+
+  test.each([
+    ["[]", ""],
+    ["aa", "Invalid JSON format"],
+  ])(
+    "validates index buffer when options set to custom (value: %o, error: %o)",
+    (value, expectedError) => {
+      const newState = reducer(
+        {
+          ...defaultState,
+          indexBufferValue: {
+            value: "[1]",
+            optionId: "custom",
+            error: "",
+          },
+        },
+        {
+          type: "SET_INDEX_BUFFER_VALUE",
+          payload: { value },
+        }
+      );
+
+      expect(newState.indexBufferValue).toStrictEqual({
+        value,
+        optionId: "custom",
+        error: expectedError,
+      });
+    }
+  );
 });
 
 describe("SET_INDEX_BUFFER_OPTION", () => {
-  test("sets index buffer for not existing", () => {
+  test("creates index buffer if it doesn't exist", () => {
     const newState = reducer(defaultState, {
       type: "SET_INDEX_BUFFER_OPTION",
       payload: { optionId: "op1" },
@@ -483,7 +512,7 @@ describe("SET_INDEX_BUFFER_OPTION", () => {
     });
   });
 
-  test("sets index buffer option for existing, validates and preserves value", () => {
+  test("updates index buffer if it already exist", () => {
     const newState = reducer(
       {
         ...defaultState,
@@ -632,18 +661,79 @@ describe("SET_TEXTURE_LOADING_ERROR", () => {
 });
 
 describe("SET_MESH", () => {
-  test("sets correct vertex file path", () => {
+  test("sets correct mesh", () => {
     const newState = reducer(defaultState, {
-      type: "SET_VERTEX_FILE_PATH",
-      payload: { path: "c:/windows/temp" },
+      type: "SET_MESH",
+      payload: { id: "plane" },
     });
-
-    expect(newState.vertexFilePath).toBe("c:/windows/temp");
+    expect(newState.meshId).toBe("plane");
   });
+
+  test.each([
+    ["AB1", "positions", "[]", "[[-0.5,-0.5,0,1],[0.5,-0.5,0,1],[0.5,0.5,0,1],[-0.5,0.5,0,1]]"],
+    ["AB2", "custom", "[]", "[]"],
+    ["AB3", "textureCoordinates", "[]", "[[0,0],[1,0],[1,1],[0,1]]"],
+  ])(
+    "updates attribute buffers bound to mesh (name: %o, option: %o, current value: %o, expected value: %o)",
+    (name, optionId, currentValue, expectedValue) => {
+      const newState = reducer(
+        {
+          ...defaultState,
+          attributeBufferValues: {
+            [name]: {
+              type: AttributeBufferType.FLOAT_VEC3,
+              optionId,
+              value: currentValue,
+              error: "",
+            },
+          },
+        },
+        {
+          type: "SET_MESH",
+          payload: { id: "plane" },
+        }
+      );
+
+      expect(newState.attributeBufferValues).toStrictEqual({
+        [name]: {
+          type: AttributeBufferType.FLOAT_VEC3,
+          optionId,
+          value: expectedValue,
+          error: "",
+        },
+      });
+    }
+  );
+
+  test.each([
+    ["IB1", "indices", "[]", "[0,1,2,0,2,3]"],
+    ["IB2", "custom", "[]", "[]"],
+  ])(
+    "updates index buffers bound to mesh (name: %o, option: %o, current value: %o, expected value: %o)",
+    (name, optionId, currentValue, expectedValue) => {
+      const newState = reducer(
+        {
+          ...defaultState,
+          indexBufferValue: {
+            optionId,
+            value: currentValue,
+            error: "",
+          },
+        },
+        {
+          type: "SET_MESH",
+          payload: { id: "plane" },
+        }
+      );
+
+      expect(newState.indexBufferValue).toStrictEqual({
+        optionId,
+        value: expectedValue,
+        error: "",
+      });
+    }
+  );
 });
-//sets correct mesh
-//updates attribute buffers bound to mesh
-//updates index buffers bound to mesh
 
 describe("SET_DRAW_MODE", () => {
   test("sets correct draw mode", () => {

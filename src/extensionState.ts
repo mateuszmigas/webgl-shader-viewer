@@ -1,3 +1,4 @@
+import { meshes } from "./viewer/meshes/index";
 import { CameraPosition } from "@utils/cameraManipulator";
 import { DrawMode } from "@utils/webgl/types";
 import { vscodeApi } from "./communication/vscodeApi";
@@ -25,7 +26,7 @@ export type ExtensionState = {
   textureValues: Record<string, TextureState>;
   cameraPosition: CameraPosition;
   drawMode: DrawMode;
-  meshId: string;
+  meshId: keyof typeof meshes;
 };
 
 const defaultState: ExtensionState = {

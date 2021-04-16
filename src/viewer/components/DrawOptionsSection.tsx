@@ -1,5 +1,5 @@
 import React from "react";
-import { meshes } from "../meshes";
+import { meshes, MeshId } from "../meshes";
 import { translations } from "@common/translations";
 import { DrawMode } from "@utils/webgl/types";
 import { Dropdown } from "./common/Dropdown";
@@ -13,7 +13,7 @@ const drawModeOptions: { id: DrawMode; display: string }[] = [
   { id: "elements", display: translations.drawOptions.drawMode.elements },
 ];
 
-const meshOptions = Array.from(meshes.entries()).map(([key, value]) => ({
+const meshOptions = Object.entries(meshes).map(([key, value]) => ({
   id: key,
   display: value.display,
 }));
@@ -27,7 +27,7 @@ export const DrawOptionsSection = React.memo(() => {
     [dispatch]
   );
   const setMeshId = React.useCallback(
-    (newMeshId: string) => dispatch({ type: "SET_MESH", payload: { id: newMeshId } }),
+    (newMeshId: string) => dispatch({ type: "SET_MESH", payload: { id: newMeshId as MeshId } }),
     [dispatch]
   );
 

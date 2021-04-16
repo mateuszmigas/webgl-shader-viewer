@@ -1,3 +1,4 @@
+import { MeshId } from "./../meshes/index";
 import { CameraPosition } from "@utils/cameraManipulator";
 import { DrawMode } from "@utils/webgl/types";
 import { AttributeBufferType } from "@utils/webgl/attributeBuffer/attributeBuffer";
@@ -77,7 +78,7 @@ export type ViewerAction =
     }
   | {
       type: "SET_MESH";
-      payload: { id: string };
+      payload: { id: MeshId };
     }
   | {
       type: "SET_DRAW_MODE";
