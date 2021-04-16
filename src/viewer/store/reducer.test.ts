@@ -1,3 +1,4 @@
+import { repeat } from "./../../utils/array";
 import { meshes } from "./../meshes/index";
 import { AttributeBufferType } from "@utils/webgl/attributeBuffer/attributeBuffer";
 import { UniformType } from "@utils/webgl/uniform/uniform";
@@ -656,17 +657,70 @@ describe("SET_DRAW_MODE", () => {
 });
 
 describe("SET_CAMERA_POSITION", () => {
-  test("sets correct vertex file path", () => {
+  test("sets correct camera position", () => {
     const newState = reducer(defaultState, {
-      type: "SET_VERTEX_FILE_PATH",
-      payload: { path: "c:/windows/temp" },
+      type: "SET_CAMERA_POSITION",
+      payload: { position: { longitude: 1.2, latitude: 0.5, radius: 2 } },
     });
 
-    expect(newState.vertexFilePath).toBe("c:/windows/temp");
+    expect(newState.cameraPosition).toStrictEqual({ longitude: 1.2, latitude: 0.5, radius: 2 });
   });
+
+  test.each([
+    [
+      "UF1",
+      "perspectiveCamera",
+      repeat(16, 0),
+      [
+        2.4142136573791504,
+        0,
+        0,
+        0,
+        0,
+        2.4142136573791504,
+        0,
+        0,
+        0,
+        0,
+        -1.0020020008087158,
+        -1,
+        0,
+        0,
+        -0.20020020008087158,
+        0,
+      ],
+    ],
+    ["UF2", "custom", repeat(16, 0), repeat(16, 0)],
+  ])(
+    "updates uniforms bound to camera (name: %o, option: %o, current value: %o, expected value: %o)",
+    (name, optionId, currentValue, expectedValue) => {
+      const newState = reducer(
+        {
+          ...defaultState,
+          uniformValues: {
+            [name]: {
+              optionId,
+              value: currentValue,
+              type: UniformType.FLOAT_MAT4,
+            },
+          },
+        },
+        {
+          type: "SET_CAMERA_POSITION",
+          payload: { position: { longitude: 0, latitude: 0, radius: 0 } },
+        }
+      );
+
+      expect(newState.uniformValues).toStrictEqual({
+        [name]: {
+          optionId,
+          value: expectedValue,
+          type: UniformType.FLOAT_MAT4,
+        },
+      });
+    }
+  );
 });
-//sets correct camera position
-//updates uniforms bound to camera
 
 describe("SET_VIWER_SIZE", () => {
   test("sets correct viewer size", () => {
