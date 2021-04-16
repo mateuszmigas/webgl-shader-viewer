@@ -23,7 +23,7 @@ Open command palette in vscode and run "Extensions: Install from VSIX..."
 
 ## Example shaders
 
-# Vertex.hlsl
+Vertex.hlsl
 ```js
 attribute vec4 a_position;
 attribute vec3 a_normal;
@@ -39,7 +39,7 @@ void main(){
 }
 ```
 
-# Fragment.hlsl
+Fragment.hlsl
 ```js
 precision mediump float;
 uniform vec3 u_reverseLightDirection;
