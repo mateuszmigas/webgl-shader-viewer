@@ -1,7 +1,7 @@
 # WebGL Shader Viewer
 
 This is a Visual Studio Code extension for previewing shader files.
-![](https://github.com/mateuszmigas/webgl-shader-viewer/blob/main/docs/images/presentation.gif)
+![](https://github.com/mateuszmigas/webgl-shader-viewer/blob/main/docs/images/screenshot1.jpg)
 
 ## Features
 
@@ -11,10 +11,7 @@ This is a Visual Studio Code extension for previewing shader files.
 4. Generates inputs for dynamically controlling uniforms/textures/attributes either manually or predefined bindings
 
 ## Installation
-Go to releases and download vsix and example(optional)
-https://github.com/mateuszmigas/webgl-shader-viewer/releases/
-
-Open command palette in vscode and run "Extensions: Install from VSIX..."
+https://marketplace.visualstudio.com/items?itemName=mateuszmigas.webgl-shader-viewer
 
 ## How to run
 1. Open directory/workspace where you have glsl files (can be example project)
