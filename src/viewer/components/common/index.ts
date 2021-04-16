@@ -1,3 +1,4 @@
+export * from "./Matrix2x2NumberInput";
 export * from "./Matrix3x3NumberInput";
 export * from "./Matrix4x4NumberInput";
 export * from "./Vector2NumberInput";

@@ -36,13 +36,28 @@ const getDefaultOption = (name: string) => {
 const getDefaultValue = (type: UniformType) => {
   switch (type) {
     case UniformType.FLOAT:
+    case UniformType.BOOL:
+    case UniformType.BYTE:
+    case UniformType.UNSIGNED_BYTE:
+    case UniformType.SHORT:
+    case UniformType.UNSIGNED_SHORT:
+    case UniformType.INT:
+    case UniformType.UNSIGNED_INT:
       return 1;
     case UniformType.FLOAT_VEC2:
+    case UniformType.INT_VEC2:
+    case UniformType.BOOL_VEC2:
       return repeat(2, 1);
     case UniformType.FLOAT_VEC3:
+    case UniformType.INT_VEC3:
+    case UniformType.BOOL_VEC3:
       return repeat(3, 1);
     case UniformType.FLOAT_VEC4:
+    case UniformType.INT_VEC4:
+    case UniformType.BOOL_VEC4:
       return repeat(4, 1);
+    case UniformType.FLOAT_MAT2:
+      return [1, 0, 0, 1];
     case UniformType.FLOAT_MAT3:
       return [1, 0, 0, 0, 1, 0, 0, 0, 1];
     case UniformType.FLOAT_MAT4:
