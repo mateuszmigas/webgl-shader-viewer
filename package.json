@@ -3,10 +3,15 @@
   "displayName": "WebGL Shader Viewer",
   "description": "WebGL Shader Viewer",
   "publisher": "mateuszmigas",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/mateuszmigas/webgl-shader-viewer.git"
+  },
+  "icon": "assets/icon.png",
+  "galleryBanner": {
+    "color": "#C80000",
+    "theme": "dark"
   },
   "engines": {
     "vscode": "^1.51.0"
