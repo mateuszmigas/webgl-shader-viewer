@@ -42,7 +42,7 @@ export const createUseDebounceSelector = <TState>(store: Store<TState, any>) => 
       debounceSetState.cancel();
       unsubscribe();
     };
-  }, []);
+  }, [areEqual, debounceSetState, selector, setState, shouldDebounce]);
 
   return state.current;
 };

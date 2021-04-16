@@ -25,7 +25,7 @@ export const AttributeBufferField = React.memo((props: { name: string; type: num
           optionId,
         },
       }),
-    [dispatch]
+    [dispatch, name, type]
   );
 
   const setValue = React.useCallback(
@@ -38,7 +38,7 @@ export const AttributeBufferField = React.memo((props: { name: string; type: num
           value,
         },
       }),
-    [dispatch]
+    [dispatch, name, type]
   );
 
   const options = [customOption, ...getAttributeBufferBindingOptionsForType(type)];

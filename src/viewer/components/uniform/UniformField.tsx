@@ -82,7 +82,7 @@ export const UniformField = React.memo((props: { name: string; type: number }) =
           optionId,
         },
       }),
-    [dispatch]
+    [dispatch, name, type]
   );
 
   const setValue = React.useCallback(
@@ -95,7 +95,7 @@ export const UniformField = React.memo((props: { name: string; type: number }) =
           value,
         },
       }),
-    [dispatch]
+    [dispatch, name, type]
   );
 
   const isCustom = optionId === customOption.id;

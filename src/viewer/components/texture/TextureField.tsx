@@ -21,7 +21,7 @@ export const TextureField = React.memo((props: { name: string }) => {
           optionId,
         },
       }),
-    [dispatch]
+    [dispatch, name]
   );
   const setWorkspaceUrl = React.useCallback(
     (workspaceUrl: string) => {
@@ -33,7 +33,7 @@ export const TextureField = React.memo((props: { name: string }) => {
         },
       });
     },
-    [dispatch]
+    [dispatch, name]
   );
   const setCustomUrl = React.useCallback(
     (customUrl: string) =>
@@ -44,7 +44,7 @@ export const TextureField = React.memo((props: { name: string }) => {
           customUrl,
         },
       }),
-    [dispatch]
+    [dispatch, name]
   );
   const options = React.useMemo(
     () => [customImageUrl, workspaceImageUrl, ...getTextureBindingOptions()],
