@@ -1,4 +1,4 @@
-import { getSerializedProp } from "@meshes";
+import { getSerializedProp, MeshInfo } from "@meshes";
 import { customOption } from "@common/constants";
 import { translations } from "@common/translations";
 import { AttributeBufferType } from "@utils/webgl/attributeBuffer/attributeBuffer";
@@ -9,7 +9,7 @@ const normals = getSerializedProp("normals");
 const colors = getSerializedProp("colors");
 
 const bindings = new Map<
-  string,
+  keyof MeshInfo,
   { display: string; type: AttributeBufferType; getValue: (id: string) => any }
 >([
   [
@@ -63,7 +63,7 @@ const getDefaultOption = (name: string) => {
   return customOption.id;
 };
 
-export const getAttributeBufferBinding = (name: string) => bindings.get(name);
+export const getAttributeBufferBinding = (name: string) => bindings.get(name as keyof MeshInfo);
 
 export const getAttributeBufferBindingOptionsForType = (type: AttributeBufferType) =>
   Array.from(bindings.entries())

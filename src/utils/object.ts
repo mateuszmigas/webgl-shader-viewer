@@ -35,8 +35,5 @@ const areEqual = <T extends any>(left: T, right: T, deep: boolean) => {
   return true;
 };
 
-export const shallowEqualArrays = <T extends any[]>(left: T, right: T) =>
-  left.length === right.length && left.every((value, index) => value === right[index]);
-
 export const shallowEqual = <T extends object>(left: T, right: T) => areEqual(left, right, false);
 export const deepEqual = <T extends object>(left: T, right: T) => areEqual(left, right, true);

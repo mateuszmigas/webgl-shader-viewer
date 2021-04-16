@@ -4,7 +4,7 @@ import { Matrix4Array, Vector3 } from "./types";
 
 type EventHandler<T extends Event> = (event: T) => void;
 
-export const cameraPositionToVector3 = (cameraPosition: CameraPosition): Vector3 => {
+const cameraPositionToVector3 = (cameraPosition: CameraPosition): Vector3 => {
   const y = cameraPosition.radius * Math.sin(cameraPosition.latitude);
   const r = cameraPosition.radius * Math.cos(cameraPosition.latitude);
   const z = r * Math.cos(cameraPosition.longitude);
@@ -51,16 +51,20 @@ const clampLatitude = (latitude: number) => {
 };
 
 const clampLongitude = (longitude: number) => {
-  if (longitude > Math.PI) return longitude - Math.PI * 2.0;
-  else if (longitude < -Math.PI) return longitude + Math.PI * 2.0;
-  else return longitude;
+  if (longitude > Math.PI) {
+    return longitude - Math.PI * 2.0;
+  } else if (longitude < -Math.PI) {
+    return longitude + Math.PI * 2.0;
+  } else {
+    return longitude;
+  }
 };
 
 const clampRadius = (radius: number) => {
   return Math.min(Math.max(radius, 1), 10);
 };
 
-const reducer = (position: CameraPosition, action: Action): CameraPosition => {
+const cameraReducer = (position: CameraPosition, action: Action): CameraPosition => {
   switch (action.type) {
     case "orbitRotate": {
       return {
@@ -109,7 +113,7 @@ export class CameraPositionManipulator extends ThrottleHtmlManipulator {
   }
 
   private dispatchAction = (action: Action) => {
-    const newViewport = reducer(this.positionProvider(), action);
+    const newViewport = cameraReducer(this.positionProvider(), action);
     this.onPositionChange(newViewport);
   };
 

@@ -1,4 +1,3 @@
-import { ViewerState } from "@viewerStore/state";
 import { repeat } from "@utils/array";
 import { assertNever } from "@utils/typeGuards";
 import { customOption } from "@common/constants";
@@ -7,12 +6,14 @@ import { CameraPosition, getCameraMatrix } from "@utils/cameraManipulator";
 import { UniformType } from "@utils/webgl/uniform/uniform";
 import { memoizeResult } from "@utils/function";
 
+const perspectiveCameraKey = "perspectiveCamera";
+
 const bindings = new Map<
   string,
   { display: string; type: UniformType; getValue: (...arg: any[]) => any }
 >([
   [
-    "perspectiveCamera",
+    perspectiveCameraKey,
     {
       type: UniformType.FLOAT_MAT4,
       display: translations.bindings.uniformPerspectiveCamera,
@@ -27,7 +28,7 @@ const bindings = new Map<
 const getDefaultOption = (name: string) => {
   const lowerCaseName = name.toLocaleLowerCase();
   if (lowerCaseName.includes("camera")) {
-    return "perspectiveCamera";
+    return perspectiveCameraKey;
   }
   return customOption.id;
 };

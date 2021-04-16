@@ -1,9 +1,10 @@
+import { MeshInfo } from "@meshes";
 import { translations } from "@common/translations";
 import { getSerializedProp } from "@meshes";
 
 const indices = getSerializedProp("indices");
 
-const bindings = new Map<string, { display: string; getValue: (id: string) => any }>([
+const bindings = new Map<keyof MeshInfo, { display: string; getValue: (id: string) => any }>([
   [
     "indices",
     {
@@ -13,7 +14,7 @@ const bindings = new Map<string, { display: string; getValue: (id: string) => an
   ],
 ]);
 
-export const getIndexBufferBinding = (name: string) => bindings.get(name);
+export const getIndexBufferBinding = (name: string) => bindings.get(name as keyof MeshInfo);
 
 export const getIndexBufferBindingOptions = () =>
   Array.from(bindings.entries()).map(([key, value]) => ({
