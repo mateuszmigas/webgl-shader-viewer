@@ -1,7 +1,7 @@
 # WebGL Shader Viewer
 
 This is a Visual Studio Code extension for previewing shader files.
-![](https://github.com/mateuszmigas/webgl-shader-viewer/blob/main/docs/images/presentation.gif)
+![](https://github.com/mateuszmigas/webgl-shader-viewer/blob/main/docs/images/presentation.gif?raw=true)
 
 ## Features
 
