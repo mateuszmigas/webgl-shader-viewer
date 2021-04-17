@@ -1,6 +1,7 @@
 # WebGL Shader Viewer
 
-This is a Visual Studio Code extension for previewing shader files.
+This is a Visual Studio Code extension for previewing shader files inside.
+
 ![](https://github.com/mateuszmigas/webgl-shader-viewer/blob/main/docs/images/presentation.gif?raw=true)
 
 ## Features
@@ -20,7 +21,7 @@ https://marketplace.visualstudio.com/items?itemName=mateuszmigas.webgl-shader-vi
 
 ## Example shaders
 
-Vertex.hlsl
+Vertex.glsl
 ```js
 attribute vec4 a_position;
 attribute vec3 a_normal;
@@ -36,7 +37,7 @@ void main(){
 }
 ```
 
-Fragment.hlsl
+Fragment.glsl
 ```js
 precision mediump float;
 uniform vec3 u_reverseLightDirection;
