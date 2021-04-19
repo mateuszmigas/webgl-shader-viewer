@@ -21,7 +21,7 @@ https://marketplace.visualstudio.com/items?itemName=mateuszmigas.webgl-shader-vi
 All values can be set manually. For some types you can can also use bindings.
 
 ### Synchronization
-At the start, the extension will do synchronization of glsl and image files. Later when new files in the workspace/directory are added click on this button to run this synchronization manually.
+At the start, the extension will do synchronization of glsl and image files. Later when new files in the workspace/directory are added click "Synchronize" to do this manually. 
 
 ### Uniforms
 | Name | Type | Description |
@@ -37,6 +37,7 @@ At the start, the extension will do synchronization of glsl and image files. Lat
 | Binding - Mesh texture coords | Vec2  | Selected mesh texture coordinates |
 | Binding - Mesh normals | Vec3 | Selected mesh normals |
 | Binding - Mesh colors | Vec3 | Selected mesh predefined faces colors |
+
 This field will show an error if data cannot be parsed
 
 ### Index buffer
@@ -44,18 +45,23 @@ This field will show an error if data cannot be parsed
 | --- | --- | --- |
 | Custom | number[] | Custom array |
 | Binding - Mesh indices | number[] | Selected mesh indices |
+
 This field will show an error if data cannot be parsed
 
 ### Textures
 | Name | Description |
-| --- | --- | --- |
+| --- | --- |
 | Url | Custom texture url |
 | Workspace | Allows setting texture from workspace |
 | Binding - Grass | Extension texture |
 | Binding - Sky | Extension texture |
 | Binding - Egypt | Extension texture |
+
 Url will show an error if the extension cannot fetch the image due to security reasons.
 Workspace images are not always working and might be blocked, depends on the image.
+
+## Draw mode / Indices
+Rendering can run either in "array" or "elements" mode for which you can set index buffer.
 
 ## Bugs
 If you find any bugs or think something can be improved feel free to contact me: 
