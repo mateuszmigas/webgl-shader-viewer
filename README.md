@@ -1,23 +1,65 @@
 # WebGL Shader Viewer
 
-This is a Visual Studio Code extension for previewing shader files inside.
+Visual Studio Code extension for previewing shader files inside the editor.
 
 ![](https://github.com/mateuszmigas/webgl-shader-viewer/blob/main/docs/images/presentation.gif?raw=true)
 
 ## Features
 
-1. Shows predefined or custom models using selected shaders from workspace in vscode webview
-2. Shows shader compile errors
-3. Watches shader file changes rebuilds shaders on the fly
-4. Generates inputs for dynamically controlling uniforms/textures/attributes either manually or predefined bindings
+1. Watches attached shader files and recompiles shaders on the fly
+2. Creates controls for setting attribute buffers/uniforms/textures
+3. Renders selected data or compile errors
 
 ## Installation
 https://marketplace.visualstudio.com/items?itemName=mateuszmigas.webgl-shader-viewer
 
 ## How to run
-1. Open directory/workspace where you have glsl files (can be example project)
-2. Open command palette in vscode and run "Open WebGL Shader Viewer"
-3. Select vertex and fragment shaders
+1. Open directory/workspace with glsl files in Visual Studio Code
+2. Run "Open WebGL Shader Viewer" command to activate the extension
+3. Select vertex and fragment shader files
+
+All values can be set manually. For some types you can can also use bindings.
+
+### Synchronization
+At the start, the extension will do synchronization of glsl and image files. Later when new files in the workspace/directory are added click on this button to run this synchronization manually.
+
+### Uniforms
+| Name | Type | Description |
+| --- | --- | --- |
+| Custom | Any WebGL compatible | Custom user data |
+| Binding - Perspective Camera | Matrix 4x4 | 3D orbit controls matrix |
+
+### Attribute buffers
+| Name | Type | Description |
+| --- | --- | --- |
+| Custom | number[][] | Custom array of arrays (Ex: [[0,0],[1,2],[3,1]]) |
+| Binding - Mesh positions | Vec4 | Selected mesh positions |
+| Binding - Mesh texture coords | Vec2  | Selected mesh texture coordinates |
+| Binding - Mesh normals | Vec3 | Selected mesh normals |
+| Binding - Mesh colors | Vec3 | Selected mesh predefined faces colors |
+This field will show an error if data cannot be parsed
+
+### Index buffer
+| Name | Type | Description |
+| --- | --- | --- |
+| Custom | number[] | Custom array |
+| Binding - Mesh indices | number[] | Selected mesh indices |
+This field will show an error if data cannot be parsed
+
+### Textures
+| Name | Description |
+| --- | --- | --- |
+| Url | Custom texture url |
+| Workspace | Allows setting texture from workspace |
+| Binding - Grass | Extension texture |
+| Binding - Sky | Extension texture |
+| Binding - Egypt | Extension texture |
+Url will show an error if the extension cannot fetch the image due to security reasons.
+Workspace images are not always working and might be blocked, depends on the image.
+
+## Bugs
+If you find any bugs or think something can be improved feel free to contact me: 
+mateuszmigas.dev@gmail.com
 
 ## Example shaders
 
