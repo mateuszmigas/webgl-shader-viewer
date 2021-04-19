@@ -3,7 +3,7 @@
   "displayName": "WebGL Shader Viewer",
   "description": "WebGL Shader Viewer",
   "publisher": "mateuszmigas",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "repository": {
     "type": "git",
     "url": "https://github.com/mateuszmigas/webgl-shader-viewer.git"
