@@ -60,7 +60,7 @@ This field will show an error if data cannot be parsed
 Url will show an error if the extension cannot fetch the image due to security reasons.
 Workspace images are not always working and might be blocked, depends on the image.
 
-## Draw mode / indices
+## Draw mode/indices
 Rendering can run either in "array" or "elements" mode for which you can set index buffer.
 
 ## Bugs
