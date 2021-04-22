@@ -22,6 +22,7 @@ All values can be set manually. For some types you can can also use bindings.
 
 ## Configuration
 It's possible to change configuration in Visual Studio settings
+
 | Key | Values |
 | --- | --- |
 | webglShaderViewer.renderingContext | WebGL, WebGL2 |
