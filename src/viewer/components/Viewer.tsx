@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { viewerEndpoint } from "communication/viewerEndpoint";
 import { observeElementBoundingRect } from "@utils/html";
 import { DrawOptionsSection } from "./DrawOptionsSection";
@@ -26,6 +26,7 @@ import {
   renderProgram,
 } from "@utils/webgl/program";
 import { compileShadersFromSource } from "@utils/webgl/shader";
+import { ExtensionConfigurationContext } from "viewer/contexts/extensionConfigurationContext";
 
 export const Viewer = React.memo(() => {
   const selectedVertexFileId = useViewerSelector(state => state.vertexFilePath);
@@ -35,8 +36,9 @@ export const Viewer = React.memo(() => {
   const [selectedFragmentFileText, setSelectedFragmentFileText] = React.useState("");
   const contentRef = React.useRef<HTMLDivElement>(null);
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const contextRef = React.useRef<WebGLRenderingContext>(null);
+  const contextRef = React.useRef<WebGLRenderingContext | WebGL2RenderingContext>(null);
   const animationFrameHandleRef = React.useRef<number | null>(null);
+  const extensionConfiguration = useContext(ExtensionConfigurationContext);
 
   const dispatch = useViewerDispatch();
   const setCameraPosition = React.useCallback(
@@ -90,7 +92,9 @@ export const Viewer = React.memo(() => {
 
   //startup
   React.useEffect(() => {
-    contextRef.current = canvasRef.current.getContext("webgl");
+    contextRef.current = canvasRef.current.getContext(
+      extensionConfiguration.renderingContext.toLocaleLowerCase()
+    ) as WebGLRenderingContext | WebGL2RenderingContext;
 
     if (!contextRef.current) {
       throw new Error(translations.errors.contextNotCreated);

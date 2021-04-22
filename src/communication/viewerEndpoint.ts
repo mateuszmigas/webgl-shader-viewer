@@ -1,5 +1,6 @@
 import { remove } from "@utils/array";
 import { uuidv4 } from "@utils/uuid";
+import { ExtensionConfiguration } from "extensionConfiguration";
 import { MessageResponse } from "./messages";
 import { vscodeApi } from "./vscodeApi";
 
@@ -69,6 +70,23 @@ class ViewerEndpoint {
       const listener = (message: MessageResponse) => {
         if (message.type === "getExtensionFileUri" && message.id === messageId) {
           resolve(message.payload.uri);
+          this.removeListener(listener);
+        }
+      };
+
+      this.eventListeners.push(listener);
+    });
+  }
+
+  getExtensionConfiguration() {
+    vscodeApi.postMessage({
+      type: "getExtensionConfiguration",
+    });
+
+    return new Promise<ExtensionConfiguration>(resolve => {
+      const listener = (message: MessageResponse) => {
+        if (message.type === "getExtensionConfiguration") {
+          resolve(message.payload.config);
           this.removeListener(listener);
         }
       };

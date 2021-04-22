@@ -1,3 +1,4 @@
+import { ExtensionConfiguration } from "./../extensionConfiguration";
 export type MessageRequest =
   | {
       type: "getWorkspaceFilesOfTypes";
@@ -8,6 +9,7 @@ export type MessageRequest =
   | { type: "getExtensionFileUri"; id: string; payload: { fileName: string } }
   | { type: "subscribeToDocumentTextChange"; payload: { fileName: string } }
   | { type: "unsubscribeToDocumentTextChange"; payload: { fileName: string } }
+  | { type: "getExtensionConfiguration" }
   | { type: "showWebViewDevTools" };
 
 export type MessageResponse =
@@ -25,6 +27,10 @@ export type MessageResponse =
       type: "getExtensionFileUri";
       id: string;
       payload: { uri: string };
+    }
+  | {
+      type: "getExtensionConfiguration";
+      payload: { config: ExtensionConfiguration };
     }
   | {
       type: "onDocumentTextChange";

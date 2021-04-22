@@ -1,12 +1,18 @@
+import { viewerEndpoint } from "@communication/viewerEndpoint";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
+import { ExtensionConfigurationContext } from "./contexts/extensionConfigurationContext";
 import { Viewer } from "./components/Viewer";
 import { store } from "./store";
 
-ReactDOM.render(
-  <Provider store={store}>
-    <Viewer />
-  </Provider>,
-  document.getElementById("viewer")
-);
+viewerEndpoint.getExtensionConfiguration().then(config => {
+  ReactDOM.render(
+    <ExtensionConfigurationContext.Provider value={config}>
+      <Provider store={store}>
+        <Viewer />
+      </Provider>
+    </ExtensionConfigurationContext.Provider>,
+    document.getElementById("viewer")
+  );
+});

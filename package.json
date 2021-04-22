@@ -3,7 +3,7 @@
   "displayName": "WebGL Shader Viewer",
   "description": "WebGL Shader Viewer",
   "publisher": "mateuszmigas",
-  "version": "0.9.5",
+  "version": "0.10.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/mateuszmigas/webgl-shader-viewer.git"
@@ -30,7 +30,24 @@
         "command": "webgl-shader-viewer.show-viewer",
         "title": "Open WebGL Shader Viewer"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "WebGL Shader Viewer",
+      "properties": {
+        "webglShaderViewer.renderingContext": {
+          "type": "string",
+          "default": "WebGL",
+          "enum": [
+            "WebGL",
+            "WebGL2"
+          ],
+          "enumDescriptions": [
+            "Viewer will use WebGL rendering context",
+            "Viewer will use WebGL2 rendering context"
+          ]
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "yarn run package",

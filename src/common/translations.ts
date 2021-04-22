@@ -2,7 +2,7 @@ export const translations = {
   custom: "Custom",
   synchronize: "Synchronize",
   shaders: {
-    title: "Shaders",
+    context: "Context",
     syncTooltip: "Synchronize extension with workspace glsl files",
   },
   vertexShader: "Vertex Shader",

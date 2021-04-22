@@ -67,6 +67,21 @@ export const panelEndpoint = (
         });
         break;
       }
+      case "getExtensionConfiguration": {
+        const configuration = vscode.workspace.getConfiguration("webglShaderViewer");
+        const renderingContext =
+          configuration.get("renderingContext") === "WebGL2" ? "WebGL2" : "WebGL";
+
+        postMessage({
+          ...message,
+          payload: {
+            config: {
+              renderingContext,
+            },
+          },
+        });
+        break;
+      }
       case "subscribeToDocumentTextChange": {
         didSaveTextDocumentWatchers.set(message.payload.fileName, (newContent: string) => {
           postMessage({
