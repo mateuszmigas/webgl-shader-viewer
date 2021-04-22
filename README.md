@@ -11,9 +11,11 @@ Visual Studio Code extension for previewing shader files inside the editor.
 3. Renders selected data or compile errors
 
 ## Installation
+
 https://marketplace.visualstudio.com/items?itemName=mateuszmigas.webgl-shader-viewer
 
 ## How to run
+
 1. Open directory/workspace with glsl files in Visual Studio Code
 2. Run "Open WebGL Shader Viewer" command to activate the extension
 3. Select vertex and fragment shader files
@@ -21,63 +23,71 @@ https://marketplace.visualstudio.com/items?itemName=mateuszmigas.webgl-shader-vi
 All values can be set manually. For some types you can can also use bindings.
 
 ## Configuration
+
 It's possible to change configuration in Visual Studio settings
 
-| Key | Values |
-| --- | --- |
+| Key                                | Values        |
+| ---------------------------------- | ------------- |
 | webglShaderViewer.renderingContext | WebGL, WebGL2 |
 
 ### Synchronization
-At the start, the extension will do synchronization of glsl and image files. Later when new files in the workspace/directory are added click "Synchronize" to do this manually. 
+
+At the start, the extension will do synchronization of glsl and image files. Later when new files in the workspace/directory are added click "Synchronize" to do this manually.
 
 ### Uniforms
-| Name | Type | Description |
-| --- | --- | --- |
-| Custom | Any WebGL compatible | Custom user data |
-| Binding - Perspective Camera | Matrix 4x4 | 3D orbit controls matrix |
+
+| Name                         | Type                 | Description              |
+| ---------------------------- | -------------------- | ------------------------ |
+| Custom                       | Any WebGL compatible | Custom user data         |
+| Binding - Perspective Camera | Matrix 4x4           | 3D orbit controls matrix |
 
 ### Attribute buffers
-| Name | Type | Description |
-| --- | --- | --- |
-| Custom | number[][] | Custom array of arrays (Ex: [[0,0],[1,2],[3,1]]) |
-| Binding - Mesh positions | Vec4 | Selected mesh positions |
-| Binding - Mesh texture coords | Vec2  | Selected mesh texture coordinates |
-| Binding - Mesh normals | Vec3 | Selected mesh normals |
-| Binding - Mesh colors | Vec3 | Selected mesh predefined faces colors |
+
+| Name                          | Type       | Description                                      |
+| ----------------------------- | ---------- | ------------------------------------------------ |
+| Custom                        | number[][] | Custom array of arrays (Ex: [[0,0],[1,2],[3,1]]) |
+| Binding - Mesh positions      | Vec4       | Selected mesh positions                          |
+| Binding - Mesh texture coords | Vec2       | Selected mesh texture coordinates                |
+| Binding - Mesh normals        | Vec3       | Selected mesh normals                            |
+| Binding - Mesh colors         | Vec3       | Selected mesh predefined faces colors            |
 
 This field will show an error if data cannot be parsed
 
 ### Index buffer
-| Name | Type | Description |
-| --- | --- | --- |
-| Custom | number[] | Custom array |
+
+| Name                   | Type     | Description           |
+| ---------------------- | -------- | --------------------- |
+| Custom                 | number[] | Custom array          |
 | Binding - Mesh indices | number[] | Selected mesh indices |
 
 This field will show an error if data cannot be parsed
 
 ### Textures
-| Name | Description |
-| --- | --- |
-| Url | Custom texture url |
-| Workspace | Allows setting texture from workspace |
-| Binding - Grass | Extension texture |
-| Binding - Sky | Extension texture |
-| Binding - Egypt | Extension texture |
+
+| Name            | Description                           |
+| --------------- | ------------------------------------- |
+| Url             | Custom texture url                    |
+| Workspace       | Allows setting texture from workspace |
+| Binding - Grass | Extension texture                     |
+| Binding - Sky   | Extension texture                     |
+| Binding - Egypt | Extension texture                     |
 
 Url will show an error if the extension cannot fetch the image due to security reasons.
 Workspace images are not always working and might be blocked, depends on the image.
 
 ### Draw mode/indices
+
 Rendering can run either in "array" or "elements" mode for which you can set index buffer.
 
 ## Bugs
-If you find any bugs or think something can be improved feel free to contact me: 
-mateuszmigas.dev@gmail.com
 
+If you find any bugs or think something can be improved feel free to contact me:
+mateuszmigas.dev@gmail.com
 
 ## Example shaders
 
 Webgl_Vertex.glsl
+
 ```js
 attribute vec4 a_position;
 attribute vec3 a_normal;
@@ -94,6 +104,7 @@ void main(){
 ```
 
 Webgl_Fragment.glsl
+
 ```js
 precision mediump float;
 uniform vec3 u_reverseLightDirection;
@@ -110,6 +121,7 @@ void main(){
 ```
 
 Webgl2_Vertex.glsl
+
 ```js
 #version 300 es
 in vec4 a_position;
@@ -127,6 +139,7 @@ void main(){
 ```
 
 Webgl2_Fragment.glsl
+
 ```js
 #version 300 es
 precision mediump float;
