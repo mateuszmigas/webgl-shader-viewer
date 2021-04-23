@@ -87,7 +87,9 @@ export const Viewer = React.memo(() => {
       }))
     );
 
-    setWorkspaceImageOptions(imageFiles.map(file => ({ id: file.uri, display: file.fileName })));
+    setWorkspaceImageOptions(
+      imageFiles.map(file => ({ id: file.filePath, display: file.fileName }))
+    );
   }, [setWorkspaceShaderOptions, setWorkspaceImageOptions]);
 
   //startup

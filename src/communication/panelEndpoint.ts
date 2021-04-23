@@ -59,6 +59,18 @@ export const panelEndpoint = (
         });
         break;
       }
+      case "getImageBase64Data": {
+        const type = path.extname(message.payload.filePath).replace(".", "").toLowerCase();
+        vscode.workspace.fs.readFile(vscode.Uri.file(message.payload.filePath)).then(data => {
+          postMessage({
+            ...message,
+            payload: {
+              base64Data: `data:image/${type};base64, ${Buffer.from(data).toString("base64")}`,
+            },
+          });
+        });
+        break;
+      }
       case "getExtensionFileUri": {
         const uri = getMediaUri(message.payload.fileName);
         postMessage({

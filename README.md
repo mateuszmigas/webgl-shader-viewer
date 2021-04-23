@@ -64,13 +64,13 @@ This field will show an error if data cannot be parsed
 
 ### Textures
 
-| Name            | Description                           |
-| --------------- | ------------------------------------- |
-| Url             | Custom texture url                    |
-| Workspace       | Allows setting texture from workspace |
-| Binding - Grass | Extension texture                     |
-| Binding - Sky   | Extension texture                     |
-| Binding - Egypt | Extension texture                     |
+| Name            | Description                                      |
+| --------------- | ------------------------------------------------ |
+| Url             | Custom texture url                               |
+| Workspace       | Allows setting texture from workspace (jpg, png) |
+| Binding - Grass | Extension texture                                |
+| Binding - Sky   | Extension texture                                |
+| Binding - Egypt | Extension texture                                |
 
 Url will show an error if the extension cannot fetch the image due to security reasons.
 Workspace images are not always working and might be blocked, depends on the image.

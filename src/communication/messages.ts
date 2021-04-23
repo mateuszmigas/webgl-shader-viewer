@@ -6,6 +6,7 @@ export type MessageRequest =
       payload: { extensions: string[] };
     }
   | { type: "getDocumentText"; id: string; payload: { fileName: string } }
+  | { type: "getImageBase64Data"; id: string; payload: { filePath: string } }
   | { type: "getExtensionFileUri"; id: string; payload: { fileName: string } }
   | { type: "subscribeToDocumentTextChange"; payload: { fileName: string } }
   | { type: "unsubscribeToDocumentTextChange"; payload: { fileName: string } }
@@ -22,6 +23,11 @@ export type MessageResponse =
       type: "getDocumentText";
       id: string;
       payload: { fileName: string; text: string };
+    }
+  | {
+      type: "getImageBase64Data";
+      id: string;
+      payload: { base64Data: string };
     }
   | {
       type: "getExtensionFileUri";
