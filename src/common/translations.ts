@@ -19,7 +19,7 @@ export const translations = {
   },
   errors: {
     fetchingImage: "Unable to fetch image",
-    emptyUrl: "URL cannot be empty",
+    emptyField: "Field cannot be empty",
     program: "PROGRAM:",
     vertexShader: "VERTEX SHADER:",
     fragmentShader: "FRAGMENT SHADER:",

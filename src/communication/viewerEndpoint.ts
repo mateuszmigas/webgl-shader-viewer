@@ -57,6 +57,27 @@ class ViewerEndpoint {
     });
   }
 
+  getImageBase64Data(filePath: string) {
+    const messageId = uuidv4();
+
+    vscodeApi.postMessage({
+      type: "getImageBase64Data",
+      id: messageId,
+      payload: { filePath },
+    });
+
+    return new Promise<string>(resolve => {
+      const listener = (message: MessageResponse) => {
+        if (message.type === "getImageBase64Data" && message.id === messageId) {
+          resolve(message.payload.base64Data);
+          this.removeListener(listener);
+        }
+      };
+
+      this.eventListeners.push(listener);
+    });
+  }
+
   getExtensionFileUri(fileName: string) {
     const messageId = uuidv4();
 

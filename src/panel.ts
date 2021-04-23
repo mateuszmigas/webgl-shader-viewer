@@ -78,7 +78,7 @@ export class Panel {
                   Use a content security policy to only allow loading images from https or from our extension directory,
                   and only allow scripts that have a specific nonce.
               -->
-              <meta http-equiv="Content-Security-Policy" content="default-src 'none'; font-src ${codiconsFontUri}; style-src ${webview.cspSource} ${codiconsUri}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
+              <meta http-equiv="Content-Security-Policy" content="default-src 'none'; font-src ${codiconsFontUri}; style-src ${webview.cspSource} ${codiconsUri}; img-src ${webview.cspSource} data: https:; script-src 'nonce-${nonce}';">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
               <link href="${stylesUri}" rel="stylesheet">
               <link href="${codiconsUri}" rel="stylesheet" />

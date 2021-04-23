@@ -52,11 +52,12 @@ const setTexture = async (
   }
 
   const binding = getTextureBinding(optionId);
-  const uri = binding
+  const src = binding
     ? await viewerEndpoint.getExtensionFileUri(binding.fileName)
     : optionId === customImageUrl.id
     ? customUrl
-    : workspaceUrl;
+    : await viewerEndpoint.getImageBase64Data(workspaceUrl);
+
   const setError = (error: string) => {
     store.dispatch({
       type: "SET_TEXTURE_LOADING_ERROR",
@@ -65,11 +66,11 @@ const setTexture = async (
     error && textureInfo.setPlaceholderTexture();
   };
 
-  if (!uri) {
-    setError(translations.errors.emptyUrl);
+  if (!src) {
+    setError(translations.errors.emptyField);
   } else {
     try {
-      const img = await loadImage(uri);
+      const img = await loadImage(src);
       textureInfo.setSource(img);
       setError("");
     } catch {
