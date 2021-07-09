@@ -175,6 +175,7 @@ input:focus {
 }
 
 .dropdown-select {
+  width: 100%;
   display: flex;
   flex-grow: 1;
   align-items: center;
@@ -183,6 +184,12 @@ input:focus {
   color: var(--sv-input-foreground-color);
   background-color: var(--sv-input-background-color);
   padding: var(--sv-input-padding);
+}
+
+.dropdown-select > div {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .dropdown-select:hover {
@@ -221,6 +228,9 @@ input:focus {
 .dropdown-list-item-text {
   padding: var(--sv-input-padding);
   user-select: none;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .dropdown-list-item-selected {

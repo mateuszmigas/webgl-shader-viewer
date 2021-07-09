@@ -33,7 +33,9 @@ export const Dropdown = React.memo(
       changes => {
         if (changes.selectedIndexes !== undefined) {
           onChange(
-            changes.selectedIndexes.length > 0 ? options[changes.selectedIndexes[0]].id : null
+            changes.selectedIndexes.length > 0
+              ? options[changes.selectedIndexes[0]].id
+              : null
           );
         }
       }
@@ -46,7 +48,10 @@ export const Dropdown = React.memo(
 
     useDropdownCloseWhenClickedOutside(containerRef, dispatch);
     useFocusOnStateChange(listRef, state.isOpen, true);
-    const { top } = useAdjustVerticalOffsetWhenOutsideViewport(containerRef, height);
+    const { top } = useAdjustVerticalOffsetWhenOutsideViewport(
+      containerRef,
+      height
+    );
 
     const listKeyboardHandler = React.useMemo(() => {
       const defaultHandler = createListKeyboardNavigator(dispatch);
@@ -67,7 +72,9 @@ export const Dropdown = React.memo(
           {...state}
           dispatch={dispatch}
           itemRenderer={() => (
-            <div>{selectedIndex !== null ? options[selectedIndex].display : ""}</div>
+            <div>
+              {selectedIndex !== null ? options[selectedIndex].display : ""}
+            </div>
           )}
         ></DropdownMain>
         {state.isOpen && (
@@ -107,10 +114,10 @@ const DropdownMain = (props: {
 }) => {
   const { isOpen, itemRenderer, dispatch } = props;
   const dropdownSelectRef = React.useRef(null);
-  const handleSelect = React.useCallback(() => dispatch([isOpen ? "CloseList" : "OpenList"]), [
-    isOpen,
-    dispatch,
-  ]);
+  const handleSelect = React.useCallback(
+    () => dispatch([isOpen ? "CloseList" : "OpenList"]),
+    [isOpen, dispatch]
+  );
 
   useFocusOnStateChange(dropdownSelectRef, isOpen, false);
 
@@ -122,7 +129,7 @@ const DropdownMain = (props: {
         onClick={handleSelect}
       >
         {itemRenderer()}
-        <i className={`codicon codicon-chevron-down`}></i>
+        {"▼"}
       </button>
     </div>
   );
@@ -136,9 +143,9 @@ const DropdownItem = (props: {
   dispatch: DropdownDispatch<DropdownActions>;
 }) => {
   const { text, index, isSelected, isHighlighted, dispatch } = props;
-  const style = `dropdown-list-item ${isSelected ? "dropdown-list-item-selected" : ""}  ${
-    isHighlighted ? "dropdown-list-item-highlighted" : ""
-  }`;
+  const style = `dropdown-list-item ${
+    isSelected ? "dropdown-list-item-selected" : ""
+  }  ${isHighlighted ? "dropdown-list-item-highlighted" : ""}`;
 
   return (
     <div
