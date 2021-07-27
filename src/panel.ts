@@ -35,9 +35,16 @@ export class Panel {
     Panel.instance = new Panel(panel, extensionUri);
   }
 
-  private constructor(private panel: vscode.WebviewPanel, private extensionUri: vscode.Uri) {
+  private constructor(
+    private panel: vscode.WebviewPanel,
+    private extensionUri: vscode.Uri
+  ) {
     this.panel.webview.html = this._getHtmlForWebview();
-    const listener = panelEndpoint(this.panel.webview, extensionUri, this.disposables);
+    const listener = panelEndpoint(
+      this.panel.webview,
+      extensionUri,
+      this.disposables
+    );
     this.panel.webview.onDidReceiveMessage(listener, null, this.disposables);
     this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
   }
@@ -60,13 +67,6 @@ export class Panel {
       vscode.Uri.joinPath(this.extensionUri, mediaDirectory, "styles.css")
     );
 
-    const codiconsUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.extensionUri, mediaDirectory, "codicon.css")
-    );
-    const codiconsFontUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.extensionUri, mediaDirectory, "codicon.ttf")
-    );
-
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
 
@@ -78,10 +78,8 @@ export class Panel {
                   Use a content security policy to only allow loading images from https or from our extension directory,
                   and only allow scripts that have a specific nonce.
               -->
-              <meta http-equiv="Content-Security-Policy" content="default-src 'none'; font-src ${codiconsFontUri}; style-src ${webview.cspSource} ${codiconsUri}; img-src ${webview.cspSource} data: https:; script-src 'nonce-${nonce}';">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
               <link href="${stylesUri}" rel="stylesheet">
-              <link href="${codiconsUri}" rel="stylesheet" />
               <title>No name</title>
           </head>
           <body>
@@ -94,7 +92,8 @@ export class Panel {
 
 function getNonce() {
   let text = "";
-  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (let i = 0; i < 32; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
