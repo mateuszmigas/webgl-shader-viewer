@@ -20,7 +20,7 @@ https://marketplace.visualstudio.com/items?itemName=mateuszmigas.webgl-shader-vi
 2. Run "Open WebGL Shader Viewer" command to activate the extension
 3. Select vertex and fragment shader files
 
-All values can be set manually. For some types you can can also use bindings.
+All values can be set manually. For some types you can also use bindings.
 
 ## Configuration
 
